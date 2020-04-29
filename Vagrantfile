@@ -1,9 +1,9 @@
 # kuberverse k8s lab provisioner
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
-# dependencies: https://raw.githubusercontent.com/strus38/orchestratedrpicluster/common.sh
-#               https://raw.githubusercontent.com/strus38/orchestratedrpicluster/master.sh
-#               https://raw.githubusercontent.com/strus38/orchestratedrpicluster/worker.sh
+# dependencies: https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/common.sh
+#               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/master.sh
+#               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/worker.sh
 
 BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 1
@@ -11,9 +11,9 @@ WORKER_COUNT = 2
 POD_CIDR = "172.18.0.0/16"
 API_ADV_ADDRESS = "192.168.1.210"
 KVMSG = "Kuberverse"
-COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedrpicluster/common.sh"
-MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedrpicluster/master.sh"
-WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedrpicluster/worker.sh"
+COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/common.sh"
+MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/master.sh"
+WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/worker.sh"
 
 Vagrant.configure("2") do |config|
 
