@@ -18,7 +18,7 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 - Optionally 1 External DD or a NAS to have some NFS storage capacity (without, the storage node SD card will be enough)
 
 ## Building the RPi cluster
-- build a stand or buy or RPis cluster case
+- build a stand or buy a RPis cluster case
 - flash all the RPi SD with the latest Raspbian version
 - connect all power/switch ports
 - power up 
@@ -42,5 +42,6 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ### Power up the K8S cluster
 $ vagrant up
+$ vagrant status
 $ vagrant ssh xxx
 then manually update /etc/resolv.conf with the eth1 value (will be fixed soon)
