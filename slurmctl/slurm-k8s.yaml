@@ -1,0 +1,142 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: slurm-ns
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: slurm
+  name: slurm-fs
+  namespace: slurm-ns
+data:
+  # Configuration values can be set as key-value properties
+  slurm.conf: |
+    # slurm.conf
+    SlurmctldHost=node01(192.168.1.20)
+    AuthType=auth/munge
+    CryptoType=crypto/munge
+    MpiDefault=none
+    ProctrackType=proctrack/cgroup
+    ReturnToService=2
+    SlurmctldPidFile=/run/slurmctld.pid
+    SlurmctldPort=6817
+    SlurmdPidFile=/run/slurmd.pid
+    SlurmdPort=6818
+    SlurmdSpoolDir=/var/lib/slurm-llnl/slurmd
+    SlurmUser=slurm
+    StateSaveLocation=/var/lib/slurm-llnl/slurmctld
+    SwitchType=switch/none
+    TaskPlugin=task/affinity
+    TaskPluginParam=Sched
+    InactiveLimit=0
+    KillWait=30
+    MinJobAge=300
+    SlurmctldTimeout=120
+    SlurmdTimeout=300
+    Waittime=0
+    FastSchedule=1
+    SchedulerType=sched/backfill
+    SelectType=select/cons_res
+    SelectTypeParameters=CR_Core
+    AccountingStorageType=accounting_storage/none
+    AccountingStoreJobComment=YES
+    ClusterName=glmdev
+    JobCompType=jobcomp/none
+    JobAcctGatherFrequency=30
+    JobAcctGatherType=jobacct_gather/none
+    SlurmctldDebug=3
+    SlurmctldLogFile=/var/log/slurm-llnl/slurmctld.log
+    SlurmdDebug=3
+    SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
+    # COMPUTE NODES
+    # node01 living in K8S cluster
+    NodeName=node01 NodeAddr=192.168.1.201 CPUs=1 State=UNKNOWN
+    # node [02-05] living in RPi cluster
+    NodeName=node02 NodeAddr=192.168.1.20 CPUs=4 State=UNKNOWN
+    NodeName=node03 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
+    NodeName=node04 NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
+    NodeName=node05 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
+    PartitionName=mycluster Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
+  slurmdbd.conf: |
+    #
+    # Example slurmdbd.conf file.
+    #
+    AuthType=auth/munge
+    DbdAddr=localhost
+    DbdHost=localhost
+    SlurmUser=slurm
+    DebugLevel=4
+    LogFile=/var/log/slurm/slurmdbd.log
+    PidFile=/var/run/slurmdbd.pid
+    StorageType=accounting_storage/mysql
+    StorageHost=localhost
+    StoragePass=password
+    StorageUser=slurm
+    StorageLoc=slurm_acct_db
+  gres.conf: |
+    Name=gpu Type=titanxp Cores=0
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: slurm
+  name: slurm-config
+  namespace: slurm-ns
+data:
+  # Configuration values can be set as key-value properties
+  nfs_server: 192.168.1.20
+  nfs_mount: /clusterfs
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurm
+  namespace: slurm-ns
+spec:
+  selector:
+    matchLabels:
+      app: slurm
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: slurm
+    spec:
+      containers:
+      - name: slurm
+        image: strusfr/docker-centos7-slurm:latest
+        # args: ["HOSTNAME", "KUBERNETES_PORT"]
+        imagePullPolicy: Always
+        stdin: true
+        tty: true
+        resources:
+          limits:
+            cpu: 10m
+            memory: 32Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/slurm/slurm.conf
+          subPath: slurm.conf
+        - name: config-volume
+          mountPath: /etc/slurm/slurmdbd.conf
+          subPath: slurmdbd.conf
+        - name: config-volume
+          mountPath: /etc/slurm/gres.conf
+          subPath: gres.conf
+      hostname: node01
+      restartPolicy: Always
+      volumes:
+        - name: config-volume
+          configMap:
+            name: slurm-fs
