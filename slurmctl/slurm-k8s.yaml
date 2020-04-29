@@ -16,7 +16,7 @@ data:
   # Configuration values can be set as key-value properties
   slurm.conf: |
     # slurm.conf
-    SlurmctldHost=node01(192.168.1.20)
+    SlurmctldHost=slurm.slurm-ns.svc.cluster.local
     AuthType=auth/munge
     CryptoType=crypto/munge
     MpiDefault=none
@@ -54,7 +54,7 @@ data:
     SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
     # COMPUTE NODES
     # node01 living in K8S cluster
-    NodeName=node01 NodeAddr=192.168.1.201 CPUs=1 State=UNKNOWN
+    # NodeName=node01 NodeAddr=192.168.1.201 CPUs=1 State=UNKNOWN
     # node [02-05] living in RPi cluster
     NodeName=node02 NodeAddr=192.168.1.20 CPUs=4 State=UNKNOWN
     NodeName=node03 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
@@ -113,7 +113,6 @@ spec:
       containers:
       - name: slurm
         image: strusfr/docker-centos7-slurm:latest
-        # args: ["HOSTNAME", "KUBERNETES_PORT"]
         imagePullPolicy: Always
         stdin: true
         tty: true
@@ -124,6 +123,11 @@ spec:
           requests:
             cpu: 10m
             memory: 32Mi
+        env:
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         volumeMounts:
         - name: config-volume
           mountPath: /etc/slurm/slurm.conf
@@ -140,3 +144,23 @@ spec:
         - name: config-volume
           configMap:
             name: slurm-fs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmctld
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - protocol: TCP
+      port: 6817
+      targetPort: 6817
+    - protocol: TCP
+      port: 6818
+      targetPort: 6818
+    - protocol: TCP
+      port: 22
+      targetPort: 22
+  type: LoadBalancer
