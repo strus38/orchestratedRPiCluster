@@ -25,18 +25,21 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ## Roles
 - RPIs[01]: storage node with NFS server - how to install (will be writen later)
+
 - RPis[02-0x]: compute nodes  - how to install (will be writen later)
+
 - Laptop: K8S server providing basic cluster services:
     * SLURM controller (in progress)
     * DHCPD server (in progress)
     * DNS server (in progress)
     * PXE boot (not yet implemented)
+    * Docker registry
     * ... more to come
 - K8S services:
     * grafana & prometheus monitoring
     * K8S dashboard
     * metallb
-    * (more to come)
+    * ... more to come
 
 ## What's next
 
