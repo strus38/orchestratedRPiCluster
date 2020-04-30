@@ -1,7 +1,7 @@
 # Install all apps related to monitoring in the monitoring namespace
 
 ## Prepare
-kubectl apply -f namespace.yml
+kubectl apply -f monitoring-ns.yml
 
 ## Loadbalancer
 Metallb is used to provide external access to those apps
@@ -9,8 +9,8 @@ Metallb is used to provide external access to those apps
 # Prometheus
 
 ## Install
-helm inspect values stable/prometheus > /tmp/prometheus.values
-helm install prometheus stable/prometheus -n monitoring -f .\monitoring\prometheus.values
+helm inspect values stable/prometheus > prometheus.values
+helm install prometheus stable/prometheus -n monitoring -f .\prometheus\prometheus.values
 
 ## Add RPi node
 Releases: https://github.com/prometheus/node_exporter/releases
@@ -20,13 +20,13 @@ RPi 2: wget https://github.com/prometheus/node_exporter/releases/download/v0.18.
 # Grafana
 
 ## Prepare
-helm inspect values stable/grafana > .\monitoring\grafanavalues.yaml
+helm inspect values stable/grafana > .\grafana\grafanavalues.yaml
 
 ## sidecar
-kubectl apply -f .\monitoring\grafanaconfig.yaml
+kubectl apply -f .\grafana\grafanaconfig.yaml
 
 ## Change to LoadBalancer
-helm install grafana stable/grafana -f .\monitoring\grafanavalues.yaml --namespace monitoring
+helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace monitoring
 
 ## Retrieve the password
 kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
@@ -34,7 +34,7 @@ kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-pass
 # K8S dashboard
 
 ## Install
-kubectl apply -f .\monitoring\dashboard.yml
+kubectl apply -f .\k8sdashboard\dashboard.yml
 
 ## Get access token
 kubectl create serviceaccount dashboard-admin-sa

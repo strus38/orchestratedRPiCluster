@@ -152,15 +152,18 @@ metadata:
   name: slurmctld
 spec:
   selector:
-    app: MyApp
+    app: slurm
   ports:
-    - protocol: TCP
+    - name: tcp6817
+      protocol: TCP
       port: 6817
       targetPort: 6817
-    - protocol: TCP
+    - name: tcp6818
+      protocol: TCP
       port: 6818
       targetPort: 6818
-    - protocol: TCP
+    - name: tcp22
+      protocol: TCP
       port: 22
       targetPort: 22
   type: LoadBalancer

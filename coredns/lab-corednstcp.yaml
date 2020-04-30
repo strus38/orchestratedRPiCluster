@@ -1,0 +1,29 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-dns-tcp
+  namespace: coredns
+  labels:
+    app.kubernetes.io/name: coredns
+    app.kubernetes.io/instance: lab-coredns
+  annotations:
+    prometheus.io/port: '9153'
+    prometheus.io/scrape: 'true'
+    metallb.universe.tf/allow-shared-ip: coredns
+spec:
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+    - name: metrics
+      protocol: TCP
+      port: 9153
+      targetPort: 9153
+  selector:
+    app.kubernetes.io/name: coredns
+    app.kubernetes.io/instance: lab-coredns
+  loadBalancerIP: 192.168.1.180
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Local

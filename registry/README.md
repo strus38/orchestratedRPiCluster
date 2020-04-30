@@ -1,7 +1,7 @@
 # Docker registry
 
 ## Prepare and configure
-helm inspect values stable/docker-registry > registry/registryvalues.yaml
+helm inspect values stable/docker-registry > registryvalues.yaml
 
 ## Install
 kubectl create namespace registry

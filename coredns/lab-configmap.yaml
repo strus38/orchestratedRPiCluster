@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: coredns-zones
+  namespace: coredns
+data:
+  db.home.lab: |
+    @ IN SOA ns1.home.lab. home.lab. (
+        20200101 ; serial
+        4H ; refresh
+        1H ; retry
+        7D ; expire
+        4H ; Negative Cache TTL) 
+      IN NS ns1
+    ns1       IN A 192.168.1.150
+    node01    IN A 192.168.1.20
+    node02    IN A 192.168.1.21
+    node03    IN A 192.168.1.22
+    node04    IN A 192.168.1.23
