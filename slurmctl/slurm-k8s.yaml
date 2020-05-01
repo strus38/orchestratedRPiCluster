@@ -16,7 +16,7 @@ data:
   # Configuration values can be set as key-value properties
   slurm.conf: |
     # slurm.conf
-    SlurmctldHost=slurm.slurm-ns.svc.cluster.local
+    SlurmctldHost=node01.home.lab
     AuthType=auth/munge
     CryptoType=crypto/munge
     MpiDefault=none
@@ -53,13 +53,13 @@ data:
     SlurmdDebug=3
     SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
     # COMPUTE NODES
-    # node01 living in K8S cluster
-    # NodeName=node01 NodeAddr=192.168.1.201 CPUs=1 State=UNKNOWN
+    # node99 - aka slurm controller living in K8S cluster
+    NodeName=node99.home.lab NodeAddr=192.168.1.199 CPUs=1 State=UNKNOWN
     # node [02-05] living in RPi cluster
-    NodeName=node02 NodeAddr=192.168.1.20 CPUs=4 State=UNKNOWN
-    NodeName=node03 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
-    NodeName=node04 NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
-    NodeName=node05 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
+    NodeName=node02.home.lab NodeAddr=192.168.1.20 CPUs=4 State=UNKNOWN
+    NodeName=node03.home.lab NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
+    NodeName=node04.home.lab NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
+    NodeName=node05.home.lab NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
     PartitionName=mycluster Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
   slurmdbd.conf: |
     #
@@ -90,7 +90,7 @@ metadata:
   namespace: slurm-ns
 data:
   # Configuration values can be set as key-value properties
-  nfs_server: 192.168.1.20
+  nfs_server: node01.home.lab
   nfs_mount: /clusterfs
 
 ---
@@ -138,7 +138,7 @@ spec:
         - name: config-volume
           mountPath: /etc/slurm/gres.conf
           subPath: gres.conf
-      hostname: node01
+      hostname: node99
       restartPolicy: Always
       volumes:
         - name: config-volume
@@ -167,3 +167,4 @@ spec:
       port: 22
       targetPort: 22
   type: LoadBalancer
+  loadBalancerIP: 192.168.1.199
