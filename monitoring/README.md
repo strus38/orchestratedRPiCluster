@@ -1,7 +1,9 @@
 # Install all apps related to monitoring in the monitoring namespace
 
 ## Prepare
+```
 kubectl apply -f monitoring-ns.yml
+```
 
 ## Loadbalancer
 Metallb is used to provide external access to those apps
@@ -9,8 +11,10 @@ Metallb is used to provide external access to those apps
 # Prometheus
 
 ## Install
+```
 helm inspect values stable/prometheus > prometheus.values
 helm install prometheus stable/prometheus -n monitoring -f .\prometheus\prometheus.values
+```
 
 ## Add RPi node
 Releases: https://github.com/prometheus/node_exporter/releases
@@ -20,13 +24,17 @@ RPi 2: wget https://github.com/prometheus/node_exporter/releases/download/v0.18.
 # Grafana
 
 ## Prepare
+```
 helm inspect values stable/grafana > .\grafana\grafanavalues.yaml
+```
 
-## sidecar
-kubectl apply -f .\grafana\grafanaconfig.yaml
-
-## Change to LoadBalancer
+## Install
+```
 helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace monitoring
+```
 
 ## Retrieve the password
-kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}"
+```
+Then use whatever you want to decode base64 (online or cmd on a linux)
