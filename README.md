@@ -9,6 +9,12 @@ Grafana Cluster Status
 Grafana RPI Cluster Status
 ![RPIs Cluster view](imgs/grafrpisstatus.PNG)
 
+K8S dashboard nodes
+![K8S dashboard nodes](imgs/dashNodes.PNG)
+
+K8S dashboard services
+![K8S dashboard services](imgs/dashSvc.PNG)
+
 **Status: work in progress**
 
 ## Hardware
