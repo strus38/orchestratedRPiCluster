@@ -7,6 +7,7 @@ KVMSG=$1
 NODE=$2
 POD_CIDR=$3
 API_ADV_ADDRESS=$4
+NODE_HOST_IP=10+$NODE
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -42,4 +43,4 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 kubectl apply -f /tmp/calico-defined.yaml
 rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
-echo KUBELET_EXTRA_ARGS=--node-ip=192.168.1.2$NODE > /etc/default/kubelet
+echo KUBELET_EXTRA_ARGS=--node-ip=192.168.1.2$NODE_HOST_IP > /etc/default/kubelet

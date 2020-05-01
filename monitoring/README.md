@@ -30,14 +30,3 @@ helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace 
 
 ## Retrieve the password
 kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-
-# K8S dashboard
-
-## Install
-kubectl apply -f .\k8sdashboard\dashboard.yml
-
-## Get access token
-kubectl create serviceaccount dashboard-admin-sa
-kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
-kubectl get secrets
-kubectl describe secret dashboard-admin-sa-token-kw7vn

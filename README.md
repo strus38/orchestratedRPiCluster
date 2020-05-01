@@ -43,8 +43,26 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ## What's next
 
-### Power up the K8S cluster
+Steps to deploy:
+
+1- Power up the K8S cluster
 $ vagrant up
 $ vagrant status
 $ vagrant ssh xxx
 then manually update /etc/resolv.conf with the eth1 value (will be fixed soon)
+
+2- Deploy Metallb
+
+3- Deploy k8s dashboard
+
+4- Deploy coredns
+
+5- Deploy registry
+
+6- Deploy monitoring
+
+7- Deploy dhcpd
+
+8- Deploy slurmctl
+
+Launch your SLURM jobs :-)
