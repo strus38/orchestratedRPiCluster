@@ -3,6 +3,12 @@
 ## Objective
 Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
+Grafana Cluster Status
+![K8S Cluster view](imgs/grafClusterStatus.PNG)
+
+Grafana RPI Cluster Status
+![RPIs Cluster view](imgs/grafrpisstatus.PNG)
+
 **Status: work in progress**
 
 ## Hardware
