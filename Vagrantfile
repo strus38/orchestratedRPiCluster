@@ -1,6 +1,4 @@
 # kuberverse k8s lab provisioner
-# type: kubeadm-calico-full-cluster-bootstrap
-# created by Artur Scheiner - artur.scheiner@gmail.com
 # dependencies: https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/common.sh
 #               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/master.sh
 #               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/worker.sh

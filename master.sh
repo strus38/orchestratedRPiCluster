@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 # kuberverse k8s lab provisioner
-# type: kubeadm-calico-full-cluster-bootstrap
-# created by Artur Scheiner - artur.scheiner@gmail.com
 
 KVMSG=$1
 NODE=$2
 POD_CIDR=$3
 API_ADV_ADDRESS=$4
-NODE_HOST_IP=10+$NODE
+NODE_HOST_IP=$((10+NODE))
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
