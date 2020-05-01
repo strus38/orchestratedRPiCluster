@@ -138,12 +138,16 @@ spec:
         - name: config-volume
           mountPath: /etc/slurm/gres.conf
           subPath: gres.conf
+        - name: nfs-volume
+          mountPath: /clusterfs
       hostname: node99
       restartPolicy: Always
       volumes:
-        - name: config-volume
-          configMap:
-            name: slurm-fs
+      - name: nfs-volume
+        nfs: 
+          # URL for the NFS server
+          server: 192.168.1.20 # Change this!
+          path: /clusterfs
 
 ---
 apiVersion: v1
