@@ -1,0 +1,30 @@
+- hosts: all
+  gather_facts: true
+
+  vars:
+    nodeexporter_pkg: node_exporter-0.18.1.linux-{{ archtype }}
+
+  tasks:
+  - name: untar the right version of node-exporter
+    unarchive:
+      src: "{{ nodeexporter_pkg }}.tar.gz"
+      dest: /home/pi/
+
+  - name: rename the dir
+    command: mv /home/pi/"{{ nodeexporter_pkg }}" /home/pi/node_exporter
+
+  - name: create systemd entry
+    template:
+      src: templates/node_exporter.service.j2
+      dest: /etc/systemd/system/node_exporter.service
+      owner: root
+      group: root
+      mode: '0644'
+    become: true
+
+  - name: Reload service httpd, in all cases
+    service:
+      name: node_exporter
+      state: reloaded
+      enabled: yes
+        
