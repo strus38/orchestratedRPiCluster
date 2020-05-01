@@ -143,6 +143,9 @@ spec:
       hostname: node99
       restartPolicy: Always
       volumes:
+      - name: config-volume
+        configMap:
+            name: slurm-fs
       - name: nfs-volume
         nfs: 
           # URL for the NFS server
