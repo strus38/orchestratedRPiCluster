@@ -6,12 +6,9 @@
 *~
 
 # Vagrant stuff
-acceptance_config.yml
-boxes/*
 /.vagrant
-/website/.vagrant
-/website/build
-/vagrant-spec.config.rb
-test/vagrant-spec/.vagrant/
 .vagrant
 /.kube
+/kubeadm-init.out
+kubeadm-init.out
+
