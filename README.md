@@ -103,6 +103,11 @@ $ cd metallb
 ```
 Read the README file for details
 
+* Create all namspaces needed by the project
+```
+$ kubectl apply -f createNamespaces.yaml
+```
+
 * Deploy persistentVolume
 ```
 $ cd persistentVolume
@@ -136,6 +141,12 @@ Read the README file for details
 * Deploy dhcpd
 ```
 $ cd dhcpd
+```
+Read the README file for details
+
+* Deploy SFTPD
+```
+$ cd sftp-server
 ```
 Read the README file for details
 

@@ -1,0 +1,34 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: coredns
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: monitoring
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: tftpd
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: slurm-ns
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: registry
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: kubernetes-dashboard

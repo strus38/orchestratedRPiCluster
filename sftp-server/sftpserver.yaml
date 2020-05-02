@@ -18,7 +18,7 @@ status:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: tftp-nfs
+  name: sftp-nfs
   namespace: coredns
   labels:
     app.name: sftp
@@ -28,7 +28,7 @@ spec:
   resources:
     requests:
       storage: 4Gi
-  volumeName: nfs-tftp
+  volumeName: sftp-nfs
   volumeMode: Filesystem
 
 ---
@@ -55,9 +55,9 @@ spec:
 
     spec:
       volumes:
-        - name: nfs-tftp
+        - name: sftp-nfs
           persistentVolumeClaim:
-            claimName: tftp-nfs
+            claimName: sftp-nfs
         - name: sftp-public-keys
           configMap:
             name: sftp-public-keys
@@ -71,8 +71,8 @@ spec:
             - containerPort: 22
           volumeMounts:
             - mountPath: /clusterfs
-              subPath: tftp
-              name: nfs-tftp
+              subPath: sftp
+              name: sftp-nfs
             - mountPath: /home/pxe/.ssh/keys
               name: sftp-public-keys
               readOnly: true
