@@ -13,7 +13,7 @@ metadata:
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: tftpd
+  name: ftpsvc
 
 ---
 kind: Namespace

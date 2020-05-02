@@ -169,13 +169,13 @@ Read the README file for details
 
 * Deploy SFTPD
 ```
-$ cd sftp-server
+$ cd ftpsvc/sftp-server
 ```
 Read the README file for details
 
 * Deploy TFTPD
 ```
-$ cd tftp-server
+$ cd ftpsvc/tftp-server
 ```
 Read the README file for details
 

@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: sftp
-  namespace: coredns
+  namespace: ftpsvc
 spec:
   type: "LoadBalancer"
   ports:
@@ -19,7 +19,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: sftp-nfs
-  namespace: coredns
+  namespace: ftpsvc
   labels:
     app.name: sftp
 spec:
@@ -36,7 +36,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: sftp
-  namespace: coredns
+  namespace: ftpsvc
   labels:
     app: sftp
 spec:
