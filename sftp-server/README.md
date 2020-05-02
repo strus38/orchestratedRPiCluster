@@ -1,4 +1,4 @@
-# TFT Server
+# SFTP Server
 
 ## Prepare
 Copy your local ssh key into a configmap. Only 1 user is available: pxe
