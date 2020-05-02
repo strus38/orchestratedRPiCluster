@@ -56,6 +56,24 @@ K8S dashboard services
     * metallb
     * ... more to come
 
+## Services IPs
+By default DHCP is set between: 192.168.1.150-199
+(Not yet implemented like this)
+Fixed Services endpoints for admins:
+* NFS Server: 20
+* DNS Server: 180
+* DHCP Server: 181
+* dashboard: 190
+* grafana: 191
+* prometheus-server: 192
+* prometheus-pushgateway: 192
+
+Fixed Services endpoints for end users:
+* docker registry: 197
+* ChartMuseum: 198
+* TFTP: 199
+* SFTP: 198
+
 ## What's next
 
 Steps to deploy:
