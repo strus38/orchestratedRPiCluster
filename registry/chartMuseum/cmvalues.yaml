@@ -1,0 +1,23 @@
+env:
+  open:
+    STORAGE: local
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 8Gi
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+
+  ## Chartmuseum data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+service:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.195

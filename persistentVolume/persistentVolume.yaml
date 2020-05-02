@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-nfs-share
+  namespace: registry
+spec:
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteOnce # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /clusterfs # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-nfs-share2
+  namespace: registry
+spec:
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteOnce # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /clusterfs # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-nfs-share3
+  namespace: monitoring
+spec:
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteOnce # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /clusterfs # Please change this to the relevant share
