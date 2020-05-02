@@ -1,0 +1,82 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sftp
+  namespace: coredns
+spec:
+  type: "LoadBalancer"
+  ports:
+  - name: "ssh"
+    port: 22
+    targetPort: 22
+  selector:
+    app: sftp
+status:
+  loadBalancer: {}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: tftp-nfs
+  namespace: coredns
+  labels:
+    app.name: sftp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+  volumeName: nfs-tftp
+  volumeMode: Filesystem
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: sftp
+  namespace: coredns
+  labels:
+    app: sftp
+spec:
+  selector:
+    matchLabels:
+      app: sftp
+  # how many pods and indicate which strategy we want for rolling update
+  replicas: 1
+  minReadySeconds: 10
+
+  template:
+    metadata:
+      labels:
+        environment: production
+        app: sftp
+
+    spec:
+      volumes:
+        - name: nfs-tftp
+          persistentVolumeClaim:
+            claimName: tftp-nfs
+        - name: sftp-public-keys
+          configMap:
+            name: sftp-public-keys
+      containers:
+        #the sftp server itself
+        - name: sftp
+          image: atmoz/sftp:latest
+          imagePullPolicy: Always
+          args: ["pxe::1001:100:incoming,outgoing"] #create users and dirs
+          ports:
+            - containerPort: 22
+          volumeMounts:
+            - mountPath: /clusterfs
+              subPath: tftp
+              name: nfs-tftp
+            - mountPath: /home/pxe/.ssh/keys
+              name: sftp-public-keys
+              readOnly: true
+          securityContext:
+            capabilities:
+              add: ["SYS_ADMIN"]
+          resources: {}
