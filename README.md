@@ -60,7 +60,7 @@ K8S dashboard services
 
 Steps to deploy:
 
-1- Power up the K8S cluster on your laptop
+* Power up the K8S cluster on your laptop
 By default: 1 Master and 3 workers
 Update the Vagrantfile to match your subnets.
 ```
@@ -97,49 +97,61 @@ kv-worker-1   Ready      <none>   36m     v1.18.2
 kv-worker-2   NotReady   <none>   6m49s   v1.18.2
 ```
 
-2- Deploy Metallb
+* Deploy Metallb
 ```
 $ cd metallb
 ```
 Read the README file for details
 
-3- Deploy k8s dashboard
+* Deploy persistentVolume
+```
+$ cd persistentVolume
+```
+Read the README file for details
+
+* Deploy k8s dashboard
 ```
 $ cd k8sdashboard
 ```
 Read the README file for details
 
-4- Deploy coredns
+* Deploy coredns
 ```
 $ cd coredns
 ```
 Read the README file for details
 
-5- Deploy registry
+* Deploy docker registry and ChartsMuseum
 ```
 $ cd registry
 ```
 Read the README file for details
 
-6- Deploy monitoring
+* Deploy monitoring
 ```
 $ cd monitoring
 ```
 Read the README file for details
 
-7- Deploy dhcpd
+* Deploy dhcpd
 ```
 $ cd dhcpd
 ```
 Read the README file for details
 
-8- Deploy slurmctl
+* Deploy TFTPD
+```
+$ cd tftp-server
+```
+Read the README file for details
+
+* Deploy slurmctl
 ```
 $ cd slutmctld
 ```
 Read the README file for details
 
-9- Finish the config of your RPis
+* Finish the config of your RPis
 ```
 $ cd rpicluster
 ```
