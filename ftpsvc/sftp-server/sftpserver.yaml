@@ -65,7 +65,7 @@ spec:
         #the sftp server itself
         - name: sftp
           image: atmoz/sftp:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           args: ["pxe::1001:100:incoming,outgoing"] #create users and dirs
           ports:
             - containerPort: 22

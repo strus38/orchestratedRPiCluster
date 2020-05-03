@@ -3,7 +3,7 @@
 ## Prepare
 Copy your local ssh key into a configmap. Only 1 user is available: pxe
 ```
-$ kubectl create configmap sftp-public-keys --from-file C:\Users\miamore\.ssh\id_rsa.pub -n coredns
+$ kubectl create configmap sftp-public-keys --from-file C:\Users\miamore\.ssh\id_rsa.pub -n ftpsvc
 ```
 
 ## Install

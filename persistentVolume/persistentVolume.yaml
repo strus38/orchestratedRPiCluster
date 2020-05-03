@@ -71,7 +71,7 @@ spec:
   capacity:
     storage: 5Gi # This size is used to match a volume to a tenents claim
   accessModes:
-    - ReadWriteOnce # Access modes are defined below
+    - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
