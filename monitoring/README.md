@@ -11,9 +11,15 @@ Metallb is used to provide external access to those apps
 # Prometheus
 
 ## Install
+* Install the prometeus server
 ```
 helm inspect values stable/prometheus > prometheus.values
 helm install prometheus stable/prometheus -n monitoring -f .\prometheus\prometheus.values
+```
+
+* Install the kube-state-metric
+```
+helm install -f .\kubestatemetrics\prometheus.values
 ```
 
 ## Add RPi node
@@ -29,9 +35,12 @@ helm inspect values stable/grafana > .\grafana\grafanavalues.yaml
 ```
 
 ## Install
+* Install the server part
 ```
 helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace monitoring
 ```
+
+* Add the dashboard you want :-) ... some provided in this repo.s
 
 ## Retrieve the password
 ```
