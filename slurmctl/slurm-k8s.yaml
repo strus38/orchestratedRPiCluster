@@ -9,7 +9,7 @@ data:
   # Configuration values can be set as key-value properties
   slurm.conf: |
     # slurm.conf
-    SlurmctldHost=node01.home.lab
+    SlurmctldHost=node99.home.lab
     AuthType=auth/munge
     CryptoType=crypto/munge
     MpiDefault=none
@@ -85,6 +85,7 @@ data:
   # Configuration values can be set as key-value properties
   nfs_server: node01.home.lab
   nfs_mount: /clusterfs
+  subPath: clustershare/
 
 ---
 apiVersion: apps/v1
@@ -133,7 +134,7 @@ spec:
           mountPath: /etc/slurm/gres.conf
           subPath: gres.conf
         - name: nfs-volume
-          mountPath: /clusterfs
+          mountPath: /clusterfs/clustershare
       hostname: node99
       restartPolicy: Always
       volumes:

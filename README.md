@@ -79,6 +79,19 @@ Fixed Services endpoints for end users:
 * TFTP: 199
 * SFTP: 198
 
+## RBAC related topics
+
+Currently RBAc is being used in some areas but not all ...
+Using https://github.com/alcideio/rbac-tool you can get more details about your running cluster
+
+* RBAC for K8S dashboard services
+
+![RBAC view of K8S dashboard services](imgs/rbac-kdashboard.PNG)
+
+* RBAC for Grafana
+
+![RBAC for Grafana](imgs/rbac-grafana.PNG)
+
 ## What's next
 
 Steps to deploy:
