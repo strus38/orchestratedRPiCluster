@@ -126,11 +126,11 @@ sudo service kubelet restart
 From your laptop, check the status of your K8S cluster:
 ```
 $ kubectl get nodes
-NAME          STATUS     ROLES    AGE     VERSION
-kv-master-0   Ready      master   85m     v1.18.2
-kv-worker-0   Ready      <none>   63m     v1.18.2
-kv-worker-1   Ready      <none>   36m     v1.18.2
-kv-worker-2   NotReady   <none>   6m49s   v1.18.2
+NAME          STATUS   ROLES    AGE    VERSION
+kv-master-0   Ready    master   4d4h   v1.18.2
+kv-worker-0   Ready    <none>   4d4h   v1.18.2
+kv-worker-1   Ready    <none>   4d3h   v1.18.2
+kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
 
 * Deploy Metallb
