@@ -5,7 +5,7 @@ metadata:
   namespace: registry
 spec:
   capacity:
-    storage: 20Gi # This size is used to match a volume to a tenents claim
+    storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
@@ -21,7 +21,7 @@ metadata:
   namespace: registry
 spec:
   capacity:
-    storage: 20Gi # This size is used to match a volume to a tenents claim
+    storage: 5Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 

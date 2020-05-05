@@ -1,10 +1,12 @@
 env:
   open:
     STORAGE: local
+
 persistence:
   enabled: true
-  accessMode: ReadWriteOnce
-  size: 8Gi
+  accessMode: ReadWriteMany
+  size: 5Gi
+  subPath: "chartmuseum/"
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
