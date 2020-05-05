@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: my-nfs-share
+  name: dockerreg-nfsshare
   namespace: registry
 spec:
   capacity:
     storage: 20Gi # This size is used to match a volume to a tenents claim
   accessModes:
-    - ReadWriteOnce # Access modes are defined below
+    - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
@@ -17,13 +17,13 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: my-nfs-share2
+  name: chartmuseum-nfsshare
   namespace: registry
 spec:
   capacity:
     storage: 20Gi # This size is used to match a volume to a tenents claim
   accessModes:
-    - ReadWriteOnce # Access modes are defined below
+    - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
@@ -33,13 +33,13 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: my-nfs-share3
+  name: monitoring-nfsshare
   namespace: monitoring
 spec:
   capacity:
     storage: 20Gi # This size is used to match a volume to a tenents claim
   accessModes:
-    - ReadWriteOnce # Access modes are defined below
+    - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
@@ -55,7 +55,7 @@ spec:
   capacity:
     storage: 5Gi # This size is used to match a volume to a tenents claim
   accessModes:
-    - ReadWriteOnce # Access modes are defined below
+    - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
@@ -70,6 +70,22 @@ metadata:
 spec:
   capacity:
     storage: 5Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteMany # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /clusterfs # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dashboard-nfsshare
+  namespace: kubernetes-dashboard
+spec:
+  capacity:
+    storage: 1Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
