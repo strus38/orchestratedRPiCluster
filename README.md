@@ -92,6 +92,11 @@ Using https://github.com/alcideio/rbac-tool you can get more details about your 
 
 ![RBAC for Grafana](imgs/rbac-grafana.PNG)
 
+## SLURM
+
+Currently using SLURM 18.08.5 - Ubuntu 16.04
+Open MPI - no yet defined
+
 ## What's next
 
 Steps to deploy:

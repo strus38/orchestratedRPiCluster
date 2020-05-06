@@ -9,7 +9,7 @@ data:
   # Configuration values can be set as key-value properties
   slurm.conf: |
     # slurm.conf
-    SlurmctldHost=node99.home.lab
+    SlurmctldHost=node09(192.168.1.198)
     AuthType=auth/munge
     CryptoType=crypto/munge
     MpiDefault=none
@@ -19,9 +19,9 @@ data:
     SlurmctldPort=6817
     SlurmdPidFile=/run/slurmd.pid
     SlurmdPort=6818
-    SlurmdSpoolDir=/var/lib/slurm-llnl/slurmd
+    SlurmdSpoolDir=/usr/local/sbin/slurmcd
     SlurmUser=slurm
-    StateSaveLocation=/var/lib/slurm-llnl/slurmctld
+    StateSaveLocation=/usr/local/sbin/slurmctld
     SwitchType=switch/none
     TaskPlugin=task/affinity
     TaskPluginParam=Sched
@@ -37,22 +37,22 @@ data:
     SelectTypeParameters=CR_Core
     AccountingStorageType=accounting_storage/none
     AccountingStoreJobComment=YES
-    ClusterName=glmdev
+    ClusterName=rpicluster
     JobCompType=jobcomp/none
     JobAcctGatherFrequency=30
     JobAcctGatherType=jobacct_gather/none
     SlurmctldDebug=3
-    SlurmctldLogFile=/var/log/slurm-llnl/slurmctld.log
+    SlurmctldLogFile=/var/log/supervisor/slurmctld.log
     SlurmdDebug=3
-    SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
+    SlurmdLogFile=/var/log/supervisor/slurmd.log
     # COMPUTE NODES
     # node99 - aka slurm controller living in K8S cluster
-    NodeName=node99.home.lab NodeAddr=192.168.1.199 CPUs=1 State=UNKNOWN
+    NodeName=node09 NodeAddr=192.168.1.198 CPUs=1 State=UNKNOWN
     # node [02-05] living in RPi cluster
-    NodeName=node02.home.lab NodeAddr=192.168.1.20 CPUs=4 State=UNKNOWN
-    NodeName=node03.home.lab NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
-    NodeName=node04.home.lab NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
-    NodeName=node05.home.lab NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
+    NodeName=node02 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
+    NodeName=node03 NodeAddr=192.168.1.22 CPUs=4 State=UNKNOWN
+    NodeName=node04 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
+    NodeName=node05 NodeAddr=192.168.1.25 CPUs=4 State=UNKNOWN
     PartitionName=mycluster Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
   slurmdbd.conf: |
     #
@@ -106,36 +106,42 @@ spec:
     spec:
       containers:
       - name: slurm
-        image: strusfr/docker-centos7-slurm:latest
-        #image: jmcarbo/docker-slurmctld
+        #image: titansmc/docker-slurmctld
+        image: strusfr/docker-ubuntu1604-slurmctld:latest
         imagePullPolicy: IfNotPresent
         stdin: true
         tty: true
         resources:
           limits:
-            cpu: 10m
-            memory: 32Mi
+            cpu: 20m
+            memory: 64Mi
           requests:
-            cpu: 10m
-            memory: 32Mi
+            cpu: 20m
+            memory: 64Mi
         env:
+          - name: SLURM_CLUSTER_NAME
+            value: rpicluster
+          - name: SLURM_CONTROL_MACHINE
+            value: node09.home.lab
+          - name: SLURM_NODE_NAMES
+            value: node[02-05]
           - name: MY_POD_IP
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/slurm/slurm.conf
+          mountPath: /usr/local/etc/slurm/slurm.conf
           subPath: slurm.conf
         - name: config-volume
-          mountPath: /etc/slurm/slurmdbd.conf
+          mountPath: /usr/local/etc/slurm/slurmdbd.conf
           subPath: slurmdbd.conf
         - name: config-volume
-          mountPath: /etc/slurm/gres.conf
+          mountPath: /usr/local/etc/slurm/gres.conf
           subPath: gres.conf
         - name: nfs-volume
-          mountPath: /clusterfs/clustershare
-      hostname: node99
+          mountPath: /clusterfs
+      hostname: node09
       restartPolicy: Always
       volumes:
       - name: config-volume
