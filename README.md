@@ -15,6 +15,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![RPIs Cluster view](imgs/grafrpisstatus.PNG)
 
+* Grafana SLURM monitoring
+
+![SLURM Cluster view](imgs/grafSlurm.PNG)
+
 * K8S dashboard nodes
 
 ![K8S dashboard nodes](imgs/dashNodes.PNG)
