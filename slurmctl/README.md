@@ -11,11 +11,9 @@ Once deployed, you must manually copy the munge.key to the RPis nodes
 $ kubectl get pods -n slurm-ns
 NAME                     READY   STATUS    RESTARTS   AGE
 slurm-745f46bd9b-26nms   1/1     Running   0          4m28s
-
-$ kubectl exec slurm-745f46bd9b-26nms -n slurm-ns -- cp /etc/munge/munge.key /clusterfs/munge.key
 ```
 
-Then, in each rpi, you have to do:
+Then, in each rpi, you have to copy the new munge.key file ... trying to see how to automate that.
 ```
 <pi_node>$ sudo cp /clusterfs/munge.key /etc/munge/munge.key
 ```
