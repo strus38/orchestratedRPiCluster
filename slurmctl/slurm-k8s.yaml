@@ -43,7 +43,7 @@ data:
     # COMPUTE NODES
     # node [02-05] living in RPi cluster
     NodeName=node02 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
-    NodeName=node03 NodeAddr=192.168.1.22 CPUs=4 State=UNKNOWN
+    NodeName=node03 NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
     NodeName=node04 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
     NodeName=node05 NodeAddr=192.168.1.25 CPUs=4 State=UNKNOWN
     PartitionName=allnodes Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
