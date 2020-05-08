@@ -19,6 +19,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![SLURM Cluster view](imgs/grafSlurm.PNG)
 
+* Prometheus Targets
+
+![Prometheus Targets](imgs/prometheusTargets.PNG)
+
 * K8S dashboard nodes
 
 ![K8S dashboard nodes](imgs/dashNodes.PNG)
