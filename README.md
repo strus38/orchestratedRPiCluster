@@ -94,8 +94,10 @@ Using https://github.com/alcideio/rbac-tool you can get more details about your 
 
 ## SLURM
 
-Currently using SLURM 18.08.5 - Ubuntu 16.04
-Open MPI - no yet defined
+Currently using SLURM 18.08.5 - Ubuntu 18.04 (otherwise the slurm node_exporter for Ubuntu cannot be compiled)
+Note: missleading name of the containers: docker-ubuntu1604-xxx are in fact Ubuntu18.04 :-).
+
+Open MPI - is compiled and running on the RPis.
 
 Example:
 ```
