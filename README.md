@@ -97,6 +97,19 @@ Using https://github.com/alcideio/rbac-tool you can get more details about your 
 Currently using SLURM 18.08.5 - Ubuntu 16.04
 Open MPI - no yet defined
 
+Example:
+```
+$ kubectl get pods -n slurm-ns
+NAME                     READY   STATUS    RESTARTS   AGE
+slurm-745f46bd9b-26nms   1/1     Running   0          4m28s
+
+$ kubectl exec slurm-745f46bd9b-26nms -n slurm-ns -- sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+allnodes*    up   infinite      1   unk* node05
+allnodes*    up   infinite      1  drain node03
+allnodes*    up   infinite      2   idle node[02,04]
+```
+
 ## What's next
 
 Steps to deploy:

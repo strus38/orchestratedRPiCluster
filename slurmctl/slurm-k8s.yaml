@@ -8,70 +8,70 @@ metadata:
 data:
   # Configuration values can be set as key-value properties
   slurm.conf: |
-    # slurm.conf
-    SlurmctldHost=node09(192.168.1.198)
-    AuthType=auth/munge
-    CryptoType=crypto/munge
-    MpiDefault=none
-    ProctrackType=proctrack/cgroup
-    ReturnToService=2
-    SlurmctldPidFile=/run/slurmctld.pid
-    SlurmctldPort=6817
-    SlurmdPidFile=/run/slurmd.pid
-    SlurmdPort=6818
-    SlurmdSpoolDir=/usr/local/sbin/slurmcd
-    SlurmUser=slurm
-    StateSaveLocation=/usr/local/sbin/slurmctld
-    SwitchType=switch/none
-    TaskPlugin=task/affinity
-    TaskPluginParam=Sched
-    InactiveLimit=0
-    KillWait=30
-    MinJobAge=300
-    SlurmctldTimeout=120
-    SlurmdTimeout=300
-    Waittime=0
-    FastSchedule=1
-    SchedulerType=sched/backfill
-    SelectType=select/cons_res
-    SelectTypeParameters=CR_Core
-    AccountingStorageType=accounting_storage/none
-    AccountingStoreJobComment=YES
+    #
+    # RPi cluster slurm.conf file.
+    #
     ClusterName=rpicluster
-    JobCompType=jobcomp/none
-    JobAcctGatherFrequency=30
-    JobAcctGatherType=jobacct_gather/none
+    ControlMachine=node09
+    #SlurmUser=slurm
+    SlurmdUser=root
+    SlurmctldPort=6817
+    SlurmdPort=6818
+    CryptoType=crypto/munge
+    AuthType=auth/munge
+    StateSaveLocation=/var/spool/slurmctld
+    SlurmdSpoolDir=/var/spool/slurmctld
+    SwitchType=switch/none
+    MpiDefault=none
+    SlurmctldPidFile=/var/run/slurmctld.pid
+    SlurmdPidFile=/var/run/slurmd.pid
+    ProctrackType=proctrack/pgid
+    ReturnToService=0
+    SlurmctldTimeout=300
+    SlurmdTimeout=300
+    InactiveLimit=0
+    MinJobAge=300
+    KillWait=30
+    Waittime=0
+    SchedulerType=sched/backfill
+    FastSchedule=1
     SlurmctldDebug=3
     SlurmctldLogFile=/var/log/supervisor/slurmctld.log
     SlurmdDebug=3
     SlurmdLogFile=/var/log/supervisor/slurmd.log
+    JobCompType=jobcomp/none
     # COMPUTE NODES
-    # node99 - aka slurm controller living in K8S cluster
-    NodeName=node09 NodeAddr=192.168.1.198 CPUs=1 State=UNKNOWN
     # node [02-05] living in RPi cluster
     NodeName=node02 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
     NodeName=node03 NodeAddr=192.168.1.22 CPUs=4 State=UNKNOWN
     NodeName=node04 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
     NodeName=node05 NodeAddr=192.168.1.25 CPUs=4 State=UNKNOWN
-    PartitionName=mycluster Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
-  slurmdbd.conf: |
-    #
-    # Example slurmdbd.conf file.
-    #
-    AuthType=auth/munge
-    DbdAddr=localhost
-    DbdHost=localhost
-    SlurmUser=slurm
-    DebugLevel=4
-    LogFile=/var/log/slurm/slurmdbd.log
-    PidFile=/var/run/slurmdbd.pid
-    StorageType=accounting_storage/mysql
-    StorageHost=localhost
-    StoragePass=password
-    StorageUser=slurm
-    StorageLoc=slurm_acct_db
-  gres.conf: |
-    Name=gpu Type=titanxp Cores=0
+    PartitionName=allnodes Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
+
+  cgroup_allowed_devices_file.conf: |
+    /dev/null
+    /dev/urandom
+    /dev/zero
+    /dev/sda*
+    /dev/cpu/*/*
+    /dev/pts/*
+    /clusterfs*
+
+  cgroup.conf: |
+    CgroupMountpoint="/sys/fs/cgroup"
+    CgroupAutomount=yes
+    CgroupReleaseAgentDir="/usr/local/etc/cgroup"
+    AllowedDevicesFile="/usr/local/etc/cgroup_allowed_devices_file.conf"
+    ConstrainCores=no
+    TaskAffinity=no
+    ConstrainRAMSpace=yes
+    ConstrainSwapSpace=no
+    ConstrainDevices=no
+    AllowedRamSpace=100
+    AllowedSwapSpace=0
+    MaxRAMPercent=100
+    MaxSwapPercent=100
+    MinRAMSpace=30
 
 ---
 kind: ConfigMap
@@ -104,6 +104,27 @@ spec:
       labels:
         app: slurm
     spec:
+      hostAliases:
+      - ip: "192.168.1.198"
+        hostnames:
+        - "node09"
+        - "node09.home.lab"
+      - ip: "192.168.1.21"
+        hostnames:
+        - "node02"
+        - "node02.home.lab"
+      - ip: "192.168.1.22"
+        hostnames:
+        - "node03"
+        - "node03.home.lab"
+      - ip: "192.168.1.23"
+        hostnames:
+        - "node04"
+        - "node04.home.lab"
+      - ip: "192.168.1.25"
+        hostnames:
+        - "node05"
+        - "node05.home.lab"
       containers:
       - name: slurm
         #image: titansmc/docker-slurmctld
@@ -122,7 +143,7 @@ spec:
           - name: SLURM_CLUSTER_NAME
             value: rpicluster
           - name: SLURM_CONTROL_MACHINE
-            value: node09.home.lab
+            value: node09
           - name: SLURM_NODE_NAMES
             value: node[02-05]
           - name: MY_POD_IP
@@ -131,14 +152,14 @@ spec:
                 fieldPath: status.podIP
         volumeMounts:
         - name: config-volume
-          mountPath: /usr/local/etc/slurm/slurm.conf
+          mountPath: /usr/local/etc/slurm.conf
           subPath: slurm.conf
         - name: config-volume
-          mountPath: /usr/local/etc/slurm/slurmdbd.conf
-          subPath: slurmdbd.conf
+          mountPath: /usr/local/etc/cgroup_allowed_devices_file.conf
+          subPath: cgroup_allowed_devices_file.conf
         - name: config-volume
-          mountPath: /usr/local/etc/slurm/gres.conf
-          subPath: gres.conf
+          mountPath: /usr/local/etc/cgroup.conf
+          subPath: cgroup.conf
         - name: nfs-volume
           mountPath: /clusterfs
       hostname: node09
