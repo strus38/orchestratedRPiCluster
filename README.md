@@ -38,7 +38,7 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 **Status: work in progress**
 
 ## Hardware
-- A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory, max: no limits)
+- A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits)
     * Linux or Windows 10 PRO (not tested with family, but should work)
     * Vagrant
     * Virtualbox
