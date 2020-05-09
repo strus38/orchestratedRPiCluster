@@ -169,7 +169,7 @@ kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
 $ cd metallb
 ```
-Read the README file for details
+[Read the README file for details](metallb/README.md)
 
 * Create all namspaces needed by the project
 ```
@@ -180,61 +180,61 @@ $ kubectl apply -f createNamespaces.yaml
 ```
 $ cd persistentVolume
 ```
-Read the README file for details
+[Read the README file for details](persistentVolume/README.md)
 
 * Deploy k8s dashboard
 ```
 $ cd k8sdashboard
 ```
-Read the README file for details
+[Read the README file for details](k8sdashboard/README.md)
 
 * Deploy coredns
 ```
 $ cd coredns
 ```
-Read the README file for details
+[Read the README file for details](coredns/README.md)
 
 * Deploy docker registry and ChartsMuseum
 ```
 $ cd registry
 ```
-Read the README file for details
+[Read the README file for details](registry/README.md)
 
 * Deploy monitoring
 ```
 $ cd monitoring
 ```
-Read the README file for details
+[Read the README file for details](monitoring/README.md)
 
 * Deploy logging (Work in progress)
 ```
 $ cd logging
 ```
-Read the README file for details
+[Read the README file for details](logging/README.md)
 
-* Deploy dhcpd
+* Deploy dhcpd (Work in progress)
 ```
 $ cd dhcpd
 ```
-Read the README file for details
+[Read the README file for details](dhcp/README.md)
 
 * Deploy SFTPD
 ```
 $ cd ftpsvc/sftp-server
 ```
-Read the README file for details
+[Read the README file for details](stpsvc/sftp-server/README.md)
 
 * Deploy TFTPD
 ```
 $ cd ftpsvc/tftp-server
 ```
-Read the README file for details
+[Read the README file for details](stpsvc/ftps-server/README.md)
 
 * Deploy slurmctl
 ```
 $ cd slutmctld
 ```
-Read the README file for details
+[Read the README file for details](slurmctld/README.md)
 
 * Finish the config of your RPis
 ```
