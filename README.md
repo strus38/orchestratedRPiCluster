@@ -210,7 +210,7 @@ $ cd monitoring
 ```
 $ cd logging
 ```
-[Read the README file for details](logging/README.md)
+[Read the README file for details](loggingEFK/README.md)
 
 * Deploy dhcpd (Work in progress)
 ```
