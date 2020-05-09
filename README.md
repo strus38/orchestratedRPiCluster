@@ -19,6 +19,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![SLURM Cluster view](imgs/grafSlurm.PNG)
 
+* Kibana ElasticSearch Fluentd Metricbeat (Work in progress)
+
+![Logging with Kibana view](imgs/kibanaOverview.PNG)
+
 * Prometheus Targets
 
 ![Prometheus Targets](imgs/prometheusTargets.PNG)
@@ -199,6 +203,12 @@ Read the README file for details
 * Deploy monitoring
 ```
 $ cd monitoring
+```
+Read the README file for details
+
+* Deploy logging (Work in progress)
+```
+$ cd logging
 ```
 Read the README file for details
 

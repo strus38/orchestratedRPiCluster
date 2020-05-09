@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chronyd
+  namespace: chronyd
+spec:
+  selector:
+    matchLabels:
+      app: chronyd
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: chronyd
+    spec:
+      hostAliases:
+      - ip: "192.168.1.198"
+        hostnames:
+        - "node09"
+        - "node09.home.lab"
+      - ip: "192.168.1.21"
+        hostnames:
+        - "node02"
+        - "node02.home.lab"
+      - ip: "192.168.1.22"
+        hostnames:
+        - "node03"
+        - "node03.home.lab"
+      - ip: "192.168.1.23"
+        hostnames:
+        - "node04"
+        - "node04.home.lab"
+      - ip: "192.168.1.25"
+        hostnames:
+        - "node05"
+        - "node05.home.lab"
+      containers:
+      - name: chronyd
+        image: alvistack/chrony:latest
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: true
+        resources:
+          limits:
+            cpu: 20m
+            memory: 64Mi
+          requests:
+            cpu: 20m
+            memory: 64Mi
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chronyd
+  namespace: chronyd
+  labels:
+    app.name: chronyd
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 123
+      targetPort: 123
+      protocol: UDP
+      name: chronyd

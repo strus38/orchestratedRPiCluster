@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
       subconfig.vm.network :public_network, ip: "192.168.1.2#{i + 20}", bridge: "Intel(R) Wireless-AC 9461"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
-        vb.memory = 1024
+        vb.memory = 2560
       end
 
       subconfig.vm.provision "shell" do |s|
