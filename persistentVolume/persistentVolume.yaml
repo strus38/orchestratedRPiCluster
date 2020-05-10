@@ -107,7 +107,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
-    path: /mnt/usb # Please change this to the relevant share
+    path: /clusterfs # Please change this to the relevant share
 
 ---
 apiVersion: v1
@@ -123,7 +123,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
-    path: /mnt/usb # Please change this to the relevant share
+    path: /clusterfs # Please change this to the relevant share
 
 ---
 apiVersion: v1
@@ -139,4 +139,4 @@ spec:
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
-    path: /mnt/usb # Please change this to the relevant share
+    path: /clusterfs # Please change this to the relevant share

@@ -1,35 +1,32 @@
 # Logging with EFK stack (ElasticSearch/Fluentd/Kibana)
 
-## Installation instructions
+## WARNING
 
+Installing this part consummes a lot of resources and appear to be not very stable for this kind of setup.
+So except for learning, it does not manadatory for this Lab :-)
+
+## Installation instructions
+* Mandatory for a basic setup:
 ```
 $ kubectl create namespace logging
 $ helm repo add elastic https://helm.elastic.co
 ```
 Install Elastic Search version 7.6.2 with 10GB sized volumes in the logging namespace.
+Install Kibana
 ```
-$ helm install elasticsearch elastic/elasticsearch --version 7.6.2 --namespace logging  --set volumeClaimTemplate.resources.requests.storage=10Gi --set replicas=1 --set esJavaOpts="-Xmx512m -Xms512m" --set resources.requests.cpu=400m --set resources.requests.memory=1G
+helm install elasticsearch elastic/elasticsearch --set imageTag=7.6.2 -n logging  --set volumeClaimTemplate.resources.requests.storage=10Gi --set replicas=1 --set service.type=LoadBalancer
 
-... wait ... and optionaly for debug
-
-$ kubectl port-forward svc/elasticsearch-master 9200
-```
-Install Kibana from repo (note it takes about five minutes for this to start up).
-```
-helm install kibana elastic/kibana --version 7.6.2 -n logging --set elasticsearchHosts="http://elasticsearch-master.logging.svc.cluster.local:9200" --set service.type=LoadBalancer --set resources.requests.cpu=200m --set resources.requests.memory=512Mi
-```
-Install Fluent-bit from stable repo
-```
-helm install fluent-bit stable/fluent-bit -n logging --set backend.type=es --set  backend.es.host="elasticsearch-master.logging.svc.cluster.local" --set filter.mergeJSONLog=true --set extraEntries.filter="Merge_Log_Key logfield" --set backend.es.retry_limit=5 --set resources.requests.cpu=100m --set resources.requests.memory=64Mi
-```
-Install a data pipeline
-```
-$ helm install metricbeat elastic/metricbeat -n logging
-
-... wait again since it may take some time for those metrics to reach Kibana
+helm install kibana elastic/kibana --set imageTag=7.6.2 -n logging --set elasticsearchHosts="http://elasticsearch-master.logging.svc.cluster.local:9200" --set service.type=LoadBalancer --set replicas=1 
 ```
 
-Configure the index based on metricbeat in Kibana.
+* Optional steps:
+```
+helm install fluent-bit stable/fluent-bit -n logging --set backend.type=es --set  backend.es.host="elasticsearch-master.logging.svc.cluster.local" --set filter.mergeJSONLog=true --set extraEntries.filter="Merge_Log_Key logfield" --set backend.es.retry_limit=5
+
+helm install metricbeat elastic/metricbeat -n logging
+```
+
+* Configure the index based on metricbeat in Kibana.
 
 ![Create index view](../imgs/kibanaIndexCreate.PNG)
 
@@ -53,4 +50,77 @@ metricbeat-metricbeat-metrics-5d848586bd-qstbd   1/1     Running             0  
 
 Then access the Kibana dashboard :-)
 
+## Rebuild since Kibana / Elasticsearch is a pain on such cluster
 
+helm delete elasticsearch -n logging
+helm delete fluent-bit -n logging
+helm delete kibana -n logging
+helm delete metricbeat -n logging
+kubectl delete pvc -n logging --all
+
+## RPis configurations
+
+```
+wget -qO - https://packages.fluentbit.io/fluentbit.key | sudo apt-key add -
+```
+Update the /etc/apt/sources.list
+```
+deb https://packages.fluentbit.io/raspbian/buster buster main
+```
+And then, move on:
+```
+sudo apt-get update
+sudo apt-get install td-agent-bit
+sudo vi /etc/td-agent-bit/td-agent-bit.conf
+Example
+>>>>
+[SERVICE]
+    Flush        5
+    Daemon       Off
+    Log_Level    info
+    Parsers_File parsers.conf
+    Plugins_File plugins.conf
+    HTTP_Server  Off
+    HTTP_Listen  0.0.0.0
+    HTTP_Port    2020
+
+[INPUT]
+    Name cpu
+    Tag  cpu.local
+    Interval_Sec 2
+
+[INPUT]
+    Name mem
+    Tag memory
+
+[INPUT]
+    Name netif
+    Tag netif
+    Interval_Sec 2
+    Interval_Nsec 2
+    Interface eth0
+
+[INPUT]
+    Name Thermal
+    Tag my_thermal
+
+[INPUT]
+    Name systemd
+    Tag host.*
+
+[INPUT]
+    Name              tail
+    Tag               syslog
+    Path              /var/log/syslog
+    Path_Key          filename
+    Refresh_Interval  10
+
+[OUTPUT]
+    Name  es
+    Match *
+    Host 192.168.1.179
+    Port 9200
+    Index fluent_bit_node
+
+sudo service td-agent-bit restart
+```
