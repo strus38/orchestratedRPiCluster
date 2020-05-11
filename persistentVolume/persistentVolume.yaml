@@ -69,13 +69,13 @@ metadata:
   namespace: ftpsvc
 spec:
   capacity:
-    storage: 5Gi # This size is used to match a volume to a tenents claim
+    storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
-    path: /clusterfs # Please change this to the relevant share
+    path: /mnt/usb # Please change this to the relevant share
 
 ---
 apiVersion: v1

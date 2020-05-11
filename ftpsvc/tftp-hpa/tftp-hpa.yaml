@@ -10,7 +10,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 4Gi
+      storage: 10Gi
   volumeName: tftp-nfs
   volumeMode: Filesystem
 
@@ -51,8 +51,9 @@ spec:
     spec:
       containers:
         - name: tftpd
-          image: jumanjiman/tftp-hpa:latest
-          imagePullPolicy: IfNotPresent
+          #image: jumanjiman/tftp-hpa:latest
+          image: strusfr/docker-ubuntu-tftpd
+          imagePullPolicy: Always
           ports:
             - name: tftpd
               containerPort: 69
@@ -64,11 +65,11 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-      #     volumeMounts:
-      #       - name: tftp-nfs
-      #         mountPath: /tftpboot
-      #         readOnly: false
-      # volumes:
-      #   - name: tftp-nfs
-      #     persistentVolumeClaim:
-      #       claimName: tftp-nfs
+          volumeMounts:
+            - name: tftp-nfs
+              mountPath: /tftp
+              readOnly: false
+      volumes:
+        - name: tftp-nfs
+          persistentVolumeClaim:
+            claimName: tftp-nfs
