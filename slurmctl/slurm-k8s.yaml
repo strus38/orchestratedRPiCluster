@@ -127,17 +127,16 @@ spec:
         - "node05.home.lab"
       containers:
       - name: slurm
-        #image: titansmc/docker-slurmctld
         image: strusfr/docker-ubuntu1604-slurmctld:latest
         imagePullPolicy: Always
         stdin: true
         tty: true
         resources:
           limits:
-            cpu: 20m
+            cpu: 200m
             memory: 64Mi
           requests:
-            cpu: 20m
+            cpu: 200m
             memory: 64Mi
         env:
           - name: SLURM_CLUSTER_NAME
