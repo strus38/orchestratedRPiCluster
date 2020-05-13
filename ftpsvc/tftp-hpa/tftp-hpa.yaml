@@ -24,12 +24,14 @@ metadata:
     app.name: tftpd
 spec:
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.199
+  #loadBalancerIP: 192.168.1.183
   ports:
     - port: 69
-      targetPort: tftpd
+      targetPort: 69
       protocol: UDP
       name: tftpd
+  selector:
+    app: tftpd
 
 ---
 apiVersion: apps/v1
@@ -67,7 +69,8 @@ spec:
               memory: 128Mi
           volumeMounts:
             - name: tftp-nfs
-              mountPath: /tftp
+              mountPath: /srv/tftp
+              subPath: tftp
               readOnly: false
       volumes:
         - name: tftp-nfs

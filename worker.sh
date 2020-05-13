@@ -15,4 +15,4 @@ echo "********** $KVMSG ->> kv-worker-$NODE"
 
 # Extract and execute the kubeadm join command from the exported file
 $(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
-echo KUBELET_EXTRA_ARGS=--node-ip=192.168.1.$NODE_HOST_IP > /etc/default/kubelet
+echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.$NODE_HOST_IP > /etc/default/kubelet

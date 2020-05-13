@@ -1,6 +1,12 @@
 kind: Namespace
 apiVersion: v1
 metadata:
+  name: kube-system
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
   name: coredns
 
 ---

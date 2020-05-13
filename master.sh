@@ -34,11 +34,11 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
 #wget -q https://bit.ly/kv-lab-k8s-calico-yaml -O /tmp/calico-default.yaml
-sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
+sed "s+10.0.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
 echo "********** $KVMSG ->> Applying Calico YAML File"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 kubectl apply -f /tmp/calico-defined.yaml
 rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
-echo KUBELET_EXTRA_ARGS=--node-ip=192.168.1.2$NODE_HOST_IP > /etc/default/kubelet
+echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.2$NODE_HOST_IP > /etc/default/kubelet

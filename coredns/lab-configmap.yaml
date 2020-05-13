@@ -14,9 +14,9 @@ data:
         4H); Negative Cache TTL
       IN NS ns1
     ns1       IN A 192.168.1.150
-    node01.home.lab    IN A 192.168.1.20
-    node02.home.lab    IN A 192.168.1.21
-    node03.home.lab    IN A 192.168.1.22
-    node04.home.lab    IN A 192.168.1.23
-    node05.home.lab    IN A 192.168.1.25
-    node09.home.lab    IN A 192.168.1.198
+    node01.home.lab    IN A 10.0.0.20
+    node02.home.lab    IN A 10.0.0.21
+    node03.home.lab    IN A 10.0.0.22
+    node04.home.lab    IN A 10.0.0.23
+    node05.home.lab    IN A 10.0.0.24
+    node09.home.lab    IN A 10.0.0.198

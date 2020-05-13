@@ -7,7 +7,7 @@ BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 1
 WORKER_COUNT = 3
 POD_CIDR = "172.18.0.0/16"
-API_ADV_ADDRESS = "192.168.1.210"
+API_ADV_ADDRESS = "10.0.0.210"
 KVMSG = "Kuberverse"
 COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/common.sh"
 MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/master.sh"
@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-master-#{i}"
-      subconfig.vm.network :public_network, ip: "192.168.1.2#{i + 10}", bridge: "Intel(R) Wireless-AC 9461"
+      subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 10}", bridge: "Intel(R) Wireless-AC 9461"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-worker-#{i}"
-      subconfig.vm.network :public_network, ip: "192.168.1.2#{i + 20}", bridge: "Intel(R) Wireless-AC 9461"
+      subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 20}", bridge: "Intel(R) Wireless-AC 9461"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 4096

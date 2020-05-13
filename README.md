@@ -73,23 +73,41 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
     * metallb
     * ... more to come
 
+## Configuration of your laptop network
+
+The aim is to have the laptop connected using the Wifi to the external world, and use the Laptop Eth0 interface to connect the RPi Cluster. This needs some preparation:
+1) If your laptop does not have an Ethernet port (yeah, many now just have a Wifi adapter), you can buy a USB-C 10 adapters with an ethernet port
+2) Update the registry key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\SharedAccess\Parameters and set the values to 10.0.0.1 instead of 192.168.137.1
+3) Configure Windows ISC on the Wifi adapter to share the wifi and setup the Windows 10 built-in DHCP server
+![ISC access](imgs/windowsNetConfig.PNG)
+4) Connect the switch to the Laptop ethernet port, power-up the RPis, after some time you should get all online with an ip on the 10.0.0.0/24 subnet
+![10.0.0.0/24 subnet view](imgs/iscNmap.PNG)
+![Cluster switch config](imgs/tp-linkConfig.PNG)
+
+Using this setup, the Vagrant VMs will be assigned the following IPs:
+* kv-master-0: 10.0.0.210
+* kv-worker-0: 10.0.0.220
+* kv-worker-1: 10.0.0.221
+* kv-worker-2: 10.0.0.222
+
 ## Services IPs
 By default DHCP is set between: 192.168.1.150-199
 (Not yet implemented like this)
 Fixed Services endpoints for admins:
-* NFS Server: 20
-* DNS Server: 180
-* DHCP Server: 181
-* dashboard: 190
-* grafana: 191
-* prometheus-server: 192
-* prometheus-pushgateway: 192
+* NFS Server: 10.0.0.4
+* DNS Server: 10.0.0.3
+* DHCP Server: 10.0.0.2
+* dashboard: 10.0.0.10
+* grafana: 10.0.0.11
+* prometheus-server: 10.0.0.12
+* prometheus-pushgateway: 10.0.0.13
+* Kibana: 10.0.0.18
 
 Fixed Services endpoints for end users:
-* docker registry: 197
-* ChartMuseum: 198
-* TFTP: 199
-* SFTP: 198
+* docker registry: 10.0.0.14
+* ChartMuseum: 10.0.0.15
+* TFTP: 10.0.0.16
+* SFTP: 10.0.0.17
 
 ## RBAC related topics
 

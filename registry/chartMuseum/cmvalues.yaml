@@ -22,4 +22,4 @@ persistence:
   # storageClass: "-"
 service:
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.195
+  loadBalancerIP: 192.168.1.189
