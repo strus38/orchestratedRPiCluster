@@ -9,7 +9,7 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 * 3D view of the in-progress final cluster stack
 
-![RPi Cluster 3D View](imgs/3DView.PNG)
+![RPi Cluster 3D View](imgs/3DView.PNG)![RPi Cluster 3D View](imgs/3DView2.PNG)
 
 * Grafana Cluster Status
 
