@@ -25,6 +25,26 @@
     with_items:
       - nfs-kernel-server
     when: node_role == "nfsserver"
+  
+  - name: Update /etc/hosts
+    become: true
+    blockinfile:
+        path: /etc/hosts
+        create: yes
+        block: |
+          127.0.0.1 localhost
+
+          # The following lines are desirable for IPv6 capable hosts
+          ::1 ip6-localhost ip6-loopback
+          fe00::0 ip6-localnet
+          ff00::0 ip6-mcastprefix
+          ff02::1 ip6-allnodes
+          ff02::2 ip6-allrouters
+          ff02::3 ip6-allhosts
+
+          {% for item in ansible_play_batch %}
+          {{ hostvars[item].ansible_ssh_host }}   {{ item }}    
+          {% endfor %}
 
   - name: Mount NFS share
     become: true
