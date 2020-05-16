@@ -57,7 +57,13 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 - build a stand or buy a RPis cluster case
 - flash all the RPi SD with the latest Raspbian version
 - connect all power/switch ports
-- power up 
+- power up
+- Update all /etc/dhcpcd.conf or /etc/network/interfaces (depending on the RPi version) to fix the IPs of the nodes:
+    * node01: 10.0.0.2
+    * node02: 10.0.0.3
+    * node03: 10.0.0.4
+    * node04: 10.0.0.5
+    * node05: 10.0.0.6
 
 ## Roles
 - RPIs[01]: storage node with NFS server - how to install (will be writen later)
@@ -98,20 +104,20 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 By default DHCP is set between: 192.168.1.150-199
 (Not yet implemented like this)
 Fixed Services endpoints for admins:
-* NFS Server: 10.0.0.4
-* DNS Server: 10.0.0.3
-* DHCP Server: 10.0.0.2
-* dashboard: 10.0.0.10
-* grafana: 10.0.0.11
-* prometheus-server: 10.0.0.12
-* prometheus-pushgateway: 10.0.0.13
-* Kibana: 10.0.0.18
+* NFS Server: 10.0.0.10
+* DNS Server: 10.0.0.11
+* DHCP Server: 10.0.0.12
+* dashboard: 10.0.0.15
+* grafana: 10.0.0.16
+* prometheus-server: 10.0.0.17
+* prometheus-pushgateway: 10.0.0.18
+* Kibana: 10.0.0.19
 
 Fixed Services endpoints for end users:
-* docker registry: 10.0.0.14
-* ChartMuseum: 10.0.0.15
-* TFTP: 10.0.0.16
-* SFTP: 10.0.0.17
+* docker registry: 10.0.0.20
+* ChartMuseum: 10.0.0.21
+* TFTP: 10.0.0.13
+* SFTP: 10.0.0.14
 
 ## RBAC related topics
 
