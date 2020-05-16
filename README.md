@@ -5,7 +5,7 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 * RPi Cluster View (COVID19 - built with some stuff I had at that time :-) )
 
-![RPi Cluster View](imgs/RpiClusterView.jpg)![RPi Cluster View](imgs/rackView.PNG)
+![RPi Cluster View](imgs/RpiClusterView.PNG)![RPi Cluster View](imgs/rackView.PNG)
 
 * Grafana Cluster Status
 
