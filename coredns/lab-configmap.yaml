@@ -13,10 +13,10 @@ data:
         7D ; expire
         4H); Negative Cache TTL
       IN NS ns1
-    ns1       IN A 192.168.1.150
-    node01.home.lab    IN A 10.0.0.20
-    node02.home.lab    IN A 10.0.0.21
-    node03.home.lab    IN A 10.0.0.22
-    node04.home.lab    IN A 10.0.0.23
-    node05.home.lab    IN A 10.0.0.24
-    node09.home.lab    IN A 10.0.0.198
+    ns1       IN A 10.0.0.1.150
+    node01.home.lab    IN A 10.0.0.2
+    node02.home.lab    IN A 10.0.0.3
+    node03.home.lab    IN A 10.0.0.4
+    node04.home.lab    IN A 10.0.0.5
+    node05.home.lab    IN A 10.0.0.6
+    node09.home.lab    IN A 10.0.0.9

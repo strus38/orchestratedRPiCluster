@@ -1,0 +1,12 @@
+# List of NFS shares
+nfs_share_mounts:
+  - path: /usb
+    location: 10.0.0.2:/mnt/usb
+  - path: /clusterfs
+    location: 10.0.0.2:/clusterfs
+
+# NFS version, default 4
+nfs_version: 4
+
+# Default NFS4 mount options
+nfs_mount_opts: rsize=8192,wsize=8192,timeo=14,intr

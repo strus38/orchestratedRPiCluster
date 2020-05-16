@@ -19,7 +19,7 @@ spec:
   selector:
     app.kubernetes.io/name: coredns
     app.kubernetes.io/instance: lab-coredns
-  loadBalancerIP: 10.0.0.3
+  loadBalancerIP: 10.0.0.20
   type: LoadBalancer
   sessionAffinity: None
   externalTrafficPolicy: Local

@@ -104,20 +104,20 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 By default DHCP is set between: 192.168.1.150-199
 (Not yet implemented like this)
 Fixed Services endpoints for admins:
-* NFS Server: 10.0.0.10
-* DNS Server: 10.0.0.11
-* DHCP Server: 10.0.0.12
-* dashboard: 10.0.0.15
-* grafana: 10.0.0.16
-* prometheus-server: 10.0.0.17
-* prometheus-pushgateway: 10.0.0.18
-* Kibana: 10.0.0.19
+* NFS Server: 10.0.0.20
+* DNS Server: 10.0.0.21
+* DHCP Server: 10.0.0.22
+* dashboard: 10.0.0.30
+* grafana: 10.0.0.31
+* prometheus-server: 10.0.0.32
+* prometheus-pushgateway: 10.0.0.33
+* Kibana: 10.0.0.34
 
 Fixed Services endpoints for end users:
-* docker registry: 10.0.0.20
-* ChartMuseum: 10.0.0.21
-* TFTP: 10.0.0.13
-* SFTP: 10.0.0.14
+* docker registry: 10.0.0.25
+* ChartMuseum: 10.0.0.26
+* TFTP: 10.0.0.23
+* SFTP: 10.0.0.24
 
 ## RBAC related topics
 

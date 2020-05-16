@@ -1,0 +1,63 @@
+- hosts: all
+  gather_facts: true
+
+  vars:
+    nodeexporter_pkg: node_exporter-0.18.1.linux-{{ archtype }}
+
+  tasks:
+  - name: Install necessary packages
+    become: true
+    apt:
+      pkg: "{{ item }}"
+      state: present
+    with_items:
+      - nfs-common
+      - slurmd slurm-client
+      - td-agent-bit
+      - tftp
+      - chrony
+  
+  - name: Install necessary packages
+    become: true
+    apt:
+      pkg: "{{ item }}"
+      state: present
+    with_items:
+      - nfs-kernel-server
+    when: node_role == "nfsserver"
+
+  - name: Mount NFS share
+    become: true
+    mount:
+      fstype: nfs
+      name: "{{ item.path }}"
+      opts: "vers={{ nfs_version }},{{ item.opts | default(nfs_mount_opts) }}"
+      src: "{{ item.location }}"
+      dump: "{{ item.dump | default(omit) }}"
+      passno: "{{ item.passno | default(omit) }}"
+      state: "{{ item.state | default( 'mounted' ) }}"
+    with_items: "{{ nfs_share_mounts }}"
+    when: node_role == "node"
+
+  - name: untar the right version of node-exporter
+    unarchive:
+      src: "{{ nodeexporter_pkg }}.tar.gz"
+      dest: /home/pi/
+
+  - name: rename the dir
+    command: mv /home/pi/"{{ nodeexporter_pkg }}" /home/pi/node_exporter
+
+  - name: create systemd entry
+    template:
+      src: templates/node_exporter.service.j2
+      dest: /etc/systemd/system/node_exporter.service
+      owner: root
+      group: root
+      mode: '0644'
+    become: true
+
+  - name: Reload service httpd, in all cases
+    service:
+      name: node_exporter
+      state: reloaded
+      enabled: yes

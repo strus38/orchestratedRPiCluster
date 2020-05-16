@@ -42,10 +42,10 @@ data:
     JobCompType=jobcomp/none
     # COMPUTE NODES
     # node [02-05] living in RPi cluster
-    NodeName=node02 NodeAddr=192.168.1.21 CPUs=4 State=UNKNOWN
-    NodeName=node03 NodeAddr=192.168.1.22 CPUs=1 State=UNKNOWN
-    NodeName=node04 NodeAddr=192.168.1.23 CPUs=1 State=UNKNOWN
-    NodeName=node05 NodeAddr=192.168.1.25 CPUs=4 State=UNKNOWN
+    NodeName=node02 NodeAddr=10.0.0.3 CPUs=4 State=UNKNOWN
+    NodeName=node03 NodeAddr=10.0.0.4 CPUs=1 State=UNKNOWN
+    NodeName=node04 NodeAddr=10.0.0.5 CPUs=1 State=UNKNOWN
+    NodeName=node05 NodeAddr=10.0.0.6 CPUs=4 State=UNKNOWN
     PartitionName=allnodes Nodes=node[02-05] Default=YES MaxTime=INFINITE State=UP
 
   cgroup_allowed_devices_file.conf: |
@@ -105,23 +105,23 @@ spec:
         app: slurm
     spec:
       hostAliases:
-      - ip: "192.168.1.198"
+      - ip: "10.0.0.9"
         hostnames:
         - "node09"
         - "node09.home.lab"
-      - ip: "192.168.1.21"
+      - ip: "10.0.0.3"
         hostnames:
         - "node02"
         - "node02.home.lab"
-      - ip: "192.168.1.22"
+      - ip: "10.0.0.4"
         hostnames:
         - "node03"
         - "node03.home.lab"
-      - ip: "192.168.1.23"
+      - ip: "10.0.0.5"
         hostnames:
         - "node04"
         - "node04.home.lab"
-      - ip: "192.168.1.25"
+      - ip: "10.0.0.6"
         hostnames:
         - "node05"
         - "node05.home.lab"
@@ -174,7 +174,7 @@ spec:
       - name: nfs-volume
         nfs: 
           # URL for the NFS server
-          server: 192.168.1.20 # Change this!
+          server: 10.0.0.2 # Change this!
           path: /clusterfs
 
 ---
@@ -204,4 +204,4 @@ spec:
       port: 8080
       targetPort: 8080
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.198
+  loadBalancerIP: 10.0.0.9
