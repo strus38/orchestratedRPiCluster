@@ -4,6 +4,7 @@
 #               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/worker.sh
 
 BOX_IMAGE = "bento/ubuntu-18.04"
+BOX_IMAGE_VERSION = "202003.31.0"
 MASTER_COUNT = 1
 WORKER_COUNT = 3
 POD_CIDR = "172.18.0.0/16"
@@ -29,6 +30,7 @@ Vagrant.configure("2") do |config|
   (0..MASTER_COUNT-1).each do |i|
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.box_version = BOX_IMAGE_VERSION
       subconfig.vm.hostname = "kv-master-#{i}"
       subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 10}", bridge: "#{ETH1_NAME}"
       subconfig.vm.provider :virtualbox do |vb|
@@ -57,6 +59,7 @@ Vagrant.configure("2") do |config|
   (0..WORKER_COUNT-1).each do |i|
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.box_version = BOX_IMAGE_VERSION
       subconfig.vm.hostname = "kv-worker-#{i}"
       subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 20}", bridge: "#{ETH1_NAME}"
       subconfig.vm.provider :virtualbox do |vb|
