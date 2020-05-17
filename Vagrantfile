@@ -41,9 +41,10 @@ Vagrant.configure("2") do |config|
       subconfig.cache.scope = :box
       subconfig.vm.synced_folder 'src/', "/var/www", 
         type:"nfs", 
-        mount_options: %w{rw,async,fsc,nolock,vers=4,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}
+        mount_options: %w{rw,async,fsc,nolock,vers=3,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}
       subconfig.vm.hostname = "kv-master-#{i}"
       subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 10}", bridge: "#{ETH1_NAME}"
+      subconfig.vm.network :private_network, ip: "172.28.128.2#{i + 10}"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
@@ -74,9 +75,10 @@ Vagrant.configure("2") do |config|
       subconfig.cache.scope = :box
       subconfig.vm.synced_folder 'src/', "/var/www", 
         type:"nfs", 
-        mount_options: %w{rw,async,fsc,nolock,vers=4,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}
+        mount_options: %w{rw,async,fsc,nolock,vers=3,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}
       subconfig.vm.hostname = "kv-worker-#{i}"
       subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 20}", bridge: "#{ETH1_NAME}"
+      subconfig.vm.network :private_network, ip: "172.28.128.2#{i + 20}"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 4096
