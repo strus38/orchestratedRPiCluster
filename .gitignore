@@ -11,3 +11,5 @@
 /.kube
 /kubeadm-init.out
 kubeadm-init.out
+src/
+src/*
