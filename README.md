@@ -70,7 +70,43 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 * kv-worker-1: 10.0.0.221
 * kv-worker-2: 10.0.0.222
 
-Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IPs, it will be more convenient.
+5) Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IPs, it will be more convenient.
+
+6) Connect to your worker nodes 1 by one, and update the file: /etc/systemd/resolved.conf
+```
+$ vagrant ssh kv-worker-X
+$ sudo su
+$ vi /etc/systemd/resolved.conf
+[Resolve]
+DNS=10.0.0.20
+```
+after that, restart the service:
+```
+service systemd-resolved restart
+```
+
+7) Update the docker registry of the worker nodes:
+```
+$ cat /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "insecure-registries": ["10.0.0.21:5000"],
+  "storage-driver": "overlay2"
+}
+$  systemctl daemon-reload && systemctl restart docker
+```
+
+Note: easily populate your local docker repositories with all running images of your K8S cluster:
+```
+for i in $(docker images | grep -v 10.0.0.21 | tail -n +2 | awk '{print $1":"$2}'); do 
+  docker tag $i 10.0.0.21:5000/$i
+  docker push 10.0.0.21:5000/$i
+done
+```
 
 ## Preparing the RPi cluster
 - build a stand or buy a RPis cluster case
@@ -83,12 +119,16 @@ Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IP
     * node03: 10.0.0.4
     * node04: 10.0.0.5
     * node05: 10.0.0.6
-    Also fix the the line about:
+    Also fix in /etc/dhcpcd.conf the line about:
     ```
     static routers=10.0.0.1
     static domain_name_servers=10.0.0.20 8.8.8.8
     ```
-
+    or in /etc/network/interfaces:
+    ```
+    gateway 10.0.0.1
+    dns-nameservers 10.0.0.20 8.8.8.8
+    ```
 
 ## Roles
 - RPIs[01]: storage node with NFS server - how to install (will be writen later)
@@ -218,6 +258,12 @@ $ cd coredns
 ```
 [Read the README file for details](coredns/README.md)
 
+* Deploy dhcpd (-- NOT NEEDED WITH THIS NETWORK SETUP --)
+```
+$ cd dhcpd
+```
+[Read the README file for details](dhcp/README.md)
+
 * Deploy persistentVolume
 ```
 $ cd persistentVolume
@@ -242,17 +288,11 @@ $ cd monitoring
 ```
 [Read the README file for details](monitoring/README.md)
 
-* Deploy logging (Work in progress)
+* Deploy logging (optional since very eager on resources)
 ```
 $ cd logging
 ```
 [Read the README file for details](loggingEFK/README.md)
-
-* Deploy dhcpd (Work in progress)
-```
-$ cd dhcpd
-```
-[Read the README file for details](dhcp/README.md)
 
 * Deploy SFTPD
 ```
