@@ -1,7 +1,7 @@
 # DHPCD
 
 Provides DHCP services for the RPIs cluster and services.
-Note: should only be deployed if not using another DHCP server in 192.168.1.0/24 subnet
+Note: at this stage this is not needed since we have the laptop running a DHCP server for the same subnet, and we cannot limit Windows ISC DHPC to a range of a subnet.
 
 ## Prepare & Configure
 ```

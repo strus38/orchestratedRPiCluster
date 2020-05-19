@@ -38,3 +38,9 @@ kind: Namespace
 apiVersion: v1
 metadata:
   name: kubernetes-dashboard
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dhcpd
