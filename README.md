@@ -132,7 +132,7 @@ done
     ```
 - The node01.home.lab is acting as a NFS server, as such it has a USB HDD linked to it.
 In order to provide NFS shares to the K8S cluster, it is good to split it into partitions to have dedicated storage for the pods.
-Note: the number of partitions needed will depeend on how many persistent volumes you will need for the services (45 is a good number for the default setup)
+Note: the number of partitions needed will depeend on how many persistent volumes you will need for the services (5 is a good number for the default setup)
 So, you can split your HDD on the RPis using those commands:
 ```
 $ fdisk -l
@@ -143,6 +143,9 @@ $ mkfs.ext4 /dev/sdaX
 $ mkdir /mnt/usbX
 $ chown nobody:nogroup -R /mnt/usbX
 $ chmod 777 -R /mnt/usbX
+$ vi /etc/exportfs
+** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
+$ exportfs -ra
 ```
 
 ## Roles
