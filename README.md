@@ -95,6 +95,7 @@ $ cat /etc/docker/daemon.json
     "max-size": "100m"
   },
   "insecure-registries": ["10.0.0.21:5000"],
+  "registry-mirrors": ["https://docker.io"],
   "storage-driver": "overlay2"
 }
 $  systemctl daemon-reload && systemctl restart docker
@@ -129,6 +130,20 @@ done
     gateway 10.0.0.1
     dns-nameservers 10.0.0.20 8.8.8.8
     ```
+- The node01.home.lab is acting as a NFS server, as such it has a USB HDD linked to it.
+In order to provide NFS shares to the K8S cluster, it is good to split it into partitions to have dedicated storage for the pods.
+Note: the number of partitions needed will depeend on how many persistent volumes you will need for the services (45 is a good number for the default setup)
+So, you can split your HDD on the RPis using those commands:
+```
+$ fdisk -l
+$ parted /dev/sda
+** here use the "mkpart primary ext4 xxG yyG" to create the different partitions **
+$ mkfs.ext4 /dev/sdaX
+** update the fstab to identify the new /dev/sdaX partitions **
+$ mkdir /mnt/usbX
+$ chown nobody:nogroup -R /mnt/usbX
+$ chmod 777 -R /mnt/usbX
+```
 
 ## Roles
 - RPIs[01]: storage node with NFS server - how to install (will be writen later)

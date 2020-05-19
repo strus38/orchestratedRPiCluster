@@ -19,7 +19,7 @@ helm install prometheus stable/prometheus -n monitoring -f .\prometheus\promethe
 
 * Install the kube-state-metric
 ```
-helm install -f .\kubestatemetrics\prometheus.values
+kubectl apply -f .\kubestatemetrics\.
 ```
 
 ## Add RPi node

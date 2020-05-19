@@ -49,6 +49,8 @@ cat > /etc/docker/daemon.json <<EOF
   "log-opts": {
     "max-size": "100m"
   },
+  "insecure-registries": ["10.0.0.21:5000"],
+  "registry-mirrors": ["https://docker.io"],
   "storage-driver": "overlay2"
 }
 EOF

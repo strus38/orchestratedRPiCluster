@@ -5,13 +5,61 @@ metadata:
 spec:
   storageClassName: nfsusb
   capacity:
-    storage: 150Gi # This size is used to match a volume to a tenents claim
+    storage: 20Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /mnt/usb # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfsshare-usb2
+spec:
+  storageClassName: nfsusb
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteMany # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /mnt/usb2 # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfsshare-usb3
+spec:
+  storageClassName: nfsusb
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteMany # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /mnt/usb3 # Please change this to the relevant share
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfsshare-usb4
+spec:
+  storageClassName: nfsusb
+  capacity:
+    storage: 20Gi # This size is used to match a volume to a tenents claim
+  accessModes:
+    - ReadWriteMany # Access modes are defined below
+  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  nfs:
+    server: node01.home.lab # Please change this to your NFS server
+    path: /mnt/usb4 # Please change this to the relevant share
 
 ---
 apiVersion: v1
@@ -28,131 +76,3 @@ spec:
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /clusterfs # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: chartmuseum-nfsshare
-#   namespace: registry
-# spec:
-#   capacity:
-#     storage: 5Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteMany # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: monitoring-nfsshare
-#   namespace: monitoring
-# spec:
-#   capacity:
-#     storage: 20Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteMany # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: sftp-nfs
-#   namespace: ftpsvc
-# spec:
-#   capacity:
-#     storage: 5Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteMany # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: tftp-nfs
-#   namespace: ftpsvc
-# spec:
-#   capacity:
-#     storage: 10Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteMany # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: dashboard-nfsshare
-#   namespace: kubernetes-dashboard
-# spec:
-#   capacity:
-#     storage: 1Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteMany # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: logging-es1
-#   namespace: logging
-# spec:
-#   capacity:
-#     storage: 10Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteOnce # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: logging-es2
-#   namespace: logging
-# spec:
-#   capacity:
-#     storage: 10Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteOnce # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: logging-es3
-#   namespace: logging
-# spec:
-#   capacity:
-#     storage: 10Gi # This size is used to match a volume to a tenents claim
-#   accessModes:
-#     - ReadWriteOnce # Access modes are defined below
-#   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
-#   nfs:
-#     server: node01.home.lab # Please change this to your NFS server
-#     path: /mnt/usb # Please change this to the relevant share
