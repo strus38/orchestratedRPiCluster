@@ -2,7 +2,7 @@
 
  ## Install
  ```
- helm install metallb stable/metallb --namespace kube-system
+ helm install metallb stable/metallb -n kube-system
  kubectl apply -f metallb-config.yml
 ```
  ## Test metallb

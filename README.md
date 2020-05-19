@@ -53,7 +53,26 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 - 1 multi-USB power station
 - Optionally 1 External DD or a NAS to have some NFS storage capacity (without, the storage node SD card will be enough)
 
-## Building the RPi cluster
+## Configuration of your laptop network
+
+The aim is to have the laptop connected using the Wifi to the external world, and use the Laptop Eth0 interface to connect the RPi Cluster. This needs some preparation:
+1) If your laptop does not have an Ethernet port (yeah, many now just have a Wifi adapter), you can buy a USB-C 10 adapters with an ethernet port
+2) Update the registry key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\SharedAccess\Parameters and set the values to 10.0.0.1 instead of 192.168.137.1
+3) Configure Windows ISC on the Wifi adapter to share the wifi and setup the Windows 10 built-in DHCP server
+![ISC access](imgs/windowsNetConfig.PNG)
+4) Connect the switch to the Laptop ethernet port, power-up the RPis, after some time you should get all online with an ip on the 10.0.0.0/24 subnet
+![10.0.0.0/24 subnet view](imgs/iscNmap.PNG)
+![Cluster switch config](imgs/tp-linkConfig.PNG)
+
+Using this setup, the Vagrant VMs will be assigned the following IPs:
+* kv-master-0: 10.0.0.210
+* kv-worker-0: 10.0.0.220
+* kv-worker-1: 10.0.0.221
+* kv-worker-2: 10.0.0.222
+
+Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IPs, it will be more convenient.
+
+## Preparing the RPi cluster
 - build a stand or buy a RPis cluster case
 - flash all the RPi SD with the latest Raspbian version
 - connect all power/switch ports
@@ -82,23 +101,6 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
     * K8S dashboard
     * metallb
     * ... more to come
-
-## Configuration of your laptop network
-
-The aim is to have the laptop connected using the Wifi to the external world, and use the Laptop Eth0 interface to connect the RPi Cluster. This needs some preparation:
-1) If your laptop does not have an Ethernet port (yeah, many now just have a Wifi adapter), you can buy a USB-C 10 adapters with an ethernet port
-2) Update the registry key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\SharedAccess\Parameters and set the values to 10.0.0.1 instead of 192.168.137.1
-3) Configure Windows ISC on the Wifi adapter to share the wifi and setup the Windows 10 built-in DHCP server
-![ISC access](imgs/windowsNetConfig.PNG)
-4) Connect the switch to the Laptop ethernet port, power-up the RPis, after some time you should get all online with an ip on the 10.0.0.0/24 subnet
-![10.0.0.0/24 subnet view](imgs/iscNmap.PNG)
-![Cluster switch config](imgs/tp-linkConfig.PNG)
-
-Using this setup, the Vagrant VMs will be assigned the following IPs:
-* kv-master-0: 10.0.0.210
-* kv-worker-0: 10.0.0.220
-* kv-worker-1: 10.0.0.221
-* kv-worker-2: 10.0.0.222
 
 ## Services IPs
 By default DHCP is set between: 192.168.1.150-199
@@ -193,16 +195,22 @@ kv-worker-1   Ready    <none>   4d3h   v1.18.2
 kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
 
+* Create all namespaces needed by the project
+```
+$ kubectl apply -f createNamespaces.yaml
+```
+
 * Deploy Metallb
 ```
 $ cd metallb
 ```
 [Read the README file for details](metallb/README.md)
 
-* Create all namspaces needed by the project
+* Deploy coredns
 ```
-$ kubectl apply -f createNamespaces.yaml
+$ cd coredns
 ```
+[Read the README file for details](coredns/README.md)
 
 * Deploy persistentVolume
 ```
@@ -215,12 +223,6 @@ $ cd persistentVolume
 $ cd k8sdashboard
 ```
 [Read the README file for details](k8sdashboard/README.md)
-
-* Deploy coredns
-```
-$ cd coredns
-```
-[Read the README file for details](coredns/README.md)
 
 * Deploy docker registry and ChartsMuseum
 ```
