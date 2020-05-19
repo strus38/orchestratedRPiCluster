@@ -83,6 +83,12 @@ Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IP
     * node03: 10.0.0.4
     * node04: 10.0.0.5
     * node05: 10.0.0.6
+    Also fix the the line about:
+    ```
+    static routers=10.0.0.1
+    static domain_name_servers=10.0.0.20 8.8.8.8
+    ```
+
 
 ## Roles
 - RPIs[01]: storage node with NFS server - how to install (will be writen later)

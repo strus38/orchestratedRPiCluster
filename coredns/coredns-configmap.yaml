@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: coredns-config
   namespace: coredns
+  labels:
+    app.kubernetes.io/name: coredns
+    app.kubernetes.io/instance: lab-coredns
 data:
   Corefile: |
     .:53 {
@@ -14,6 +17,8 @@ data:
         log
         # Print errors to STDOUT
         errors
+        prometheus :9153
+        forward . /etc/resolv.conf
         # Automatically load changes to the Corefile
         reload 30s
         # Round-robin A, AAAA and PTR records

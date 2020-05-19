@@ -7,7 +7,6 @@ helm inspect values stable/docker-registry > registryvalues.yaml
 
 ## Install
 ```
-kubectl create namespace registry
 helm install registry stable/docker-registry -n registry -f registryvalues.yaml
 ```
 

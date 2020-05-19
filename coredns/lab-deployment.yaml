@@ -21,7 +21,7 @@ spec:
       containers:
       - name: coredns-lab
         image: coredns/coredns:latest
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         args: [ "-conf", "/etc/coredns/Corefile" ]
         ports:
           - name: dns-tcp

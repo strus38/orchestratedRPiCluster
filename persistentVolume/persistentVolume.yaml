@@ -3,6 +3,7 @@ kind: PersistentVolume
 metadata:
   name: nfsshare-usb1
 spec:
+  storageClassName: nfsusb
   capacity:
     storage: 150Gi # This size is used to match a volume to a tenents claim
   accessModes:
@@ -18,6 +19,7 @@ kind: PersistentVolume
 metadata:
   name: nfsshare-clusterfs
 spec:
+  storageClassName: nfsclusterfs
   capacity:
     storage: 30Gi # This size is used to match a volume to a tenents claim
   accessModes:
