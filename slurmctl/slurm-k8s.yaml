@@ -174,7 +174,7 @@ spec:
       - name: nfs-volume
         nfs: 
           # URL for the NFS server
-          server: 10.0.0.2 # Change this!
+          server: node01.home.lab # Change this!
           path: /clusterfs
 
 ---

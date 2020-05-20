@@ -10,10 +10,15 @@ Metallb is used to provide external access to those apps
 
 # Prometheus
 
+## Prepare
+!! Optionnal: This will overwrite the values set ... so do it only if you know what you are doing.
+```
+helm inspect values stable/prometheus > prometheus.values
+```
+
 ## Install
 * Install the prometeus server
 ```
-helm inspect values stable/prometheus > prometheus.values
 helm install prometheus stable/prometheus -n monitoring -f .\prometheus\prometheus.values
 ```
 
@@ -30,6 +35,7 @@ RPi 2: wget https://github.com/prometheus/node_exporter/releases/download/v0.18.
 # Grafana
 
 ## Prepare
+!! Optionnal: This will overwrite the values set ... so do it only if you know what you are doing.
 ```
 helm inspect values stable/grafana > .\grafana\grafanavalues.yaml
 ```
@@ -37,6 +43,7 @@ helm inspect values stable/grafana > .\grafana\grafanavalues.yaml
 ## Install
 * Install the server part
 ```
+kubectl apply -f ./grafana/grafanaconfig.yaml
 helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace monitoring
 ```
 

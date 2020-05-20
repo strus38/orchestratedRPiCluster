@@ -1,6 +1,7 @@
 # Docker registry
 
 ## Prepare and configure
+!! Optionnal: This will overwrite the values set ... so do it only if you know what you are doing.
 ```
 helm inspect values stable/docker-registry > registryvalues.yaml
 ```
