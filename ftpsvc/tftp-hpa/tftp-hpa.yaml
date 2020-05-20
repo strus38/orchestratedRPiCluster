@@ -54,7 +54,6 @@ spec:
     spec:
       containers:
         - name: tftpd
-          #image: jumanjiman/tftp-hpa:latest
           image: strusfr/docker-ubuntu-tftpd
           imagePullPolicy: Always
           ports:

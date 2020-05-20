@@ -9,6 +9,7 @@ helm inspect values stable/docker-registry > registryvalues.yaml
 ## Install
 ```
 helm install registry stable/docker-registry -n registry -f registryvalues.yaml
+kubectl apply -f registryui.yaml -n registry
 ```
 
 ## Post install

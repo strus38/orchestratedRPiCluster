@@ -41,7 +41,7 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce kubeadm kubelet kubectl
 
-# Setup Docker daemon.
+# Setup Docker daemon, add the local and few remotes repositories
 cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -50,7 +50,7 @@ cat > /etc/docker/daemon.json <<EOF
     "max-size": "100m"
   },
   "insecure-registries": ["10.0.0.21:5000"],
-  "registry-mirrors": ["https://docker.io"],
+  "registry-mirrors": ["https://docker.io","https://quay.io"],
   "storage-driver": "overlay2"
 }
 EOF

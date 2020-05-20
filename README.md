@@ -27,6 +27,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![Logging with Kibana view](imgs/kibanaOverview.PNG)
 
+* Private registry UI
+
+![Private Registry UI](imgs/registryUI.PNG)
+
 * Prometheus Targets
 
 ![Prometheus Targets](imgs/prometheusTargets.PNG)
@@ -85,7 +89,7 @@ after that, restart the service:
 service systemd-resolved restart
 ```
 
-7) Update the docker registry of the worker nodes:
+7) Update the docker registry of the worker nodes (if necessary, the default setup is has shown below):
 ```
 $ cat /etc/docker/daemon.json
 {
@@ -94,8 +98,8 @@ $ cat /etc/docker/daemon.json
   "log-opts": {
     "max-size": "100m"
   },
-  "insecure-registries": ["10.0.0.21:5000"],
-  "registry-mirrors": ["https://docker.io"],
+  "insecure-registries": ["10.0.0.10:5000"],
+  "registry-mirrors": ["https://docker.io","https://quay.io","https://hub.docker.com"],
   "storage-driver": "overlay2"
 }
 $  systemctl daemon-reload && systemctl restart docker
@@ -180,8 +184,9 @@ Fixed Services endpoints for admins:
 * Kibana: 10.0.0.34
 
 Fixed Services endpoints for end users:
-* docker registry: 10.0.0.25
-* ChartMuseum: 10.0.0.26
+* docker registry: 10.0.0.10
+* docker registryUI: 10.0.0.26
+* ChartMuseum: 10.0.0.27
 * TFTP: 10.0.0.23
 * SFTP: 10.0.0.24
 

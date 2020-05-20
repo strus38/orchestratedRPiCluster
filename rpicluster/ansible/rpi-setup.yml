@@ -12,7 +12,7 @@
       state: present
     with_items:
       - nfs-common
-      - slurmd slurm-client
+      - slurm-client
       - td-agent-bit
       - tftp
       - chrony
