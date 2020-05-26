@@ -32,7 +32,7 @@ echo "********** $KVMSG ->> Configuring Kubernetes Cluster Calico Networking"
 echo "********** $KVMSG ->> Downloading Calico YAML File"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
+wget -q https://docs.projectcalico.org/v3.14/manifests/calico.yaml -O /tmp/calico-default.yaml
 #wget -q https://bit.ly/kv-lab-k8s-calico-yaml -O /tmp/calico-default.yaml
 sed "s+10.0.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
