@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: coredns-zones
-  namespace: coredns
+  namespace: rack01
   labels:
     app.kubernetes.io/name: coredns
     app.kubernetes.io/instance: lab-coredns

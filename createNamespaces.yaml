@@ -7,43 +7,19 @@ metadata:
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: coredns
+  name: rack01
 
 ---
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: monitoring
-
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: ftpsvc
-
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: slurm-ns
-
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: registry
+  name: rack02
 
 ---
 kind: Namespace
 apiVersion: v1
 metadata:
   name: kubernetes-dashboard
-
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: dhcpd
 
 ---
 kind: Namespace

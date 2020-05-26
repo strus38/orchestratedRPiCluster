@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lab-coredns
-  namespace: coredns
+  namespace: rack01
   labels:
     app.kubernetes.io/name: coredns
     app.kubernetes.io/instance: lab-coredns

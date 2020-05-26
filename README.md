@@ -134,12 +134,24 @@ done
     gateway 10.0.0.1
     dns-nameservers 10.0.0.20 8.8.8.8
     ```
-- The node01.home.lab is acting as a NFS server, as such it has a USB HDD linked to it.
+- The node01.home.lab is acting as a special node:
+  * apt-cacher-ng
+```
+apt-get install apt-cacher-ng
+```
+On the other nodes, just add a file: /etc/apt/apt.conf.d/02proxy
+and add: ```Acquire::http::proxy "http://node01.home.lab:3142";```
+
+  * a NFS server, as such it has a USB HDD linked to it.
 In order to provide NFS shares to the K8S cluster, it is good to split it into partitions to have dedicated storage for the pods.
 Note: the number of partitions needed will depeend on how many persistent volumes you will need for the services (5 is a good number for the default setup)
 So, you can split your HDD on the RPis using those commands:
 ```
 $ fdisk -l
+** retrieve the /dev/sdX matching the HDD **
+```
+If your HDD is not configured with 4 partitions at least:
+```
 $ parted /dev/sda
 ** here use the "mkpart primary ext4 xxG yyG" to create the different partitions **
 $ mkfs.ext4 /dev/sdaX
