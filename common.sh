@@ -10,7 +10,7 @@ echo "********** $KVMSG ->> Adding Kubernetes and Docker-CE Repo"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 ### Install packages to allow apt to use a repository over HTTPS
-apt-get update -y && apt-get install apt-transport-https ca-certificates curl software-properties-common
+apt-get update -y && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
 ### Add Kubernetes GPG key
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -

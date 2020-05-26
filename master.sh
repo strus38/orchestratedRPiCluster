@@ -13,7 +13,7 @@ echo "********** $KVMSG ->> Initializing Kubernetes Cluster"
 echo "********** $KVMSG ->> Master Node $NODE"
 echo "********** $KVMSG ->> kv-master-$NODE"
 kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $API_ADV_ADDRESS | tee /vagrant/kubeadm-init.out
-
+# optionnaly can add: --kubernetes-version=v1.18.3
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 echo "********** $KVMSG ->> Configuring Kubernetes Cluster Environment"
