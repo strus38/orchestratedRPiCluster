@@ -183,6 +183,7 @@ $ exportfs -ra
     * ... more to come
 
 ## Services IPs
+****** BEING reworked to go behind a nginx-ingress *******
 By default DHCP is set between: 192.168.1.150-199
 (Not yet implemented like this)
 Fixed Services endpoints for admins:
@@ -201,6 +202,7 @@ Fixed Services endpoints for end users:
 * ChartMuseum: 10.0.0.27
 * TFTP: 10.0.0.23
 * SFTP: 10.0.0.24
+**********************************************************
 
 ## RBAC related topics
 

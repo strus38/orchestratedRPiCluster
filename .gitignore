@@ -13,5 +13,3 @@
 kubeadm-init.out
 src/
 src/*
-certmgr/
-certmgr/*

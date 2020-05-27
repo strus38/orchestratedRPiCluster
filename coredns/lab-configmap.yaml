@@ -23,3 +23,4 @@ data:
     node04    IN A 10.0.0.5
     node05    IN A 10.0.0.6
     node09    IN A 10.0.0.9
+    kubernetes IN A 10.0.0.10
