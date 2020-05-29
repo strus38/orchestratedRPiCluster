@@ -24,3 +24,5 @@ data:
     node05    IN A 10.0.0.6
     node09    IN A 10.0.0.9
     kubernetes IN A 10.0.0.10
+    registry IN A 10.0.0.10
+    registryui IN A 10.0.0.10

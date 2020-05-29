@@ -98,7 +98,7 @@ $ cat /etc/docker/daemon.json
   "log-opts": {
     "max-size": "100m"
   },
-  "insecure-registries": ["10.0.0.10:5000"],
+  "insecure-registries": ["https://registry.home.lab"],
   "registry-mirrors": ["https://docker.io","https://quay.io","https://hub.docker.com"],
   "storage-driver": "overlay2"
 }
@@ -107,9 +107,9 @@ $  systemctl daemon-reload && systemctl restart docker
 
 Note: easily populate your local docker repositories with all running images of your K8S cluster:
 ```
-for i in $(docker images | grep -v 10.0.0.21 | tail -n +2 | awk '{print $1":"$2}'); do 
-  docker tag $i 10.0.0.21:5000/$i
-  docker push 10.0.0.21:5000/$i
+for i in $(docker images | grep -v home.lab | tail -n +2 | awk '{print $1":"$2}'); do 
+  docker tag $i registry.home.lab/$i
+  docker push registry.home.lab/$i
 done
 ```
 
@@ -190,7 +190,7 @@ Fixed Services endpoints for admins:
 * NFS Server: 10.0.0.20
 * DNS Server: 10.0.0.21
 * DHCP Server: 10.0.0.22
-* dashboard: 10.0.0.30
+* dashboard: https://kubernetes.home.lab
 * grafana: 10.0.0.31
 * prometheus-server: 10.0.0.32
 * prometheus-pushgateway: 10.0.0.33
