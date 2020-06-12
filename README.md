@@ -76,7 +76,7 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 
 5) Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IPs, it will be more convenient.
 
-6) Connect to your worker nodes 1 by one, and update the file: /etc/systemd/resolved.conf
+6) Connect to your worker nodes 1 by one, and update the file: /etc/systemd/resolved.conf (to delete)
 ```
 $ vagrant ssh kv-worker-X
 $ sudo su

@@ -2,11 +2,6 @@
 
 Provides the DNS for RPi nodes and for Services
 
-## Prepare
-```
-$ kubectl create namespace coredns
-```
-
 ## Install
 ```
 $ kubectl apply -f .
