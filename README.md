@@ -295,6 +295,18 @@ $ cd coredns
 ```
 [Read the README file for details](coredns/README.md)
 
+* Deploy nginx-ingress
+```
+$ cd nginx-ingress
+```
+[Read the README file for details](nginx-ingress/README.md)
+
+* Deploy certmgr
+```
+$ cd certmgr
+```
+[Read the README file for details](certmgr/README.md)
+
 * Deploy dhcpd (-- NOT NEEDED WITH THIS NETWORK SETUP --)
 ```
 $ cd dhcpd
