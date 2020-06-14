@@ -21,11 +21,12 @@ echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.$NODE_HOST_IP > /etc/default/kubelet
 sed -i 's/^#DNS=/DNS=10.0.0.20/' /etc/systemd/resolved.conf
 sed -i 's/^#FallbackDNS=/FallbackDNS=10.96.0.10/' /etc/systemd/resolved.conf
 sed -i 's/^#Domains=/Domains=default.svc.cluster.local svc.cluster.local home.lab' /etc/systemd/resolved.conf
-sed -i 's/^#DNSStubListener=/DNSStubListener=no' /etc/systemd/resolved.conf
+#sed -i 's/^#DNSStubListener=/DNSStubListener=no' /etc/systemd/resolved.conf
 systemctl stop systemd-resolved
-rm -f /etc/resolv.conf
+systemctl start systemd-resolved
+#rm -f /etc/resolv.conf
 echo "nameserver 10.0.0.20" > /etc/resolv.conf
 echo "nameserver 10.96.0.10" >> /etc/resolv.conf
 echo "search default.svc.cluster.local svc.cluster.local home.lab" >> /etc/resolv.conf
-echo "options eth1"
+echo "options eth1" >> /etc/resolv.conf
 #service systemd-resolved restart
