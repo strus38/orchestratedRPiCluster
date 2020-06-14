@@ -17,6 +17,7 @@ spec:
   tls:
   - hosts:
     - kubernetes.home.lab
+    secretName: selfsigned-cert-tls
   rules:
   - host: kubernetes.home.lab
     http:

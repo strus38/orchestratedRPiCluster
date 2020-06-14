@@ -28,7 +28,10 @@ function remove {
 function reset {
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
-    helm delete $(helm list --short)
+    helm delete $(helm list --short -n monitoring) -n monitoring
+    helm delete $(helm list --short -n cert-manager) -n cert-manager
+    helm delete $(helm list --short -n nginx-ingress) -n nginx-ingress
+    helm delete $(helm list --short -n rack01) -n rack01
     ./kubectl delete all --all -n monitoring
     ./kubectl delete all --all -n rack01
     ./kubectl delete all --all -n kubernetes-dashboard
@@ -92,8 +95,8 @@ function deploy {
     check_readiness "coredns"
 
     echo " ....Create chronyd"
-    ./kubectl apply -f chronyd/chronyd.yaml
-    check_readiness "chrony"
+    #./kubectl apply -f chronyd/chronyd.yaml
+    #check_readiness "chrony"
 
     echo "....Create certificates manager"
     ./kubectl apply -f certmgr/cert-manager.crds.yaml
@@ -150,11 +153,16 @@ function deploy {
 function access {
     echo "+++++ Access to services +++++"
     echo "K8S dashboard: https://dashboard.home.lab"
-    echo "    Token:"
-    ./kubctl get secrets grep "-sa"
+    echo "    Token: "
+    ./kubectl describe secret $(./kubectl get secrets | grep dashboard-admin-sa-token | awk '{ print $1 }' ) | grep "token:" | awk '{ print $2 }'
+    echo ""
     echo "Monitoring dashboard: https://grafana.home.lab"
     echo "    Login: admin"
     echo "    Password: (in secrets)"
+    gp=$(./kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}")
+    echo $gp | base64 -d
+    echo ""
+    echo ""
     echo "Docker registry UI: https://registryui.home.lab"
     echo "++++++++++++++++++++++++++++++"
 }
