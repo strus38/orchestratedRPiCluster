@@ -7,7 +7,8 @@ function check_readiness {
     while  [ "$ready" = false ]; do
         ready=true
         for i in $(./kubectl get pods --all-namespaces |  grep  $1 | awk '{ print $3 }'); do
-            if [ $i != "1/1" ]; then
+            IFS=/ read var1 var2 <<< $i
+            if [ $var1 -ne $var2 ]; then
                 ready=false
             fi
         done
@@ -28,6 +29,11 @@ function reset {
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
     helm delete $(helm list --short)
+    ./kubectl delete all --all -n monitoring
+    ./kubectl delete all --all -n rack01
+    ./kubectl delete all --all -n kubernetes-dashboard
+    ./kubectl delete all --all -n nginx-ingress
+    ./kubectl delete all --all -n cert-manager
 }
 
 function deploy {
@@ -141,10 +147,26 @@ function deploy {
     echo "Done"
 }
 
+function access {
+    echo "+++++ Access to services +++++"
+    echo "K8S dashboard: https://dashboard.home.lab"
+    echo "    Token:"
+    ./kubctl get secrets grep "-sa"
+    echo "Monitoring dashboard: https://grafana.home.lab"
+    echo "    Login: admin"
+    echo "    Password: (in secrets)"
+    echo "Docker registry UI: https://registryui.home.lab"
+    echo "++++++++++++++++++++++++++++++"
+}
+
 while [[ $# -gt 0 ]]
 do
     key="${1}"
     case ${key} in
+    -a|--access)
+        access
+        exit 0
+        ;;
     -c|--create)
         echo "Create environment"
         create
@@ -166,8 +188,13 @@ do
         exit 0
         ;;
     *)  # unknown option
-        echo "Missing at least 1 argument: -c or -d or -r"
-        exit 1
+        echo "Arguments missing"
+        echo "./pb-install-all.sh [-a|-c|-d|-r|-i]"
+        echo "  -a: Print access endpoints"
+        echo "  -d: Deploy all services on existing cluster"
+        echo "  -r: Delete the whole cluster and all services"
+        echo "  -i: Delete all services running on the cluster"
+        exit 0
         ;;
     esac
 done
