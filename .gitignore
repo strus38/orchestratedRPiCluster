@@ -13,3 +13,6 @@
 kubeadm-init.out
 src/
 src/*
+kubectl.exe
+kubectl
+get_helm.sh

@@ -2,8 +2,7 @@
 
 ## Install
 ```
-kubectl apply -f .\k8sdashboard\dashboard.yml
-kubectl apply -f ingress.yaml
+kubectl apply -f *
 ```
 
 ## Get access token

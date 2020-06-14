@@ -32,3 +32,9 @@ kind: Namespace
 apiVersion: v1
 metadata:
   name: nginx-ingress
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: monitoring
