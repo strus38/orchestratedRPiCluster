@@ -144,7 +144,7 @@ function deploy {
     ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
 
     echo "....Create slurmctld"
-    ./kubectl apply -f slurmctld/slurm-k8s.yaml
+    ./kubectl apply -f slurmctl/slurm-k8s.yaml
     check_readiness "slurm"
 
     echo "Done"

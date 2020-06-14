@@ -19,5 +19,11 @@ echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.$NODE_HOST_IP > /etc/default/kubelet
 
 # update the DNS resolution
 sed -i 's/^#DNS=/DNS=10.0.0.20/' /etc/systemd/resolved.conf
-sed -i 's/^#FallbackDNS=/FallbackDNS=127.0.0.53/' /etc/systemd/resolved.conf
-service systemd-resolved restart
+sed -i 's/^#FallbackDNS=/FallbackDNS=10.96.0.10/' /etc/systemd/resolved.conf
+sed -i 's/^#Domains=/Domains=default.svc.cluster.local svc.cluster.local home.lab' /etc/systemd/resolved.conf
+rm -f /etc/resolv.conf
+echo "nameserver 10.0.0.20" > /etc/resolv.conf
+echo "nameserver 10.96.0.10" >> /etc/resolv.conf
+echo "search default.svc.cluster.local svc.cluster.local home.lab" >> /etc/resolv.conf
+echo "options eth1"
+#service systemd-resolved restart
