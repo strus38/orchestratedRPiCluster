@@ -3,8 +3,7 @@
 ## Install
 ```
 $ kubectl apply -f tftp-hpa.yaml
-$ kubectl get svc -n ftpsvc
-$ kubectl get pods -n ftpsvc
+$ kubectl apply -f ingress.yaml
 ```
 
 ## Validate

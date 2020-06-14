@@ -237,35 +237,21 @@ allnodes*    up   infinite      1  drain node03
 allnodes*    up   infinite      2   idle node[02,04]
 ```
 
-## What's next
+## How to easily deploy all services on the cluster
 
 Steps to deploy:
 
 * Power up the K8S cluster on your laptop
 By default: 1 Master and 3 workers
 Update the Vagrantfile to match your subnets.
+
 ```
 $ vagrant up
 ```
 Then, wait 1h or so depending on the speed of your internet speed.
 ```
 $ vagrant status
-$ vagrant ssh xxx
-```
-then manually update /etc/resolv.conf with the eth1 value (will be fixed soon)
-```
-$ cat .kube/config
-```
-Save the content to put in on your laptop %HOME%/.kube/config. This will allow kubectl actions from your powershell.
-
-Check that the kubelet config is set correctly (on all masters and workers)
-```
-sudo cat /etc/default/kubelet
-KUBELET_EXTRA_ARGS=--node-ip=<eth1 ip>
-```
-if not, fix it, and restart kubelet
-```
-sudo service kubelet restart
+$ scp -P 2200 vagrant@kv-master-0:/vagrant/.kube/config ~/.kube/config
 ```
 
 From your laptop, check the status of your K8S cluster:
@@ -277,6 +263,17 @@ kv-worker-0   Ready    <none>   4d4h   v1.18.2
 kv-worker-1   Ready    <none>   4d3h   v1.18.2
 kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
+
+* Easy way to start all services
+```
+$ ./pb-install-all.sh
+```
+
+Then just wait .... and enjoy.
+Launch your SLURM jobs :-)
+
+
+## The Hard way if you want to customize something :-)
 
 * Create all namespaces needed by the project
 ```
@@ -306,12 +303,6 @@ $ cd nginx-ingress
 $ cd certmgr
 ```
 [Read the README file for details](certmgr/README.md)
-
-* Deploy dhcpd (-- NOT NEEDED WITH THIS NETWORK SETUP --)
-```
-$ cd dhcpd
-```
-[Read the README file for details](dhcp/README.md)
 
 * Deploy persistentVolume
 ```
