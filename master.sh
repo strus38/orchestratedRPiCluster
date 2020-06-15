@@ -32,8 +32,7 @@ echo "********** $KVMSG ->> Configuring Kubernetes Cluster Calico Networking"
 echo "********** $KVMSG ->> Downloading Calico YAML File"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-wget -q https://docs.projectcalico.org/v3.14/manifests/calico.yaml -O /tmp/calico-default.yaml
-#wget -q https://bit.ly/kv-lab-k8s-calico-yaml -O /tmp/calico-default.yaml
+wget -q https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/calico.yaml -O /tmp/calico-default.yaml
 sed "s+10.0.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
 echo "********** $KVMSG ->> Applying Calico YAML File"
@@ -42,3 +41,10 @@ echo "********** $KVMSG"
 kubectl apply -f /tmp/calico-defined.yaml
 rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
 echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.2$NODE_HOST_IP > /etc/default/kubelet
+
+# update the DNS resolution
+sed -i 's/^#DNS=/DNS=10.0.0.20/' /etc/systemd/resolved.conf
+sed -i 's/^#FallbackDNS=/FallbackDNS=10.96.0.10/' /etc/systemd/resolved.conf
+sed -i 's/^#Domains=/Domains=default.svc.cluster.local svc.cluster.local home.lab' /etc/systemd/resolved.conf
+#sed -i 's/^#DNSStubListener=/DNSStubListener=no' /etc/systemd/resolved.conf
+systemctl restart systemd-resolved
