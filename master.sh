@@ -42,12 +42,12 @@ kubectl apply -f /tmp/calico-defined.yaml
 rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
 echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.2$NODE_HOST_IP > /etc/default/kubelet
 
-systemctl stop systemd-resolved
-systemctl stop systemd-networkd
-systemctl disable systemd-resolved
-systemctl disable systemd-networkd
+#systemctl stop systemd-resolved
+#systemctl stop systemd-networkd
+#systemctl disable systemd-resolved
+#systemctl disable systemd-networkd
 
 #echo "nameserver 10.0.0.20" > /etc/resolv.conf
-echo "nameserver 10.96.0.10" > /etc/resolv.conf
-echo "search default.svc.cluster.local svc.cluster.local home.lab" >> /etc/resolv.conf
-echo "options ndots:5" >> /etc/resolv.conf
+#echo "nameserver 10.96.0.10" > /etc/resolv.conf
+#echo "search default.svc.cluster.local svc.cluster.local home.lab" >> /etc/resolv.conf
+#echo "options ndots:5" >> /etc/resolv.conf
