@@ -29,4 +29,4 @@ rm -f /etc/resolv.conf
 echo "nameserver 10.0.0.20" > /etc/resolv.conf
 echo "nameserver 10.96.0.10" >> /etc/resolv.conf
 echo "search default.svc.cluster.local svc.cluster.local home.lab" >> /etc/resolv.conf
-echo "options eth1" >> /etc/resolv.conf
+echo "options ndots:5" >> /etc/resolv.conf
