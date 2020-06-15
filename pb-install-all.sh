@@ -124,8 +124,9 @@ function deploy {
     sleep 5s
 
     echo "....Create DockerRegistry"
-    helm install registry stable/docker-registry -n rack01 -f registry/dockerRegistry/registryvalues.yaml
-    check_readiness "registry"
+    helm install docker-registry stable/docker-registry -n rack01 -f registry/dockerRegistry/registryvalues.yaml
+    check_readiness "docker-registry"
+    
     echo "....Create Docker Registry UI"
     ./kubectl apply -f registry/dockerRegistry/registryui.yaml
     check_readiness "registryui"

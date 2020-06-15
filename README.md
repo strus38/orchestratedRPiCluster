@@ -76,17 +76,10 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 
 5) Update the file: C:\Windows\System32\drivers\etc\hosts to add the node[01-05] IPs, it will be more convenient.
 
-6) Connect to your worker nodes 1 by one, and update the file: /etc/systemd/resolved.conf (to delete)
+6) Install some Vagrant plugins
 ```
-$ vagrant ssh kv-worker-X
-$ sudo su
-$ vi /etc/systemd/resolved.conf
-[Resolve]
-DNS=10.0.0.20
-```
-after that, restart the service:
-```
-service systemd-resolved restart
+$ vagrant plugin install vagrant-scp
+$ vagrant plugin install vagrant-winnfsd
 ```
 
 7) Update the docker registry of the worker nodes (if necessary, the default setup is has shown below):
