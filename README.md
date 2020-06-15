@@ -11,6 +11,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![RPi Cluster 3D View](imgs/3DView.PNG)![RPi Cluster 3D View](imgs/3DView2.PNG)
 
+* K8S lens ... dashboard on steroids
+
+![RPi Cluster Lens](imgs/lens1.PNG)
+
 * Grafana Cluster Status
 
 ![K8S Cluster view](imgs/grafClusterStatus.PNG)
@@ -308,6 +312,15 @@ $ cd persistentVolume
 $ cd k8sdashboard
 ```
 [Read the README file for details](k8sdashboard/README.md)
+
+* At this stage update the /etc/systemd/resolved.conf file
+```
+$ cat /etc/systemd/resolved.conf
+DNS=10.0.0.20
+FallbackDNS=10.96.0.10
+
+service systemd-resolved restart
+```
 
 * Deploy docker registry and ChartsMuseum
 ```
