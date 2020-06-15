@@ -23,7 +23,7 @@ sed -i 's/^#FallbackDNS=/FallbackDNS=10.96.0.10/' /etc/systemd/resolved.conf
 sed -i 's/^#Domains=/Domains=default.svc.cluster.local svc.cluster.local home.lab' /etc/systemd/resolved.conf
 sed -i 's/^#DNSStubListener=/DNSStubListener=no' /etc/systemd/resolved.conf
 systemctl stop systemd-resolved
-systemctl start systemd-resolved
+#systemctl start systemd-resolved
 #service systemd-resolved restart
 rm -f /etc/resolv.conf
 echo "nameserver 10.0.0.20" > /etc/resolv.conf
