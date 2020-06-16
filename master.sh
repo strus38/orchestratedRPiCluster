@@ -41,6 +41,7 @@ echo "********** $KVMSG"
 kubectl apply -f /tmp/calico-defined.yaml
 rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
 echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.2$NODE_HOST_IP > /etc/default/kubelet
+service kubelet restart
 
 #systemctl stop systemd-resolved
 #systemctl stop systemd-networkd

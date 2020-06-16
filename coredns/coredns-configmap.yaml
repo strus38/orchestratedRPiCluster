@@ -13,17 +13,17 @@ data:
         auto {
             directory /etc/coredns/zones
         }
-        # kubernetes cluster.local in-addr.arpa ip6.arpa {
-        #     pods insecure
-        #     fallthrough in-addr.arpa ip6.arpa
-        #     ttl 30
-        # }
+        kubernetes cluster.local. in-addr.arpa ip6.arpa {
+            pods insecure
+            upstream
+            fallthrough in-addr.arpa ip6.arpa
+        }
         # Enable logging to STDOUT
         log
         # Print errors to STDOUT
         errors
         prometheus :9153
-        forward . /etc/resolv.conf 10.0.0.20
+        forward . /etc/resolv.conf
         # Automatically load changes to the Corefile
         reload 30s
         # Round-robin A, AAAA and PTR records

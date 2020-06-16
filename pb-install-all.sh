@@ -32,11 +32,11 @@ function reset {
     helm delete $(helm list --short -n cert-manager) -n cert-manager
     helm delete $(helm list --short -n nginx-ingress) -n nginx-ingress
     helm delete $(helm list --short -n rack01) -n rack01
-    ./kubectl delete all --all -n monitoring
-    ./kubectl delete all --all -n rack01
-    ./kubectl delete all --all -n kubernetes-dashboard
-    ./kubectl delete all --all -n nginx-ingress
-    ./kubectl delete all --all -n cert-manager
+    ./kubectl delete ns kubernetes-dashboard
+    ./kubectl delete ns rack01
+    ./kubectl delete ns cert-manager
+    ./kubectl delete ns monitoring
+    ./kubectl delete ns nginx-ingress
 }
 
 function deploy {
@@ -90,9 +90,9 @@ function deploy {
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
 
-    echo "....Create coredns"
-    ./kubectl apply -f coredns/.
-    check_readiness "coredns"
+    # echo "....Create coredns"
+    # ./kubectl apply -f coredns/.
+    # check_readiness "coredns"
 
     echo " ....Create chronyd"
     #./kubectl apply -f chronyd/chronyd.yaml
@@ -114,39 +114,40 @@ function deploy {
     ./kubectl apply -f persistentVolume/persistentVolume.yaml
     sleep 5s
 
-    echo "....Create K8S dashboard"
-    ./kubectl apply -f dashboard/dashboard.yaml
-    check_readiness "dashboard"
-    ./kubectl create serviceaccount dashboard-admin-sa
-    ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
-    sleep 5s
-    ./kubectl apply -f dashboard/ingress.yaml
-    sleep 5s
+    # echo "....Create K8S dashboard"
+    # ./kubectl apply -f dashboard/dashboard.yaml
+    # check_readiness "dashboard"
+    # ./kubectl create serviceaccount dashboard-admin-sa
+    # ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+    # sleep 5s
+    # ./kubectl apply -f dashboard/ingress.yaml
+    # sleep 5s
 
     echo "....Create DockerRegistry"
     helm install docker-registry stable/docker-registry -n rack01 -f registry/dockerRegistry/registryvalues.yaml
     check_readiness "docker-registry"
-    
-    echo "....Create Docker Registry UI"
-    ./kubectl apply -f registry/dockerRegistry/registryui.yaml
-    check_readiness "registryui"
 
-    echo "....Create monitoring"
-    helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
-    check_readiness "prometheus"
-    ./kubectl apply -f monitoring/kubestatemetrics/.
-    ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
-    helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
-    check_readiness "grafana"
+    # echo "....Create Docker Registry UI"
+    # ./kubectl apply -f registry/dockerRegistry/registryui.yaml
+    # check_readiness "registryui"
 
-    echo "....Create tftpd"
-    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml
-    check_readiness "tftp"
-    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
+    # echo "....Create monitoring"
+    # helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    # check_readiness "prometheus"
+    # ./kubectl apply -f monitoring/kubestatemetrics/.
+    # ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
+    # helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    # check_readiness "grafana"
+    # exit 0
 
-    echo "....Create slurmctld"
-    ./kubectl apply -f slurmctl/slurm-k8s.yaml
-    check_readiness "slurm"
+    # echo "....Create tftpd"
+    # ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml
+    # check_readiness "tftp"
+    # ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
+
+    # echo "....Create slurmctld"
+    # ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
+    # check_readiness "slurm"
 
     echo "Done"
 }

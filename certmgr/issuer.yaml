@@ -2,7 +2,6 @@ apiVersion: cert-manager.io/v1alpha2
 kind: Issuer
 metadata:
   name: selfsigned
-  namespace: cert-manager
 spec:
   selfSigned: {}
 ---
@@ -10,8 +9,7 @@ apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: selfsigned-cert
-  namespace: cert-manager
-spec:
+sspec:
   dnsNames:
     - home.lab
   secretName: selfsigned-cert-tls

@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: coredns-zones
-  namespace: rack01
+  namespace: kube-system
   labels:
     app.kubernetes.io/name: coredns
     app.kubernetes.io/instance: lab-coredns
@@ -26,3 +26,4 @@ data:
     kubernetes IN A 10.0.0.10
     registry IN A 10.0.0.10
     registryui IN A 10.0.0.10
+    grafana  IN A 10.0.0.10
