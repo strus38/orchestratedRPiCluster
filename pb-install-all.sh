@@ -103,7 +103,8 @@ function deploy {
     sleep 5s
     helm install cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0
     check_readiness "cert-manager"
-    ./kubectl apply -f certmgr/issuer.yaml
+    ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
+    ./kubectl apply -f certmgr/issuer.yaml -n rack01
     sleep 5s
 
     echo "....Create nginx-ingress"

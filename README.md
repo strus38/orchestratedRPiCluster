@@ -260,7 +260,6 @@ kv-worker-0   Ready    <none>   4d4h   v1.18.2
 kv-worker-1   Ready    <none>   4d3h   v1.18.2
 kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
-* Restart kubelet in all workers... (why the hell??? not sure)
 
 * Easy way to start all services
 ```
