@@ -44,8 +44,8 @@ echo KUBELET_EXTRA_ARGS=--node-ip=10.0.0.2$NODE_HOST_IP > /etc/default/kubelet
 service kubelet restart
 
 # update the DNS resolution
-sed -i 's/^#DNS=/DNS=10.96.0.10/' /etc/systemd/resolved.conf
-service systemd-resolved restart
+#sed -i 's/^#DNS=/DNS=10.96.0.10/' /etc/systemd/resolved.conf
+#service systemd-resolved restart
 
 #systemctl stop systemd-resolved
 #systemctl stop systemd-networkd
