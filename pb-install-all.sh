@@ -90,11 +90,12 @@ function deploy {
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
 
-    # echo "....Create coredns"
-    # ./kubectl apply -f coredns/.
-    # check_readiness "coredns"
+    echo "....Update coredns"
+    ./kubectl apply -f coredns/lab-configmap.yaml
+    ./kubectl apply -f coredns/reconfigure-coredns.yaml
+    check_readiness "coredns"
 
-    echo " ....Create chronyd"
+    #echo " ....Create chronyd"
     #./kubectl apply -f chronyd/chronyd.yaml
     #check_readiness "chrony"
 
@@ -125,12 +126,16 @@ function deploy {
     # sleep 5s
 
     echo "....Create DockerRegistry"
-    helm install docker-registry stable/docker-registry -n rack01 -f registry/dockerRegistry/registryvalues.yaml
+    ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
     check_readiness "docker-registry"
 
-    # echo "....Create Docker Registry UI"
-    # ./kubectl apply -f registry/dockerRegistry/registryui.yaml
-    # check_readiness "registryui"
+    echo "....Create Docker Registry UI"
+    ./kubectl apply -f registry/dockerRegistry/registryui.yaml -n rack01
+    check_readiness "registryui"
+
+    echo "....Create netbox"
+    ./kubectl apply -f netbox/. -n kube-system
+    check_readiness "netbox"
 
     # echo "....Create monitoring"
     # helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
