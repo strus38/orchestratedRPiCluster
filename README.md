@@ -194,9 +194,9 @@ Fixed Services endpoints for admins:
 * Kibana: 10.0.0.34
 
 Fixed Services endpoints for end users:
-* docker registry: 10.0.0.10
-* docker registryUI: 10.0.0.26
-* ChartMuseum: 10.0.0.27
+* docker registry: internal
+* docker registryUI: https://registryui.home.lab
+* ChartMuseum: <not needed yet>
 * TFTP: 10.0.0.23
 * SFTP: 10.0.0.24
 **********************************************************
