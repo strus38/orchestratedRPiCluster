@@ -1,9 +1,10 @@
 apiVersion: cert-manager.io/v1alpha2
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: selfsigned
 spec:
   selfSigned: {}
+
 ---
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate

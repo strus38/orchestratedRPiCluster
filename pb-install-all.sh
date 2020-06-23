@@ -95,6 +95,9 @@ function deploy {
     ./kubectl apply -f coredns/reconfigure-coredns.yaml
     check_readiness "coredns"
 
+    echo "... NFS client"
+    helm install nfs-client stable/nfs-client-provisioner --set nfs.server=node01.home.lab --set nfs.path=/mnt/usb
+
     #echo " ....Create chronyd"
     #./kubectl apply -f chronyd/chronyd.yaml
     #check_readiness "chrony"
@@ -116,21 +119,21 @@ function deploy {
     ./kubectl apply -f persistentVolume/persistentVolume.yaml
     sleep 5s
 
-    # echo "....Create K8S dashboard"
-    # ./kubectl apply -f dashboard/dashboard.yaml
-    # check_readiness "dashboard"
-    # ./kubectl create serviceaccount dashboard-admin-sa
-    # ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
-    # sleep 5s
-    # ./kubectl apply -f dashboard/ingress.yaml
-    # sleep 5s
+    echo "....Create K8S dashboard"
+    ./kubectl apply -f dashboard/dashboard.yaml
+    check_readiness "dashboard"
+    ./kubectl create serviceaccount dashboard-admin-sa
+    ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+    sleep 5s
+    ./kubectl apply -f dashboard/ingress.yaml
+    sleep 5s
 
     echo "....Create DockerRegistry"
     ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
     check_readiness "docker-registry"
 
     echo "....Create Docker Registry UI"
-    ./kubectl apply -f registry/dockerRegistry/registryui.yaml -n rack01
+    ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
     check_readiness "registryui"
 
     echo "....Create netbox"
@@ -144,7 +147,6 @@ function deploy {
     # ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
     # helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     # check_readiness "grafana"
-    # exit 0
 
     # echo "....Create tftpd"
     # ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml

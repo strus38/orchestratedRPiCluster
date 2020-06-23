@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-02-18T18:52:05Z
+  name: nginx-ingress-controller
+  namespace: nginx-ingress
+data:
+  client-header-buffer-size: 1k
