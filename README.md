@@ -187,18 +187,19 @@ Fixed Services endpoints for admins:
 * NFS Server: 10.0.0.20
 * DNS Server: 10.0.0.21
 * DHCP Server: 10.0.0.22
-* dashboard: https://kubernetes.home.lab
-* grafana: 10.0.0.31
-* prometheus-server: 10.0.0.32
-* prometheus-pushgateway: 10.0.0.33
-* Kibana: 10.0.0.34
-
-Fixed Services endpoints for end users:
-* docker registry: internal
-* docker registryUI: https://registryui.home.lab
-* ChartMuseum: <not needed yet>
 * TFTP: 10.0.0.23
 * SFTP: 10.0.0.24
+
+Fixed Services endpoints for end users:
+* docker registry: https://registry.home.lab
+* docker registryUI: https://registryui.home.lab
+* ChartMuseum: https://helm.home.lab
+* dashboard: https://kubernetes.home.lab
+* grafana: https://grafana.home.lab
+* prometheus-server: https://prometheus.home.lab
+* prometheus-pushgateway: <internal>
+* Kibana: https://kibana.home.lab
+
 **********************************************************
 
 ## RBAC related topics
