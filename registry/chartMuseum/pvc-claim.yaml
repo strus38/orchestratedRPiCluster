@@ -3,13 +3,14 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: chartmuseum-pvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "nfs-dyn"
 spec:
   selector:
     matchLabels:
       app: chartmuseum
   accessModes:
     - ReadWriteMany
-  storageClassName: nfsusb
   resources:
     requests:
-      storage: 10Gi
+      storage: 2Gi

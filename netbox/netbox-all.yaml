@@ -147,10 +147,11 @@ metadata:
   name: netbox-static-files
   labels:
     pvcname: netbox-static-files
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "nfs-dyn"
 spec:
   accessModes:
-  - ReadWriteMany
-  storageClassName: nfsusb
+    - ReadWriteMany
   resources:
     requests:
       storage: 100Mi
@@ -179,6 +180,7 @@ data:
   SUPERUSER_EMAIL: admin@example.com
   SUPERUSER_NAME: admin
   SUPERUSER_PASSWORD: admin
+
 ---
 apiVersion: v1
 kind: ConfigMap

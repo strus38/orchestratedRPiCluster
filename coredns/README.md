@@ -7,13 +7,21 @@ Provides the DNS for RPi nodes and for Services
 $ kubectl apply -f .
 ```
 
+Edit the coredns config to add:
+...
+    volumes:
+        ...
+        - name: coredns-zone-volume
+          configMap:
+            name: coredns-zones
+...
+        volumeMounts:
+        ...
+        - mountPath: "/etc/coredns/zones"
+            name: coredns-zone-volume
+
 ## Validate
-From your powershell
+From a worker node:
 ```
-nslookup
-> server 192.168.1.180
-> node01.home.lab
-> node02.home.lab
-> node03.home.lab
-> node04.home.lab
+$ nslookup node01.home.lab
 ```

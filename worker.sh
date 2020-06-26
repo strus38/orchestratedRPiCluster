@@ -7,6 +7,9 @@ NODE_HOST_IP=$((220+NODE))
 POD_CIDR=$3
 API_ADV_ADDRESS=$4
 
+echo "*** Enabling nf_nat_tftp"
+modprobe nf_nat_tftp
+
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 echo "********** $KVMSG ->> Joining Kubernetes Cluster"

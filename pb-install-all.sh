@@ -91,6 +91,7 @@ function deploy {
     sleep 5s
 
     echo "....Update coredns, please do it manually"
+    ./kubectl apply -f coredns/lab-configmap.yaml
     echo "Press any key to continue"
     while [ true ] ; do
         read -t 3 -n 1
@@ -146,6 +147,8 @@ function deploy {
     check_readiness "registryui"
     
     echo "....Create ChartMuseum"
+    ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01
+    sleep 5s
     helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
     check_readiness "chartmuseum"
 

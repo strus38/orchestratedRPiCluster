@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  volumeName: nfsshare-usb2
+  volumeName: nfsshare-usb3
   volumeMode: Filesystem
   storageClassName: nfsusb
 
@@ -25,7 +25,6 @@ metadata:
     app.name: tftpd
 spec:
   type: ClusterIP
-  #loadBalancerIP: 10.0.0.23
   ports:
     - port: 69
       targetPort: 69
