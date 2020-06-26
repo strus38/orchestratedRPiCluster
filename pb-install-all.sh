@@ -41,7 +41,7 @@ function reset {
 
 function deploy {
     echo "-----"
-    echo "Checking Environment"
+    echo "### Checking Environment"
     if [ ! -f "kubectl" ]; then 
         echo "Installing kubectl"
         curl -fsSL https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/windows/amd64/kubectl.exe -o kubectl.exe
@@ -65,17 +65,23 @@ function deploy {
             helm repo add  jetstack https://charts.jetstack.io
         fi
     fi
-    echo "Testing binaries"
+    echo "### Testing binaries"
     ./kubectl version
     helm version
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
-    echo "Updating Helm repos"
+    echo "###  Updating Helm repos"
     helm repo update
     echo "Environment READY"
     echo "-----"
 
-    echo "Starting configuration of all services..."
+    if [ ! -f "/usr/local/bin/checkov" ]; then 
+        echo "### Issuing security report"
+        checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
+        junit2html checkov.results.xml > checkov.html
+    fi
+
+    echo "### Starting configuration of all services..."
     ./kubectl get nodes
     echo "....Create namespaces"
     ./kubectl apply -f createNamespaces.yaml

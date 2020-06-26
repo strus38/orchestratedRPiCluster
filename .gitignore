@@ -16,3 +16,4 @@ src/*
 kubectl.exe
 kubectl
 get_helm.sh
+checkov.results.xml
