@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry-pvc
+spec:
+  # selector:
+  #   matchLabels:
+  #     app: registry
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfsusb
+  resources:
+    requests:
+      storage: 10Gi

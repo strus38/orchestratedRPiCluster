@@ -90,13 +90,20 @@ function deploy {
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
 
-    echo "....Update coredns"
-    ./kubectl apply -f coredns/lab-configmap.yaml
-    ./kubectl apply -f coredns/reconfigure-coredns.yaml
-    check_readiness "coredns"
+    echo "....Update coredns, please do it manually"
+    echo "Press any key to continue"
+    while [ true ] ; do
+        read -t 3 -n 1
+        if [ $? = 0 ] ; then
+            exit ;
+        else
+        echo "waiting for the keypress"
+        fi
+    done
 
     echo "... NFS client"
-    helm install nfs-client stable/nfs-client-provisioner --set nfs.server=node01.home.lab --set nfs.path=/mnt/usb
+    helm install nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb --set storageClass.name=nfs-dy
+    check_readiness "nfs-client"
 
     #echo " ....Create chronyd"
     #./kubectl apply -f chronyd/chronyd.yaml
@@ -129,33 +136,39 @@ function deploy {
     sleep 5s
 
     echo "....Create DockerRegistry"
-    ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
+    ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
+    sleep 5s
+    helm install docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
 
     echo "....Create Docker Registry UI"
     ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
     check_readiness "registryui"
+    
+    echo "....Create ChartMuseum"
+    helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
+    check_readiness "chartmuseum"
 
-    echo "....Create netbox"
-    ./kubectl apply -f netbox/. -n kube-system
-    check_readiness "netbox"
+    # echo "....Create netbox"
+    # ./kubectl apply -f netbox/. -n kube-system
+    # check_readiness "netbox"
 
-    # echo "....Create monitoring"
-    # helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
-    # check_readiness "prometheus"
-    # ./kubectl apply -f monitoring/kubestatemetrics/.
-    # ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
-    # helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
-    # check_readiness "grafana"
+    echo "....Create monitoring"
+    helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    check_readiness "prometheus"
+    ./kubectl apply -f monitoring/kubestatemetrics/.
+    ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
+    helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    check_readiness "grafana"
 
-    # echo "....Create tftpd"
-    # ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml
-    # check_readiness "tftp"
-    # ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
+    echo "....Create tftpd"
+    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml
+    check_readiness "tftp"
+    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
 
-    # echo "....Create slurmctld"
-    # ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
-    # check_readiness "slurm"
+    echo "....Create slurmctld"
+    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
+    check_readiness "slurm"
 
     echo "Done"
 }

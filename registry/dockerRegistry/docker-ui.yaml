@@ -22,10 +22,11 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
           - name: ENV_DOCKER_REGISTRY_HOST
-            value: "http://registry.rack01.svc.cluster.local:5000"
+            value: "https://registry.home.lab"
           - name: ENV_DOCKER_REGISTRY_PORT
             value: "443"
-
+          - name: ENV_DOCKER_REGISTRY_USE_SSL
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

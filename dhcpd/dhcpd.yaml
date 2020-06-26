@@ -1,0 +1,61 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: dhcp
+  name: dhcp
+data:
+  # Configuration values can be set as key-value properties
+  dhcpd.conf: |
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dhcpd
+spec:
+  selector:
+    matchLabels:
+      app: dhcpd
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: dhcpd
+    spec:
+      containers:
+      - name: dhcpd
+        image: modularitycontainers/dhcp-server:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: dhcp
+          mountPath: /etc/dhcp
+        - name: dhcpd
+          mountPath: /var/lib/dhcpd
+          subPath: dhcpd.conf
+      restartPolicy: IfNotPresent
+      volumes:
+      - name: dhcp
+        configMap:
+            name: dhcp
+      - name: dhcpd
+        configMap:
+            name: dhcpd
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dhcpd
+spec:
+  selector:
+    app: dhcpd
+  ports:
+    - name: udp67
+      protocol: UDP
+      port: 67
+      targetPort: 67
+  type: ClusterIP
