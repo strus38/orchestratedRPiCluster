@@ -152,9 +152,9 @@ function deploy {
     helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
     check_readiness "chartmuseum"
 
-    # echo "....Create netbox"
-    # ./kubectl apply -f netbox/. -n kube-system
-    # check_readiness "netbox"
+    echo "....Create netbox"
+    ./kubectl apply -f netbox/. -n kube-system
+    check_readiness "netbox"
 
     echo "....Create monitoring"
     helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
@@ -163,6 +163,8 @@ function deploy {
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml
     helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     check_readiness "grafana"
+    helm install karma stable/karma --version 1.1.10 -f karma/values.yaml -n monitoring
+    check_readiness "karma"
 
     echo "....Create tftpd"
     ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml

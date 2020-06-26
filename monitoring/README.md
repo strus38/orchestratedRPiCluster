@@ -49,6 +49,11 @@ helm install grafana stable/grafana -f .\grafana\grafanavalues.yaml --namespace 
 
 * Add the dashboard you want :-) ... some provided in this repo.s
 
+## Add karma
+```
+helm inspect values stable/karma --version 1.1.10 > karma/values.yaml
+helm install stable/karma --version 1.1.10 -f karma/values.yaml -n monitoring
+```
 ## Retrieve the password
 ```
 kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}"
