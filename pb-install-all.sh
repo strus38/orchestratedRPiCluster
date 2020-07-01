@@ -102,14 +102,14 @@ function deploy {
     while [ true ] ; do
         read -t 3 -n 1
         if [ $? = 0 ] ; then
-            exit ;
+            break
         else
         echo "waiting for the keypress"
         fi
     done
 
     echo "... NFS client"
-    helm install nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb --set storageClass.name=nfs-dy
+    helm install nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb --set storageClass.name=nfs-dyn
     check_readiness "nfs-client"
 
     #echo " ....Create chronyd"
@@ -181,12 +181,17 @@ function deploy {
     ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
     check_readiness "slurm"
 
+    echo "... Create Clair-Klar"
+    ./kubectl create secret generic clairsecret --from-file=clair-cve/config.yaml -n rack01                                           
+    ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01
+    check_readiness "clair"
+                                                         
     echo "Done"
 }
 
 function access {
     echo "+++++ Access to services +++++"
-    echo "K8S dashboard: https://dashboard.home.lab"
+    echo "K8S dashboard: https://kubernetes.home.lab"
     echo "    Token: "
     ./kubectl describe secret $(./kubectl get secrets | grep dashboard-admin-sa-token | awk '{ print $1 }' ) | grep "token:" | awk '{ print $2 }'
     echo ""

@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    name: netbox
+  name: netbox
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
+    #cert-manager.io/cluster-issuer: "selfsigned-cert"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/issuer: selfsigned
+spec:
+  tls:
+  - hosts:
+    - netbox.home.lab
+    secretName: netbox-selfsigned-cert-tls
+  rules:
+  - host: netbox.home.lab
+    http:
+      paths:
+      - backend:
+          serviceName: nginx
+          servicePort: 80

@@ -27,3 +27,6 @@ data:
     registry IN A 10.0.0.10
     registryui IN A 10.0.0.10
     grafana  IN A 10.0.0.10
+    helm  IN A 10.0.0.10
+    netbox  IN A 10.0.0.10
+    prometheus  IN A 10.0.0.10

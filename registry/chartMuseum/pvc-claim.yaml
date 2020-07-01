@@ -6,9 +6,6 @@ metadata:
   annotations:
     volume.beta.kubernetes.io/storage-class: "nfs-dyn"
 spec:
-  selector:
-    matchLabels:
-      app: chartmuseum
   accessModes:
     - ReadWriteMany
   resources:

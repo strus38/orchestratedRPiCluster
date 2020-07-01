@@ -2,10 +2,9 @@ kind: Service
 apiVersion: v1
 metadata:
   name: kube-dns-udp
-  namespace: rack01
+  namespace: kube-system
   labels:
-    app.kubernetes.io/name: coredns
-    app.kubernetes.io/instance: lab-coredns
+    k8s-app: kube-dns
   annotations:
     prometheus.io/port: '9153'
     prometheus.io/scrape: 'true'
@@ -17,8 +16,7 @@ spec:
       port: 53
       targetPort: 53
   selector:
-    app.kubernetes.io/name: coredns
-    app.kubernetes.io/instance: lab-coredns
+    k8s-app: kube-dns
   loadBalancerIP: 10.0.0.20
   type: LoadBalancer
   sessionAffinity: None
@@ -29,10 +27,9 @@ kind: Service
 apiVersion: v1
 metadata:
   name: kube-dns-tcp
-  namespace: rack01
+  namespace: kube-system
   labels:
-    app.kubernetes.io/name: coredns
-    app.kubernetes.io/instance: lab-coredns
+    k8s-app: kube-dns
   annotations:
     prometheus.io/port: '9153'
     prometheus.io/scrape: 'true'
@@ -48,8 +45,7 @@ spec:
       port: 9153
       targetPort: 9153
   selector:
-    app.kubernetes.io/name: coredns
-    app.kubernetes.io/instance: lab-coredns
+    k8s-app: kube-dns
   loadBalancerIP: 10.0.0.20
   type: LoadBalancer
   sessionAffinity: None

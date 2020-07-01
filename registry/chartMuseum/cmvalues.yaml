@@ -199,16 +199,16 @@ tolerations: []
 affinity: {}
 
 persistence:
-  enabled: false
-  accessMode: ReadWriteOnce
-  size: 8Gi
+  enabled: true
+  accessMode: ReadWriteMany
+  size: 4Gi
   labels: {}
-  path: /storage
+  # path: /
   #   name: value
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
-  # existingClaim:
+  existingClaim: chartmuseum-pvc
 
   ## Chartmuseum data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
@@ -219,15 +219,15 @@ persistence:
   ##
   # storageClass: "-"
   # volumeName:
-  pv:
-    enabled: false
-    pvname:
-    capacity:
-      storage: 8Gi
-    accessMode: ReadWriteOnce
-    nfs:
-      server:
-      path:
+  # pv:
+  #   enabled: false
+  #   pvname:
+  #   capacity:
+  #     storage: 8Gi
+  #   accessMode: ReadWriteOnce
+  #   nfs:
+  #     server:
+  #     path:
 
 ## Init containers parameters:
 ## volumePermissions: Change the owner of the persistent volume mountpoint to RunAsUser:fsGroup

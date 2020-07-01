@@ -6,6 +6,9 @@ Provides the DNS for RPi nodes and for Services
 ```
 $ kubectl apply -f .
 ```
+auto {
+    directory /etc/coredns/zones
+}
 
 Edit the coredns config to add:
 ...
