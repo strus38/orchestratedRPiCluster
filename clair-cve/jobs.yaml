@@ -5,6 +5,10 @@ metadata:
 spec:
   template:
     spec:
+      hostAliases:
+        - ip: "18.213.137.78"
+          hostnames:
+            - "registry-1.docker.io"
       containers:
       - name: klar
         image: leahnp/klar-scratch
@@ -12,7 +16,7 @@ spec:
           - "strusfr/docker-ubuntu1604-slurmctld:latest"
         env:
           - name: CLAIR_ADDR
-            value: "<>"
+            value: "http://clairsvc.rack01.svc.cluster.local:6060"
           - name: CLAIR_OUTPUT
             value: "High"
           - name: CLAIR_THRESHOLD

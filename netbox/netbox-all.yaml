@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: netbox
-        image: ninech/netbox:v2.2.6
+        image: netboxcommunity/netbox:v2.8
         ports:
         - containerPort: 8001
         env:

@@ -40,8 +40,54 @@ echo "********** $KVMSG ->> Installing Required & Recommended Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce kubeadm kubelet kubectl python3 python3-pip
+pip3 install netbox-agent
 
-# Setup Docker daemon, add the local and few remotes repositories
+cat > /etc/qualification <<EOF
+DATACENTER: home.lab
+EOF
+
+cat > /root/nbagent.yaml <<EOF
+# Netbox configuration
+netbox:
+  url: 'https://netbox.home.lab'
+  token: xxx
+# Network configuration
+network:
+  # Regex to ignore interfaces
+  ignore_interfaces: "(dummy.*|tunl.*)"
+  # Regex to ignore IP addresses
+  ignore_ips: (127\.0\.0\..*)
+  # enable auto-cabling by parsing LLDP answers
+  lldp: false
+## Enable virtual machine support
+virtual:
+  # not mandatory, can be guessed
+  enabled: true
+  # see https://netbox.company.com/virtualization/clusters/
+  cluster_name: K8S cluster
+# Enable datacenter location feature in Netbox
+datacenter_location:
+ driver: "cmd:cat /etc/qualification | tr [a-z] [A-Z]"
+ regex: "DATACENTER: (?P<datacenter>[A-Za-z0-9]+)"
+# driver: 'cmd: lldpctl'
+# regex: 'SysName: .*\.([A-Za-z0-9]+)'
+#
+# driver: "file:/tmp/datacenter"
+# regex: "(.*)"
+
+# Enable rack location feature in Netbox
+rack_location:
+# driver: 'cmd:lldpctl'
+# match SysName: sw-dist-a1.dc42
+# regex: 'SysName:[ ]+[A-Za-z]+-[A-Za-z]+-([A-Za-z0-9]+)'
+#
+# driver: "file:/tmp/datacenter"
+# regex: "(.*)"
+
+# Enable local inventory reporting
+inventory: true
+EOF
+
 cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -49,7 +95,7 @@ cat > /etc/docker/daemon.json <<EOF
   "log-opts": {
     "max-size": "100m"
   },
-  "insecure-registries": ["10.0.0.21:5000"],
+  "insecure-registries": ["https://registry.home.lab"],
   "registry-mirrors": ["https://docker.io","https://quay.io"],
   "storage-driver": "overlay2"
 }

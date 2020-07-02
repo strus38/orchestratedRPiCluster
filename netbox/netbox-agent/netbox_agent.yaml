@@ -1,23 +1,23 @@
 # Netbox configuration
 netbox:
- url: 'https://netbox.home.lab'
- token: <token>
+  url: 'https://netbox.home.lab'
+  token: xxx
 
 # Network configuration
 network:
-  # Regex to ignore interfaces 
-  ignore_interfaces: "(dummy.*)"
+  # Regex to ignore interfaces
+  ignore_interfaces: "(dummy.*|tunl.*)"
   # Regex to ignore IP addresses
   ignore_ips: (127\.0\.0\..*)
   # enable auto-cabling by parsing LLDP answers
   lldp: false
 
-## Enable virtual machine support 
+## Enable virtual machine support
 virtual:
   # not mandatory, can be guessed
-  enabled: True
+  enabled: true
   # see https://netbox.company.com/virtualization/clusters/
-  cluster_name: K8S_cluster
+  cluster_name: K8S cluster
 
 # Enable datacenter location feature in Netbox
 datacenter_location:
@@ -38,5 +38,5 @@ rack_location:
 # driver: "file:/tmp/datacenter"
 # regex: "(.*)"
 
-# Enable local inventory reporting 
+# Enable local inventory reporting
 inventory: true
