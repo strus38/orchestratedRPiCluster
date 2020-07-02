@@ -15,6 +15,10 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![RPi Cluster Lens](imgs/lens1.PNG)
 
+* Netbox: 'The source of truth' :-)
+
+![RPi Cluster Lens](imgs/netbox.PNG)
+
 * Grafana Cluster Status
 
 ![K8S Cluster view](imgs/grafClusterStatus.PNG)
