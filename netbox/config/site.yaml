@@ -1,0 +1,163 @@
+sites:
+  - name: home
+    slug: home
+    location:
+      - address: foo
+    
+regions:
+  - name: isere
+    slug: isere
+    site_slug: home
+
+racks:
+  - name: rack01
+    region_slug: isere
+    site_slug: home
+    slug: rack01
+    height: 10
+
+manufacturers:
+  - name: TP-Link
+    slug: tp-link
+  - name: Raspberry Pi Foundation
+    slug: raspberry_pi_foundation
+  - name: Asus
+    slug: asus
+  - name: Fujitsu
+    slug: fujitsu
+  - name: PowerRack
+    slug: powerrack
+
+vrfs: 
+  - name: internal 
+    rd: internal
+
+device_types:
+  - name: switch
+    slug: switch
+    model: TL-SG108
+    manufacturer_slug: tp-link
+    height: 1U
+  - name: Raspberry Pi 2
+    slug: raspberry_pi_2
+    model: RPI2
+    manufacturer_slug: raspberry_pi_foundation
+    height: 1U
+  - name: Raspberry Pi 3B
+    slug: raspberry_pi_3
+    model: RPI3
+    manufacturer_slug: raspberry_pi_foundation
+    height: 1U
+  - name: Raspberry Pi 4
+    slug: raspberry_pi_4
+    model: RPI4 4GB
+    manufacturer_slug: raspberry_pi_foundation
+    height: 1U
+
+device_roles:
+  - name: switch
+    slug: switch
+    color: ff0000
+  - name: compute node
+    slug: compute_node
+    color: ff00dd
+  - name: NFS storage node
+    slug: nfs_storage_node
+    color: ffddff
+
+platforms:
+  - name: rasbian
+    slug: rasbian
+    manufacturer_slug: raspberry_pi_foundation
+
+devices:
+  - name: node01
+    slug: node01
+    device_role_slug: nfs_storage_node
+    device_types_slug: raspberry_pi_3
+    manufacturer_slug: raspberry_pi_foundation
+    site_slug: home
+    rack_slug: rack01
+    position: 1
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.2/32 
+            vrf: internal 
+            primary: true
+  - name: node02
+    slug: node02
+    device_role_slug: compute_node
+    device_types_slug: raspberry_pi_3
+    manufacturer_slug: raspberry_pi_foundation
+    site_slug: home
+    rack_slug: rack01
+    position: 2
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.3/32 
+            vrf: internal 
+            primary: true
+  - name: node03
+    slug: node03
+    device_role_slug: compute_node
+    device_types_slug: raspberry_pi_3
+    manufacturer_slug: raspberry_pi_foundation
+    site_slug: home
+    rack_slug: rack01
+    position: 3
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.4/32 
+            vrf: internal 
+            primary: true
+  - name: node04
+    slug: node04
+    device_role_slug: compute_node
+    device_types_slug: raspberry_pi_3
+    manufacturer_slug: raspberry_pi_foundation
+    site_slug: home
+    rack_slug: rack01
+    position: 4
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.5/32 
+            vrf: internal 
+            primary: true
+  - name: node05
+    slug: node05
+    device_role_slug: compute_node
+    device_types_slug: raspberry_pi_3
+    manufacturer_slug: raspberry_pi_foundation
+    site_slug: home
+    rack_slug: rack01
+    position: 5
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.6/32 
+            vrf: internal 
+            primary: true
