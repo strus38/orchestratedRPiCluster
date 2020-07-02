@@ -339,6 +339,12 @@ $ cd monitoring
 ```
 [Read the README file for details](monitoring/README.md)
 
+* Deploy netbox
+```
+$ cd netbox
+```
+[Read the README file for details](netbox/README.md)
+
 * Deploy logging (optional since very eager on resources)
 ```
 $ cd logging
