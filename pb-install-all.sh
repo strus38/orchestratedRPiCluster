@@ -149,7 +149,7 @@ function deploy {
     check_readiness "docker-registry"
 
     echo "....Create Docker Registry UI"
-    ./kubectl apply -f registry/dockerRegistry/docker-registry.yaml -n rack01
+    ./kubectl apply -f registry/dockerRegistry/docker-ui.yaml -n rack01
     check_readiness "registryui"
     
     echo "....Create ChartMuseum"
@@ -169,7 +169,7 @@ function deploy {
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
     helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     check_readiness "grafana"
-    helm install karma stable/karma --version 1.1.10 -f karma/values.yaml -n monitoring
+    helm install karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
     check_readiness "karma"
 
     echo "....Create tftpd"

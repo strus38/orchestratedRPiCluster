@@ -100,6 +100,8 @@ spec:
     metadata:
       labels:
         app: slurm
+      annotations:
+        prometheus.io/scrape: "true"
     spec:
       hostAliases:
       - ip: "10.0.0.9"
@@ -179,6 +181,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: slurmctld
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   selector:
     app: slurm

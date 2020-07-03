@@ -25,6 +25,8 @@ kind: Service
 metadata:
   name: nginx
   namespace: kube-system
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   ports:
   - name: http
