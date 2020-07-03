@@ -163,6 +163,7 @@ function deploy {
     check_readiness "netbox"
 
     echo "....Create monitoring"
+    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
     helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
     check_readiness "prometheus"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
