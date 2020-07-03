@@ -5,7 +5,6 @@ metadata:
     app.kubernetes.io/name: kube-state-metrics
     app.kubernetes.io/version: v1.8.0
   name: kube-state-metrics
-  namespace: kube-system
 spec:
   replicas: 1
   selector:
@@ -18,7 +17,7 @@ spec:
         app.kubernetes.io/version: v1.8.0
     spec:
       containers:
-      - image: quay.io/coreos/kube-state-metrics:v1.8.0
+      - image: quay.io/coreos/kube-state-metrics:v1.9.7
         livenessProbe:
           httpGet:
             path: /health
