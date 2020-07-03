@@ -134,12 +134,12 @@ function deploy {
     sleep 5s
 
     echo "....Create K8S dashboard"
-    ./kubectl apply -f dashboard/dashboard.yaml
+    ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
     check_readiness "dashboard"
     ./kubectl create serviceaccount dashboard-admin-sa
     ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
     sleep 5s
-    ./kubectl apply -f dashboard/ingress.yaml
+    ./kubectl apply -f dashboard/ingress.yaml -n monitoring
     sleep 5s
 
     echo "....Create DockerRegistry"
@@ -173,9 +173,9 @@ function deploy {
     check_readiness "karma"
 
     echo "....Create tftpd"
-    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml
+    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
     check_readiness "tftp"
-    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml
+    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml -n rack01
 
     echo "....Create slurmctld"
     ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01

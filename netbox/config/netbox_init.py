@@ -49,6 +49,27 @@ for manufacturer in data["manufacturers"]:
     if not nb_data: 
         nb_data = nb.dcim.manufacturers.create(name=manufacturer["name"], slug=manufacturer["slug"])
 
+# cluster types
+if "cluster_types" in data:
+    for cluster_type in data["cluster_types"]: 
+        print(f"Creating or Updating cluster_type {cluster_type['name']}")
+        nb_data = nb.virtualization.cluster_types.get(slug=cluster_type["slug"])
+        if not nb_data: 
+            nb_data = nb.virtualization.cluster_types.create(
+                name=cluster_type["name"],
+                slug=cluster_type["slug"])
+    
+    if "clusters" in data:
+        # clusters
+        for cluster in data["clusters"]: 
+            print(f"Creating or Updating cluster {cluster['name']}")
+            nb_data = nb.virtualization.clusters.get(slug=cluster["slug"])
+            if not nb_data: 
+                nb_data = nb.virtualization.clusters.create(
+                    name=cluster["name"],
+                    slug=cluster["slug"],
+                    type=nb.virtualization.cluster_types.get(slug=cluster["type_slug"]).id)
+
 # device_types
 for device_type in data["device_types"]: 
     print(f"Creating or Updating device_type {device_type['model']}")
@@ -83,12 +104,13 @@ for platform in data["platforms"]:
             manufacturer=nb.dcim.manufacturers.get(slug=platform["manufacturer_slug"]).id, 
             )
 
-# vrfs 
-for vrf in data["vrfs"]: 
-    print(f"Creating or Updating vrf {vrf['name']}")
-    nb_data = nb.ipam.vrfs.get(rd=vrf["rd"])
-    if not nb_data: 
-        nb_data = nb.ipam.vrfs.create(name=vrf["name"], rd=vrf["rd"])
+# vrfs
+if "vrfs" in data:
+    for vrf in data["vrfs"]: 
+        print(f"Creating or Updating vrf {vrf['name']}")
+        nb_data = nb.ipam.vrfs.get(rd=vrf["rd"])
+        if not nb_data: 
+            nb_data = nb.ipam.vrfs.create(name=vrf["name"], rd=vrf["rd"])
 
 # vlan-groups
 if "vlan_groups" in data:

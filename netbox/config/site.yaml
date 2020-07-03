@@ -34,6 +34,15 @@ vrfs:
   - name: internal 
     rd: internal
 
+cluster_types:
+  - name: Kubernetes
+    slug: kubernetes
+
+clusters:
+  - name: K8S cluster
+    slug: k8s_cluster
+    type_slug: kubernetes
+
 device_types:
   - name: switch
     slug: switch
