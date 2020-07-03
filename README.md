@@ -274,6 +274,19 @@ $ ./pb-install-all.sh
 Then just wait .... and enjoy.
 Launch your SLURM jobs :-)
 
+## Debug tips
+
+* when you have a worker vm which is stuck or need a reboot, here is how to take it back in the cluster
+```
+From the worker node after reboot
+1. Reset your node
+$ sudo kubeadm reset
+2. Turn off the swap
+$ sudo swapoff -a
+3. start kubeadm join (info found ni the kubeadm-init.out file generated during vagrant deployment)
+$ sudo kubeadm join YourMasterNodeIPAddress --token xxxx --discovery-token-ca-cert-hash \
+sha256...
+```
 
 ## The Hard way if you want to customize something :-)
 

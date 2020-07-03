@@ -27,6 +27,8 @@ manufacturers:
     slug: fujitsu
   - name: PowerRack
     slug: powerrack
+  - name: Artic
+    slug: artic
 
 vrfs: 
   - name: internal 
@@ -53,6 +55,16 @@ device_types:
     model: RPI4 4GB
     manufacturer_slug: raspberry_pi_foundation
     height: 1U
+  - name: Artic fan F9
+    slug: artic_fan_f9
+    model: F9
+    manufacturer_slug: artic
+    height: 3U
+  - name: Laptop
+    slug: laptop
+    model: asus
+    manufacturer_slug: asus
+    height: 1U
 
 device_roles:
   - name: switch
@@ -64,6 +76,12 @@ device_roles:
   - name: NFS storage node
     slug: nfs_storage_node
     color: ffddff
+  - name: Rack fan
+    slug: rack_fan
+    color: ffaa00
+  - name: Kubernetes Host
+    slug: kubernetes_host
+    color: 00dd00
 
 platforms:
   - name: rasbian
@@ -71,6 +89,24 @@ platforms:
     manufacturer_slug: raspberry_pi_foundation
 
 devices:
+  - name: laptop
+    slug: laptop
+    device_role_slug: kubernetes_host
+    device_types_slug: laptop
+    manufacturer_slug: asus
+    site_slug: home
+    rack_slug: rack01
+    position: 7
+    interfaces: 
+      - name: Mgmt0
+        type: 1000base-t
+        description: Managment Interface 
+        mgmt_only: true
+        enabled: true
+        ip_addresses: 
+          - address: 10.0.0.1/32 
+            vrf: internal 
+            primary: true
   - name: node01
     slug: node01
     device_role_slug: nfs_storage_node
