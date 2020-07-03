@@ -104,7 +104,7 @@ function deploy {
         if [ $? = 0 ] ; then
             break
         else
-        echo "waiting for the keypress"
+        echo "Please customize CoreDNS based on coredns/README.md file and press the space key..."
         fi
     done
 
@@ -185,7 +185,7 @@ function deploy {
     ./kubectl create secret generic clairsecret --from-file=clair-cve/config.yaml -n rack01                                           
     ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01
     check_readiness "clair"
-                                                         
+
     echo "Done"
 }
 

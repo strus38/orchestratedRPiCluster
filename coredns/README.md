@@ -6,11 +6,17 @@ Provides the DNS for RPi nodes and for Services
 ```
 $ kubectl apply -f .
 ```
+
+## Customize the default deployment
+
+* Update the coredns ConfigMap, by adding:
+```
 auto {
     directory /etc/coredns/zones
 }
+```
 
-Edit the coredns config to add:
+* Edit the coredns deployment file to add:
 ...
     volumes:
         ...
@@ -18,10 +24,10 @@ Edit the coredns config to add:
           configMap:
             name: coredns-zones
 ...
-        volumeMounts:
-        ...
-        - mountPath: "/etc/coredns/zones"
-            name: coredns-zone-volume
+    volumeMounts:
+    ...
+    - mountPath: "/etc/coredns/zones"
+        name: coredns-zone-volume
 
 ## Validate
 From a worker node:
