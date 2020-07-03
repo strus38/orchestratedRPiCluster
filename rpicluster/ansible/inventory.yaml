@@ -1,0 +1,8 @@
+# need to export this env var: NETBOX_API_KEY
+---
+plugin: netbox
+api_endpoint: http://netbox.home.lab
+validate_certs: False
+config_context: False
+group_by:
+  - device_roles
