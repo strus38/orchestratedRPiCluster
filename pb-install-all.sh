@@ -165,7 +165,7 @@ function deploy {
     echo "....Create monitoring"
     helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
     check_readiness "prometheus"
-    ./kubectl apply -f monitoring/kubestatemetrics/. -n monitoring
+    ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
     helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     check_readiness "grafana"
