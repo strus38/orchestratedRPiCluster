@@ -186,6 +186,9 @@ function deploy {
     ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01
     check_readiness "clair"
 
+    echo ".... Populate Netbox with default values"
+    cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py
+
     echo "Done"
 }
 

@@ -2,4 +2,4 @@
 NETBOX_URL = "https://netbox.home.lab"
 
 # Provide your API KEY
-NETBOX_TOKEN = "1b454825a2c680b5f614dac5723629f14fa83b04"
+NETBOX_TOKEN = "0123456789abcdef0123456789abcdef01234567"
