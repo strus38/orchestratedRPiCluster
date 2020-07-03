@@ -55,7 +55,7 @@ The RPis are used as compute nodes.
 
 ## High-level design
 
-![Orchestrated RPis cluster design](imgs/OrchestratedRPis.PNG)
+![Orchestrated RPis cluster design](imgs/OrchestratedRPis.png)
 
 ## Hardware
 - A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits)
