@@ -1,7 +1,9 @@
 # Orchestrated RPi cluster
 
 ## Objective
-Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
+Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop.
+Basically, the laptop is used to host the K8S cluster and all services required in an HPC cluster.
+The RPis are used as compute nodes.
 
 * RPi Cluster View (COVID19 - built with some stuff I had at that time :-) )
 
@@ -51,7 +53,9 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 
 ![K8S dashboard services](imgs/dashSvc.PNG)
 
-**Status: work in progress**
+## High-level design
+
+![Orchestrated RPis cluster design](imgs/OrchestratedRPis.PNG)
 
 ## Hardware
 - A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits)
@@ -63,7 +67,7 @@ Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop
 - 1 switch
 - Some RJ45 cables
 - 1 multi-USB power station
-- Optionally 1 External DD or a NAS to have some NFS storage capacity (without, the storage node SD card will be enough)
+- 1 External DD to have some NFS storage capacity - used as static and dynamic NFS provisioner for the Kubernetes cluster
 
 ## Configuration of your laptop network
 
@@ -90,7 +94,7 @@ $ vagrant plugin install vagrant-scp
 $ vagrant plugin install vagrant-winnfsd
 ```
 
-7) Update the docker registry of the worker nodes (if necessary, the default setup is has shown below):
+7) Default docker registry setup on worker nodes (can be customized):
 ```
 $ cat /etc/docker/daemon.json
 {
@@ -114,7 +118,7 @@ for i in $(docker images | grep -v home.lab | tail -n +2 | awk '{print $1":"$2}'
 done
 ```
 
-## Preparing the RPi cluster
+## Preparing the RPi cluster (will be automated later on)
 - build a stand or buy a RPis cluster case
 - flash all the RPi SD with the latest Raspbian version
 - connect all power/switch ports
@@ -184,25 +188,22 @@ $ exportfs -ra
     * ... more to come
 
 ## Services IPs
-****** BEING reworked to go behind a nginx-ingress *******
-By default DHCP is set between: 192.168.1.150-199
-(Not yet implemented like this)
-Fixed Services endpoints for admins:
-* NFS Server: 10.0.0.20
-* DNS Server: 10.0.0.21
-* DHCP Server: 10.0.0.22
-* TFTP: 10.0.0.23
-* SFTP: 10.0.0.24
+Fixed Cluster Services endpoints for admins:
+* NFS Server: 10.0.0.2
+* DNS: 10.0.0.20
+* Nginx ingress (entry point for all UI): 10.0.0.10
+* SLURM controller for rack01: 10.0.0.9
 
-Fixed Services endpoints for end users:
+Fixed UI Services endpoints for admins:
+* netbox: https://netbox.home.lab
+* K8S dashboard: https://kubernetes.home.lab
 * docker registry: https://registry.home.lab
 * docker registryUI: https://registryui.home.lab
 * ChartMuseum: https://helm.home.lab
-* dashboard: https://kubernetes.home.lab
 * grafana: https://grafana.home.lab
 * prometheus-server: https://prometheus.home.lab
-* prometheus-pushgateway: <internal>
-* Kibana: https://kibana.home.lab
+* Kibana: https://kibana.home.lab (optional)
+* Elasticsearch: https://elastic.home.lab (optional)
 
 **********************************************************
 
