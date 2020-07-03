@@ -50,7 +50,7 @@ cat > /root/nbagent.yaml <<EOF
 # Netbox configuration
 netbox:
   url: 'https://netbox.home.lab'
-  token: xxx
+  token: 0123456789abcdef0123456789abcdef01234567
 # Network configuration
 network:
   # Regex to ignore interfaces
