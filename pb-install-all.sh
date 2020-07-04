@@ -133,6 +133,10 @@ function deploy {
     ./kubectl apply -f persistentVolume/persistentVolume.yaml
     sleep 5s
 
+    echo "....Create keycloack"
+    ./kubectl apply -f keycloack/. -n kube-system
+    check_readiness "keycloack"
+
     echo "....Create K8S dashboard"
     ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
     check_readiness "dashboard"

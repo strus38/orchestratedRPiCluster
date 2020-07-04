@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: keycloak
+  name: keycloak
+  namespace: kube-system
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/issuer: selfsigned
+spec:
+  tls:
+  - hosts:
+    - keycloak.home.lab
+    secretName: keycloak-selfsigned-cert-tls
+  rules:
+  - host: keycloak.home.lab
+    http:
+      paths:
+      - backend:
+          serviceName: keycloak-dashboard
+          servicePort: 8080
