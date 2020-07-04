@@ -66,39 +66,39 @@ function deploy {
         fi
     fi
     echo "### Testing binaries"
-    ./kubectl version
-    helm version
+    ./kubectl version || exit
+    helm version || exit
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
     echo "###  Updating Helm repos"
-    helm repo update
+    helm repo update || exit
     echo "Environment READY"
     echo "-----"
 
     if [ ! -f "/usr/local/bin/checkov" ]; then 
         echo "### Issuing security report"
-        checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
-        junit2html checkov.results.xml > checkov.html
+        checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml || exit
+        junit2html checkov.results.xml > checkov.html || exit
     fi
 
     echo "### Starting configuration of all services..."
-    ./kubectl get nodes
+    ./kubectl get nodes || exit
     echo "....Create namespaces"
-    ./kubectl apply -f createNamespaces.yaml
+    ./kubectl apply -f createNamespaces.yaml || exit
     sleep 5s
 
     echo "Wait for all calico nodes to be ready"
     check_readiness "calico"
 
     echo "....Create metallb"
-    helm install metallb stable/metallb -n kube-system
+    helm install metallb stable/metallb -n kube-system || exit
     check_readiness "metallb"
-    ./kubectl apply -f metallb/metallb-config.yml
+    ./kubectl apply -f metallb/metallb-config.yml || exit
     sleep 5s
 
     echo "....Update coredns, please do it manually"
-    ./kubectl apply -f coredns/lab-configmap.yaml
-    echo "Press any key to continue"
+    ./kubectl apply -f coredns/lab-configmap.yaml || exit
+    echo "Waiting custom coredns configuration to be applied"
     while [ true ] ; do
         read -t 3 -n 1
         if [ $? = 0 ] ; then
@@ -117,82 +117,82 @@ function deploy {
     #check_readiness "chrony"
 
     echo "....Create certificates manager"
-    ./kubectl apply -f certmgr/cert-manager.crds.yaml
+    ./kubectl apply -f certmgr/cert-manager.crds.yaml || exit
     sleep 5s
-    helm install cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0
+    helm install cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0 || exit
     check_readiness "cert-manager"
-    ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
-    ./kubectl apply -f certmgr/issuer.yaml -n rack01
+    ./kubectl apply -f certmgr/issuer.yaml -n cert-manager || exit
+    ./kubectl apply -f certmgr/issuer.yaml -n rack01 || exit
     sleep 5s
 
     echo "....Create nginx-ingress"
-    helm install nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
+    helm install nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress || exit
     check_readiness "nginx-ingress"
 
     echo "....Create Persistent Volumes"
-    ./kubectl apply -f persistentVolume/persistentVolume.yaml
+    ./kubectl apply -f persistentVolume/persistentVolume.yaml || exit
     sleep 5s
 
     echo "....Create keycloack"
-    ./kubectl apply -f keycloack/. -n kube-system
+    ./kubectl apply -f keycloack/. -n kube-system || exit
     check_readiness "keycloack"
 
     echo "....Create K8S dashboard"
-    ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
+    ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard || exit
     check_readiness "dashboard"
-    ./kubectl create serviceaccount dashboard-admin-sa
-    ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+    ./kubectl create serviceaccount dashboard-admin-sa || exit
+    ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa || exit
     sleep 5s
-    ./kubectl apply -f dashboard/ingress.yaml -n monitoring
+    ./kubectl apply -f dashboard/ingress.yaml -n monitoring || exit
     sleep 5s
 
     echo "....Create DockerRegistry"
-    ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
+    ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01 || exit
     sleep 5s
-    helm install docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
+    helm install docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01 || exit
     check_readiness "docker-registry"
 
     echo "....Create Docker Registry UI"
-    ./kubectl apply -f registry/dockerRegistry/docker-ui.yaml -n rack01
+    ./kubectl apply -f registry/dockerRegistry/docker-ui.yaml -n rack01 || exit
     check_readiness "registryui"
     
     echo "....Create ChartMuseum"
-    ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01
+    ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01 || exit
     sleep 5s
-    helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
+    helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01 || exit
     check_readiness "chartmuseum"
 
     echo "....Create netbox"
-    ./kubectl apply -f netbox/. -n kube-system
+    ./kubectl apply -f netbox/. -n kube-system || exit
     check_readiness "netbox"
 
     echo "....Create monitoring"
-    helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
-    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
+    helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring || exit
+    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring || exit
     check_readiness "prometheus"
-    ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
-    ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-    helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system || exit
+    ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring || exit
+    helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring || exit
     check_readiness "grafana"
-    helm install karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
+    helm install karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring || exit
     check_readiness "karma"
 
     echo "....Create tftpd"
-    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
+    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01 || exit
     check_readiness "tftp"
-    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml -n rack01
+    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml -n rack01 || exit
 
     echo "....Create slurmctld"
-    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
+    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01 || exit
     check_readiness "slurm"
 
     echo "... Create Clair-Klar"
-    ./kubectl create secret generic clairsecret --from-file=clair-cve/config.yaml -n rack01                                           
-    ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01
+    ./kubectl create secret generic clairsecret --from-file=clair-cve/config.yaml -n rack01 || exit                                        
+    ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01 || exit
     check_readiness "clair"
 
     echo ".... Populate Netbox with default values"
-    cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py
+    cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py || exit
 
     echo "Done"
 }
