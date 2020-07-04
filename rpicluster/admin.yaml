@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ansible
+spec:
+  selector:
+    matchLabels:
+      app: ansible
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ansible
+      annotations:
+        prometheus.io/scrape: "true"
+    spec:
+      hostAliases:
+      - ip: "10.0.0.9"
+        hostnames:
+        - "node09"
+        - "node09.home.lab"
+      - ip: "10.0.0.3"
+        hostnames:
+        - "node02"
+        - "node02.home.lab"
+      - ip: "10.0.0.4"
+        hostnames:
+        - "node03"
+        - "node03.home.lab"
+      - ip: "10.0.0.5"
+        hostnames:
+        - "node04"
+        - "node04.home.lab"
+      - ip: "10.0.0.6"
+        hostnames:
+        - "node05"
+        - "node05.home.lab"
+      containers:
+      - name: ansible
+        image: geerlingguy/docker-ubuntu1804-ansible:latest
+        imagePullPolicy: IfNotPresent
+        stdin: true
+        tty: true
+        resources:
+          limits:
+            cpu: 200m
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+        volumeMounts:
+          - name: playbooks
+            mountPath: /root/playbooks
+      restartPolicy: Always
+      volumes:
+        - name: playbooks
+          hostPath:
+            path: ./rpicluster/ansible

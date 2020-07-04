@@ -70,6 +70,7 @@ function deploy {
             helm repo add  akomljen-charts https://raw.githubusercontent.com/komljen/helm-charts/master/charts/
             helm repo add  elastic https://helm.elastic.co
             helm repo add  jetstack https://charts.jetstack.io
+            helm repo add  codecentric https://codecentric.github.io/helm-charts
         fi
     fi
     echo "### Testing binaries"
@@ -141,7 +142,8 @@ function deploy {
     sleep 5s
 
     echo "....Create keycloack"
-    ./kubectl apply -f keycloack/. -n kube-system || exit
+    ./kubectl create secret generic realm-secret --from-file=keycloak/realm.json -n kube-system || exit
+    helm install keycloak codecentric/keycloak --version 8.2.2 -f keycloak/kcvalues.yaml -n kube-system || exit
     check_readiness "keycloack"
 
     echo "....Create K8S dashboard"
@@ -200,6 +202,9 @@ function deploy {
 
     echo ".... Populate Netbox with default values"
     cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py || exit
+
+    echo ".... Create admin container to run ansible playbooks"
+    ./kubectl -f apply rpicluster/ansible.yaml
 
     echo "Done"
 }
