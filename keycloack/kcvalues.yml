@@ -14,10 +14,10 @@ init:
 clusterDomain: cluster.local
 
 ## Optionally override the fully qualified name
-fullnameOverride: keycloak
+fullnameOverride: ""
 
 ## Optionally override the name
-nameOverride: keycloak
+nameOverride: ""
 
 keycloak:
   replicas: 1
@@ -56,7 +56,9 @@ keycloak:
     name:
 
   securityContext:
-    fsGroup: 1000
+    runAsUser: 1000
+    fsGroup: 0
+    runAsNonRoot: true
 
   containerSecurityContext:
     runAsUser: 1000
