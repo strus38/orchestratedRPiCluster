@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    cert-manager.io/issuer: selfsigned
+spec:
+  tls:
+  - hosts:
+    - kubernetes.home.lab
+    secretName: selfsigned-cert-tls
+  rules:
+  - host: kubernetes.home.lab
+    http:
+      paths:
+      - backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 443
