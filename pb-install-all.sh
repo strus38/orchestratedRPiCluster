@@ -28,15 +28,22 @@ function remove {
 function reset {
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
-    helm delete $(helm list --short -n monitoring) -n monitoring
-    helm delete $(helm list --short -n cert-manager) -n cert-manager
-    helm delete $(helm list --short -n nginx-ingress) -n nginx-ingress
-    helm delete $(helm list --short -n rack01) -n rack01
-    ./kubectl delete ns kubernetes-dashboard
-    ./kubectl delete ns rack01
-    ./kubectl delete ns cert-manager
-    ./kubectl delete ns monitoring
-    ./kubectl delete ns nginx-ingress
+    helm delete nfs-client -n kube-system
+    helm delete cert-manager -n cert-manager || exit
+    helm delete nginx-ingress -n nginx-ingress || exit
+    helm delete docker-registry -n rack01 || exit
+    helm delete chartmuseum -n rack01 || exit
+    helm delete prometheus -n monitoring || exit
+    helm delete grafana -n monitoring || exit
+    helm delete karma -n monitoring || exit
+    ./kubectl delete -f keycloack/. -n kube-system --force || exit
+    ./kubectl delete -f netbox/. -n kube-system --force || exit
+    ./kubectl delete -f monitoring/kubestatemetrics/. -n kube-system --force || exit
+    ./kubectl delete ns kubernetes-dashboard --force || exit
+    ./kubectl delete ns rack01 --force || exit
+    ./kubectl delete ns cert-manager --force || exit
+    ./kubectl delete ns monitoring --force || exit
+    ./kubectl delete ns nginx-ingress --force || exit
 }
 
 function deploy {
