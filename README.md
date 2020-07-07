@@ -164,7 +164,7 @@ $ mkfs.ext4 /dev/sdaX
 $ mkdir /mnt/usbX
 $ chown nobody:nogroup -R /mnt/usbX
 $ chmod 777 -R /mnt/usbX
-$ vi /etc/exportfs
+$ vi /etc/exports
 ** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
 $ exportfs -ra
 ```

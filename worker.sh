@@ -23,4 +23,5 @@ service kubelet restart
 
 # update the DNS resolution
 sed -i 's/^#DNS=/DNS=10.96.0.10/' /etc/systemd/resolved.conf
+sed -i 's/^#FallbackDNS=/FallbackDNS=10.0.0.20/' /etc/systemd/resolved.conf
 service systemd-resolved restart

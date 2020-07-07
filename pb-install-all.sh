@@ -106,7 +106,7 @@ function runcmds {
     sleep 5s
 
     echo "....Update coredns, please do it manually"
-    ./kubectl apply -f coredns/lab-configmap.yaml
+    ./kubectl apply -f coredns/lab-configmap.yaml  -n kube-system
     echo "Waiting custom coredns configuration to be applied"
     while [ true ] ; do
         read -t 3 -n 1
@@ -116,6 +116,7 @@ function runcmds {
         echo "Please customize CoreDNS based on coredns/README.md file and press the space key..."
         fi
     done
+    ./kubectl apply -f coredns/lab-coredns.yaml -n kube-system
 
     echo "... NFS client"
     helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
@@ -144,7 +145,7 @@ function runcmds {
 
     echo "....Create keycloack"
     # Install Gatekeeper apps
-    ./kubectl create secret generic gatekeeper --from-file=./keycloack/configs/grafana-gk.yaml -n monitoring
+    ./kubectl create secret generic gatekeeper-secrets --from-file=./keycloack/configs/grafana-gk.yaml -n monitoring
     ./kubectl create secret generic gatekeeper --from-file=./keycloack/configs/grafana-gk.yaml -n kube-system
     ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
