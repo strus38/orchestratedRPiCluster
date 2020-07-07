@@ -46,7 +46,8 @@ function reset {
     ./kubectl delete ns nginx-ingress --force
 }
 
-function deploy {
+function runcmds {
+    KEYV=$1
     echo "-----"
     echo "### Checking Environment"
     if [ ! -f "kubectl" ]; then 
@@ -99,7 +100,7 @@ function deploy {
     check_readiness "calico"
 
     echo "....Create metallb"
-    helm install metallb stable/metallb -n kube-system
+    helm $KEYV metallb stable/metallb -n kube-system
     check_readiness "metallb"
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
@@ -117,7 +118,7 @@ function deploy {
     done
 
     echo "... NFS client"
-    helm install nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb --set storageClass.name=nfs-dyn
+    helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
     check_readiness "nfs-client"
 
     #echo " ....Create chronyd"
@@ -127,14 +128,14 @@ function deploy {
     echo "....Create certificates manager"
     ./kubectl apply -f certmgr/cert-manager.crds.yaml
     sleep 5s
-    helm install cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0
+    helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0
     check_readiness "cert-manager"
     ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
     ./kubectl apply -f certmgr/issuer.yaml -n rack01
     sleep 5s
 
     echo "....Create nginx-ingress"
-    helm install nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
+    helm $KEYV nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
     check_readiness "nginx-ingress"
 
     echo "....Create Persistent Volumes"
@@ -142,8 +143,11 @@ function deploy {
     sleep 5s
 
     echo "....Create keycloack"
-    ./kubectl create secret generic realm-secret --from-file=keycloack/realm.json -n kube-system
-    helm install keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
+    # Install Gatekeeper apps
+    ./kubectl create secret generic gatekeeper --from-file=./keycloack/configs/grafana-gk.yaml -n monitoring
+    ./kubectl create secret generic gatekeeper --from-file=./keycloack/configs/grafana-gk.yaml -n kube-system
+    ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
+    helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloack"
 
     echo "....Create K8S dashboard"
@@ -152,13 +156,13 @@ function deploy {
     ./kubectl create serviceaccount dashboard-admin-sa
     ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
     sleep 5s
-    ./kubectl apply -f dashboard/ingress.yaml -n monitoring
+    ./kubectl apply -f dashboard/ingress.yaml -n kubernetes-dashboard
     sleep 5s
 
     echo "....Create DockerRegistry"
     ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
     sleep 5s
-    helm install docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
+    helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
 
     echo "....Create Docker Registry UI"
@@ -168,7 +172,7 @@ function deploy {
     echo "....Create ChartMuseum"
     ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01
     sleep 5s
-    helm install chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
+    helm $KEYV chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
     check_readiness "chartmuseum"
 
     echo "....Create netbox"
@@ -176,14 +180,14 @@ function deploy {
     check_readiness "netbox"
 
     echo "....Create monitoring"
-    helm install prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
     ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
     check_readiness "prometheus"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-    helm install grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     check_readiness "grafana"
-    helm install karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
+    helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
     check_readiness "karma"
 
     echo "....Create tftpd"
@@ -207,6 +211,14 @@ function deploy {
     cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py  
 
     echo "Done"
+}
+
+function deploy {
+    runcmds "install"
+}
+
+function upgrade {
+    runcmds "upgrade"
 }
 
 function access {

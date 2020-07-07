@@ -14,10 +14,10 @@ init:
 clusterDomain: cluster.local
 
 ## Optionally override the fully qualified name
-# fullnameOverride: keycloak
+fullnameOverride: ""
 
 ## Optionally override the name
-# nameOverride: keycloak
+nameOverride: ""
 
 keycloak:
   replicas: 1
@@ -56,7 +56,9 @@ keycloak:
     name:
 
   securityContext:
-    fsGroup: 1000
+    runAsUser: 1000
+    fsGroup: 0
+    runAsNonRoot: true
 
   containerSecurityContext:
     runAsUser: 1000
@@ -81,7 +83,7 @@ keycloak:
   terminationGracePeriodSeconds: 60
 
   ## Additional arguments to start command e.g. -Dkeycloak.import= to load a realm
-  extraArgs: ""
+  extraArgs: -Dkeycloak.import=/realm/realm.json
 
   ## Username for the initial Keycloak admin user
   username: keycloak
@@ -171,13 +173,13 @@ keycloak:
     initialDelaySeconds: 30
     timeoutSeconds: 1
 
-  resources: {}
-    # limits:
-    #   cpu: "100m"
-    #   memory: "1024Mi"
-    # requests:
-    #   cpu: "100m"
-    #   memory: "1024Mi"
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "1024Mi"
+    requests:
+      cpu: "100m"
+      memory: "1024Mi"
 
   ## WildFly CLI configurations. They all end up in the file 'keycloak.cli' configured in the configmap which is
   ## executed on server startup.
@@ -206,7 +208,6 @@ keycloak:
     #   echo 'Hello from my custom startup script!'
 
   ## Add additional volumes and mounts, e. g. for custom themes
-   ## Add additional volumes and mounts, e. g. for custom themes
   extraVolumes: |
     - name: realm-secret
       secret:
@@ -309,7 +310,7 @@ keycloak:
     deployPostgres: false
 
     # The database vendor. Can be either "postgres", "mysql", "mariadb", or "h2"
-    dbVendor: h2
+    dbVendor: postgres
 
     ## The following values only apply if "deployPostgres" is set to "false"
     dbName: keycloak
@@ -354,7 +355,7 @@ postgresql:
     enabled: false
 
 test:
-  enabled: true
+  enabled: false
   image:
     repository: unguiculus/docker-python3-phantomjs-selenium
     tag: v1

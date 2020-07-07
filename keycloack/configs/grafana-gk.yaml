@@ -1,0 +1,18 @@
+client-id: grafana_client
+client-secret: 59565e00-9416-40d7-b032-d74e7d17ab7d
+discovery-url: https://keycloack.home.lab/auth/realms/Master
+skip-upstream-tls-verify: false
+skip-openid-provider-tls-verify: true
+encryption-key: b8b5931f8385d300e4f3284dcc34345c
+listen: 0.0.0.0:443
+secure-cookie: false
+enable-logging: true
+enable-json-logging: true
+enable-default-deny: true
+enable-refresh-tokens: true
+enable-session-cookies: true
+debug: true
+ingress.enabled: true
+resources:
+  - uri: /favicon
+    white-listed: true

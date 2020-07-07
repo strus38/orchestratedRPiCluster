@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfsshare-usb2
+  name: nfsshare-usb1
 spec:
   storageClassName: nfsusb
   capacity:
-    storage: 20Gi # This size is used to match a volume to a tenents claim
+    storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
@@ -18,11 +18,11 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfsshare-usb3
+  name: nfsshare-usb2
 spec:
   storageClassName: nfsusb
   capacity:
-    storage: 20Gi # This size is used to match a volume to a tenents claim
+    storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
@@ -34,11 +34,11 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfsshare-usb4
+  name: nfsshare-usb3
 spec:
   storageClassName: nfsusb
   capacity:
-    storage: 20Gi # This size is used to match a volume to a tenents claim
+    storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
   persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
