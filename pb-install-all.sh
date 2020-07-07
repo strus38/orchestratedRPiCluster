@@ -266,6 +266,11 @@ do
         reset
         exit 0
         ;;
+    -u|--upgrade)
+        echo "Upgrading environment"
+        upgrade
+        exit 0
+        ;;
     *)  # unknown option
         echo "Arguments missing"
         echo "./pb-install-all.sh [-a|-c|-d|-r|-i]"
