@@ -110,16 +110,16 @@ spec:
             configMapKeyRef:
               key: SUPERUSER_PASSWORD
               name: netbox-netbox-env
-        # - name: REMOTE_AUTH_ENABLED
-        #   value: true
-        # - name: REMOTE_AUTH_HEADER
-        #   value: ??
-        # - name: REMOTE_AUTH_AUTO_CREATE_USER
-        #   value: true
-        # - name: REMOTE_AUTH_DEFAULT_GROUPS
-        #   value: ""
-        # - name: REMOTE_AUTH_DEFAULT_PERMISSIONS
-        #   value: ""
+        - name: REMOTE_AUTH_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: REMOTE_AUTH_ENABLED
+              name: netbox-netbox-env
+        - name: REMOTE_AUTH_AUTO_CREATE_USER
+          valueFrom:
+            configMapKeyRef:
+              key: REMOTE_AUTH_AUTO_CREATE_USER
+              name: netbox-netbox-env
         volumeMounts:
         - name: netbox-nginx-config
           mountPath: /etc/netbox-nginx/ 
@@ -190,6 +190,8 @@ data:
   SUPERUSER_EMAIL: admin@example.com
   SUPERUSER_NAME: admin
   SUPERUSER_PASSWORD: admin
+  REMOTE_AUTH_ENABLED: "true"
+  REMOTE_AUTH_AUTO_CREATE_USER: "true"
 
 ---
 apiVersion: v1

@@ -23,9 +23,9 @@ spec:
           name: service
         args:
         - --config=/etc/secrets/gatekeeper.yaml
-        # - --redirection-url=https://netbox.home.lab
-        # - --upstream-url=http://127.0.0.1:80
-        # - --resources=uri=/*|roles=Admin
+        - --redirection-url=https://netbox.home.lab
+        - --upstream-url=http://127.0.0.1:80
+        - --resources=uri=/*|roles=Admin
         volumeMounts:
           - name: gatekeeper-secrets
             mountPath: /etc/secrets
