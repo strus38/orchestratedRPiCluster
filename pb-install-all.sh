@@ -145,8 +145,6 @@ function runcmds {
 
     echo "....Create keycloack"
     # Install Gatekeeper apps
-    ./kubectl create secret generic gatekeeper-secrets --from-file=./keycloack/configs/grafana-gk.yaml -n monitoring
-    ./kubectl create secret generic gatekeeper --from-file=./keycloack/configs/grafana-gk.yaml -n kube-system
     ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloack"
@@ -177,6 +175,7 @@ function runcmds {
     check_readiness "chartmuseum"
 
     echo "....Create netbox"
+    ./kubectl create secret generic gatekeeper --from-file=./netbox/kc/gatekeeper.yaml -n kube-system
     ./kubectl apply -f netbox/. -n kube-system
     check_readiness "netbox"
 
