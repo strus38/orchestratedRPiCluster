@@ -37,10 +37,6 @@ The RPis are used as compute nodes.
 
 ![Logging with Kibana view](imgs/kibanaOverview.PNG)
 
-* Private registry UI
-
-![Private Registry UI](imgs/registryUI.PNG)
-
 * Prometheus Targets
 
 ![Prometheus Targets](imgs/prometheusTargets.PNG)
@@ -56,6 +52,17 @@ The RPis are used as compute nodes.
 ## High-level design
 
 ![Orchestrated RPis cluster design](imgs/OrchestratedRPis.png)
+
+## Compatibility
+
+| Branch / Kubernetes Version         |       1.17.X       |       1.18.X       | 
+| ----------------------------------- | :----------------: | :----------------: | 
+| Master                              | :x:                | :white_check_mark: |
+
+
+- :white_check_mark: Compatible
+- :warning: Has issues
+- :x: Incompatible
 
 ## Hardware
 - A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits)

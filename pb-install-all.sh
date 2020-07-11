@@ -106,9 +106,9 @@ function runcmds {
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
 
-    echo "....Update coredns, please do it manually"
+    echo "....Update CoreDNS, please do it manually (read README.md file)"
     ./kubectl apply -f coredns/lab-configmap.yaml  -n kube-system
-    echo "Waiting custom coredns configuration to be applied"
+    echo "Waiting coredns configuration to be applied"
     while [ true ] ; do
         read -t 3 -n 1
         if [ $? = 0 ] ; then
@@ -118,6 +118,7 @@ function runcmds {
         fi
     done
     ./kubectl apply -f coredns/lab-coredns.yaml -n kube-system
+    sleep 5s
 
     echo "... NFS client"
     helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
@@ -145,7 +146,6 @@ function runcmds {
     sleep 5s
 
     echo "....Create keycloack"
-    # Install Gatekeeper apps
     ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloack"
@@ -164,19 +164,13 @@ function runcmds {
     ./kubectl apply -f dashboard/ingress.yaml -n kubernetes-dashboard
     sleep 5s
 
-    echo "....Create Registries"
+    echo "....Create Registries: helm/docker and tools"
     helm $KEYV harbor harbor/harbor -f registry/harbor/values.yaml -n kube-system
     check_readiness "harbor"
     ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
     sleep 5s
     helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
-    
-    echo "....Create ChartMuseum"
-    ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01
-    sleep 5s
-    helm $KEYV chartmuseum -f ./registry/chartMuseum/cmvalues.yaml stable/chartmuseum -n rack01
-    check_readiness "chartmuseum"
 
     echo "....Create netbox"
     ./kubectl create secret generic gatekeeper --from-file=./netbox/kc/gatekeeper.yaml -n kube-system
@@ -202,11 +196,6 @@ function runcmds {
     echo "....Create slurmctld"
     ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
     check_readiness "slurm"
-
-    echo "... Create Clair-Klar"
-    ./kubectl create secret generic clairsecret --from-file=clair-cve/config.yaml -n rack01                                        
-    ./kubectl apply -f ./clair-cve/clair-cve.yaml -n rack01
-    check_readiness "clair"
 
     echo ".... Create admin container to run ansible playbooks"
     ./kubectl apply -f rpicluster/admin.yaml
