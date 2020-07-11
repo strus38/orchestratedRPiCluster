@@ -72,6 +72,7 @@ function runcmds {
             helm repo add  elastic https://helm.elastic.co
             helm repo add  jetstack https://charts.jetstack.io
             helm repo add  codecentric https://codecentric.github.io/helm-charts
+            helm repo add  harbor https://helm.goharbor.io
         fi
     fi
     echo "### Testing binaries"
@@ -149,6 +150,11 @@ function runcmds {
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloack"
 
+    echo "....Create main apps UI"
+    ./kubectl create secret generic gatekeeper --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
+    ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
+    check_readiness "harbor"
+
     echo "....Create K8S dashboard"
     ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
     check_readiness "dashboard"
@@ -158,15 +164,13 @@ function runcmds {
     ./kubectl apply -f dashboard/ingress.yaml -n kubernetes-dashboard
     sleep 5s
 
-    echo "....Create DockerRegistry"
+    echo "....Create Registries"
+    helm $KEYV harbor harbor/harbor -f registry/harbor/values.yaml -n kube-system
+    check_readiness "harbor"
     ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
     sleep 5s
     helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
-
-    echo "....Create Docker Registry UI"
-    ./kubectl apply -f registry/dockerRegistry/docker-ui.yaml -n rack01
-    check_readiness "registryui"
     
     echo "....Create ChartMuseum"
     ./kubectl apply -f registry/chartMuseum/pvc-claim.yaml -n rack01

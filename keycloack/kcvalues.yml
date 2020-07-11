@@ -266,6 +266,7 @@ keycloak:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: "selfsigned"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      forecastle.stakater.com/expose: "true"
 
     labels: {}
     # key: value

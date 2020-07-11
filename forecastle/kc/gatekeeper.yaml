@@ -13,7 +13,7 @@ enable-refresh-tokens: true
 enable-session-cookies: true
 debug: true
 ingress.enabled: true
-redirection_url: http://nginx.kube-system.svc.cluster.local
+redirection_url: http://forecastle.kube-system.svc.cluster.local
 upstream_url: http://127.0.0.1:80/
 resources:
   - uri: /*
