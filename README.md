@@ -64,19 +64,23 @@ The RPis are used as compute nodes.
 - :warning: Has issues
 - :x: Incompatible
 
-## Hardware
-- A laptop/desktop to run the K8S cluster (CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits)
-    * Linux or Windows 10 PRO (not tested with family, but should work)
-    * Vagrant
-    * Virtualbox
+## System description
 
-- As many as RPIs you have from RPi2 to RPi4
+- RPis[01]:
+  * Specs: RPi 3 or 4, with attached USB disk
+  * role: storage node with NFS server
+  * role: ansible deployment node (not yet implemented)
+- RPis[02-0x]: compute nodes
+- Laptop: Vagrant-based K8S server providing the management stack of this tiny HPC-RPi cluster. 
+  * Specs: CPU: VT-x capable CPU, RAM: min: 8GB memory (without the EFK stack), desired: 16GB, max: no limits
+  * Windows 10 PRO - not tested with Linux, but should work
+  * Vagrant
+  * Virtualbox
 - 1 switch
 - Some RJ45 cables
 - 1 multi-USB power station
-- 1 External DD to have some NFS storage capacity - used as static and dynamic NFS provisioner for the Kubernetes cluster
 
-## Configuration of your laptop network
+## Network and Laptop configuration
 
 The aim is to have the laptop connected using the Wifi to the external world, and use the Laptop Eth0 interface to connect the RPi Cluster. This needs some preparation:
 1) If your laptop does not have an Ethernet port (yeah, many now just have a Wifi adapter), you can buy a USB-C 10 adapters with an ethernet port
@@ -117,7 +121,7 @@ $ cat /etc/docker/daemon.json
 $  systemctl daemon-reload && systemctl restart docker
 ```
 
-Note: easily populate your local docker repositories with all running images of your K8S cluster:
+Note: easily populate your local docker repositories with all running images of your K8S cluster. This is used when the cluster is up and running to populate the Harbor registry with all running docker images.
 ```
 for i in $(docker images | grep -v home.lab | tail -n +2 | awk '{print $1":"$2}'); do 
   docker tag $i registry.home.lab/$i
@@ -125,12 +129,14 @@ for i in $(docker images | grep -v home.lab | tail -n +2 | awk '{print $1":"$2}'
 done
 ```
 
-## Preparing the RPi cluster (will be automated later on)
+## Raspeberry PIs configuration
+
 - build a stand or buy a RPis cluster case
 - flash all the RPi SD with the latest Raspbian version
 - connect all power/switch ports
 - power up
-- Update all /etc/dhcpcd.conf or /etc/network/interfaces (depending on the RPi version) to fix the IPs of the nodes:
+- Those steps will be automated later on...
+  - Update all /etc/dhcpcd.conf or /etc/network/interfaces (depending on the RPi version) to fix the IPs of the nodes:
     * node01: 10.0.0.2
     * node02: 10.0.0.3
     * node03: 10.0.0.4
@@ -146,86 +152,46 @@ done
     gateway 10.0.0.1
     dns-nameservers 10.0.0.20 8.8.8.8
     ```
-- The node01.home.lab is acting as a special node:
-  * apt-cacher-ng
-```
-apt-get install apt-cacher-ng
-```
-On the other nodes, just add a file: /etc/apt/apt.conf.d/02proxy
-and add: ```Acquire::http::proxy "http://node01.home.lab:3142";```
+  - The node01.home.lab is acting as a special node:
+    * apt-cacher-ng
+    ```
+    apt-get install apt-cacher-ng
+    ```
+    On the other nodes, just add a file: /etc/apt/apt.conf.d/02proxy
+    and add: ```Acquire::http::proxy "http://node01.home.lab:3142";```
 
-  * a NFS server, as such it has a USB HDD linked to it.
-In order to provide NFS shares to the K8S cluster, it is good to split it into partitions to have dedicated storage for the pods.
-Note: the number of partitions needed will depeend on how many persistent volumes you will need for the services (5 is a good number for the default setup)
-So, you can split your HDD on the RPis using those commands:
-```
-$ fdisk -l
-** retrieve the /dev/sdX matching the HDD **
-```
-If your HDD is not configured with 4 partitions at least:
-```
-$ parted /dev/sda
-** here use the "mkpart primary ext4 xxG yyG" to create the different partitions **
-$ mkfs.ext4 /dev/sdaX
-** update the fstab to identify the new /dev/sdaX partitions **
-$ mkdir /mnt/usbX
-$ chown nobody:nogroup -R /mnt/usbX
-$ chmod 777 -R /mnt/usbX
-$ vi /etc/exports
-** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
-$ exportfs -ra
-```
+  - In order to provide NFS shares to the K8S cluster, it is good to split it into partitions to have dedicated storage for the apps.
+    Note: the number of partitions needed will depeend on how many persistent volumes you will need for the apps (5 + 1 is a good number for the default setup)
+    So, you can split your HDD on the node01 RPi using those commands:
+    ```
+    $ fdisk -l
+    ** retrieve the /dev/sdX matching the HDD **
+    ```
+    If your HDD is not configured with 6 partitions:
+    Note: 
+      * /mnt/sda1..5: 10GB - ext4 - static K8S Volumes.
+      * /mnt/sda6: at least 50GB - ext4 - should be bigger since it acts as NFS dynamic volume for K8S.
 
-## Roles
-- RPIs[01]: storage node with NFS server - how to install (will be writen later)
-
-- RPis[02-0x]: compute nodes  - how to install (will be writen later)
-
-- Laptop: K8S server providing basic cluster services:
-    * SLURM controller (in progress)
-    * DHCPD server (in progress)
-    * DNS server (in progress)
-    * PXE boot (not yet implemented)
-    * Docker registry
-    * ... more to come
-- K8S services:
-    * grafana & prometheus monitoring
-    * K8S dashboard
-    * metallb
-    * ... more to come
+    ```
+    $ parted /dev/sda
+    ** here use the "mkpart primary ext4 xxG yyG" to create the different partitions **
+    $ mkfs.ext4 /dev/sdaX
+    ** update the fstab to identify the new /dev/sdaX partitions **
+    $ mkdir /mnt/usbX
+    $ chown nobody:nogroup -R /mnt/usbX
+    $ chmod 777 -R /mnt/usbX
+    $ vi /etc/exports
+    ** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
+    $ exportfs -ra
+    ```
 
 ## Services IPs
+
 Fixed Cluster Services endpoints for admins:
 * NFS Server: 10.0.0.2
 * DNS: 10.0.0.20
-* Nginx ingress (entry point for all UI): 10.0.0.10
+* UI entry point: https://apps.home.lab (aka: 10.0.0.10)
 * SLURM controller for rack01: 10.0.0.9
-
-Fixed UI Services endpoints for admins:
-* netbox: https://netbox.home.lab
-* K8S dashboard: https://kubernetes.home.lab
-* docker registry: https://registry.home.lab
-* docker registryUI: https://registryui.home.lab
-* ChartMuseum: https://helm.home.lab
-* grafana: https://grafana.home.lab
-* prometheus-server: https://prometheus.home.lab
-* Kibana: https://kibana.home.lab (optional)
-* Elasticsearch: https://elastic.home.lab (optional)
-
-**********************************************************
-
-## RBAC related topics
-
-Currently RBAc is being used in some areas but not all ...
-Using https://github.com/alcideio/rbac-tool you can get more details about your running cluster
-
-* RBAC for K8S dashboard services
-
-![RBAC view of K8S dashboard services](imgs/rbac-kdashboard.PNG)
-
-* RBAC for Grafana
-
-![RBAC for Grafana](imgs/rbac-grafana.PNG)
 
 ## SLURM
 
@@ -276,11 +242,15 @@ kv-worker-2   Ready    <none>   4d3h   v1.18.2
 
 * Easy way to start all services
 ```
-$ ./pb-install-all.sh
+$ ./pb-install-all.sh --deploy
 ```
 
 Then just wait .... and enjoy.
 Launch your SLURM jobs :-)
+
+* Note: the main UI giving access to all others UI is set to: https://apps.home.lab
+This UI is protected by keycloak. So you must add users in Keycloak first: https://keycloak.home.lab
+(User: admin, Password: to be retrieved as a secret: keycloak-http)
 
 ## Debug tips
 
@@ -296,104 +266,20 @@ $ sudo kubeadm join YourMasterNodeIPAddress --token xxxx --discovery-token-ca-ce
 sha256...
 ```
 
+## RBAC related topics
+
+Currently RBAc is being used in some areas but not all ...
+Using https://github.com/alcideio/rbac-tool you can get more details about your running cluster
+
+* RBAC for K8S dashboard services
+
+![RBAC view of K8S dashboard services](imgs/rbac-kdashboard.PNG)
+
+* RBAC for Grafana
+
+![RBAC for Grafana](imgs/rbac-grafana.PNG)
+
+
 ## The Hard way if you want to customize something :-)
 
-* Create all namespaces needed by the project
-```
-$ kubectl apply -f createNamespaces.yaml
-```
-
-* Deploy Metallb
-```
-$ cd metallb
-```
-[Read the README file for details](metallb/README.md)
-
-* Deploy coredns
-```
-$ cd coredns
-```
-[Read the README file for details](coredns/README.md)
-
-* Deploy nginx-ingress
-```
-$ cd nginx-ingress
-```
-[Read the README file for details](nginx-ingress/README.md)
-
-* Deploy certmgr
-```
-$ cd certmgr
-```
-[Read the README file for details](certmgr/README.md)
-
-* Deploy persistentVolume
-```
-$ cd persistentVolume
-```
-[Read the README file for details](persistentVolume/README.md)
-
-* Deploy k8s dashboard
-```
-$ cd k8sdashboard
-```
-[Read the README file for details](k8sdashboard/README.md)
-
-* At this stage update the /etc/systemd/resolved.conf file
-```
-$ cat /etc/systemd/resolved.conf
-DNS=10.0.0.20
-FallbackDNS=10.96.0.10
-
-service systemd-resolved restart
-```
-
-* Deploy docker registry and ChartsMuseum
-```
-$ cd registry
-```
-[Read the README file for details](registry/README.md)
-
-* Deploy monitoring
-```
-$ cd monitoring
-```
-[Read the README file for details](monitoring/README.md)
-
-* Deploy netbox
-```
-$ cd netbox
-```
-[Read the README file for details](netbox/README.md)
-
-* Deploy logging (optional since very eager on resources)
-```
-$ cd logging
-```
-[Read the README file for details](loggingEFK/README.md)
-
-* Deploy SFTPD
-```
-$ cd ftpsvc/sftp-server
-```
-[Read the README file for details](stpsvc/sftp-server/README.md)
-
-* Deploy TFTPD
-```
-$ cd ftpsvc/tftp-server
-```
-[Read the README file for details](stpsvc/ftps-server/README.md)
-
-* Deploy slurmctl
-```
-$ cd slutmctld
-```
-[Read the README file for details](slurmctld/README.md)
-
-* Finish the config of your RPis
-```
-$ cd rpicluster
-```
-Read the README file for details
-
-Launch your SLURM jobs :-)
+You can always depp-dive into every repositories and change whatever you need :-). A README.md file is there to tell you how to deploy the part. However, all services have to be deployed in a given order, so follow the same steps as in pb-install-all.sh script.
