@@ -13,6 +13,10 @@ The RPis are used as compute nodes.
 
 ![RPi Cluster 3D View](imgs/3DView.PNG)![RPi Cluster 3D View](imgs/3DView2.PNG)
 
+* Apps dashboard
+
+![Apps dashboard](imgs/stakater.PNG)
+
 * K8S lens ... dashboard on steroids
 
 ![RPi Cluster Lens](imgs/lens1.PNG)
