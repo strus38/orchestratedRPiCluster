@@ -42,6 +42,9 @@ spec:
         imagePullPolicy: IfNotPresent
         stdin: true
         tty: true
+        env:
+          - name: container
+            value: docker
         resources:
           limits:
             cpu: 200m
@@ -54,12 +57,14 @@ spec:
             mountPath: /sys/fs/cgroup:ro
           - name: varrun
             mountPath: /run
+          - name: varlock
+            mountPath: /run/lock
           - name: playbooks
-            mountPath: /root/playbooks
+            mountPath: /etc/ansible:ro
         securityContext:
           allowPrivilegeEscalation: true
           capabilities:
-            add: ["NET_ADMIN","SYS_ADMIN"]
+            add: ["SYS_ADMIN"]
       restartPolicy: Always
       volumes:
         - name: cgroup
@@ -69,6 +74,10 @@ spec:
         - name: varrun
           emptyDir:
             medium: Memory
+        - name: varlock
+          emptyDir:
+            medium: Memory
         - name: playbooks
           hostPath:
             path: /C/Users/miamore/Documents/Projects/kubeverse/orchestratedRPiCluster/rpicluster/ansible
+            type: Directory
