@@ -13,6 +13,5 @@ Update the RPIs node names that will be managed
 
 ## Install
 ```
-kubectl create namespace dhcpd
-helm install dhpd pnnl-miscscripts/dhcpd -f dhcpdvalues.yaml -n dhcpd
+helm install dhpd pnnl-miscscripts/dhcpd -f dhcpdvalues.yaml -n rack01
 ```
