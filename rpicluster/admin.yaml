@@ -59,6 +59,10 @@ spec:
             mountPath: /run
           - name: varlock
             mountPath: /run/lock
+          - name: fuse
+            mountPath: /sys/fs/fuse/connections
+          - name:  hugepages
+            mountPath:  /dev/hugepages
           - name: playbooks
             mountPath: /etc/ansible:ro
         securityContext:
@@ -77,7 +81,13 @@ spec:
         - name: varlock
           emptyDir:
             medium: Memory
+        - name: fuse
+          emptyDir:
+            medium: Memory
+        - name: hugepages
+          emptyDir:
+            medium: Memory
         - name: playbooks
           hostPath:
-            path: /C/Users/miamore/Documents/Projects/kubeverse/orchestratedRPiCluster/rpicluster/ansible
+            path:  "/mnt/c/Users/miamore/Documents/Projects/kubeverse/orchestratedRPiCluster/rpicluster/ansible"
             type: Directory
