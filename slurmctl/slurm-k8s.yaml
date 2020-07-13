@@ -127,7 +127,7 @@ spec:
       containers:
       - name: slurm
         image: strusfr/docker-ubuntu1604-slurmctld:latest
-        imagePullPolicy: Always
+        imagePullPolicy: IFNotPresent
         stdin: true
         tty: true
         resources:

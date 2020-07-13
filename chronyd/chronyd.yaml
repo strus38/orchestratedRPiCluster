@@ -45,6 +45,8 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: true
+          capabilities:
+            add: ["NET_ADMIN","SYS_TIME"]
         resources:
           limits:
             cpu: 20m

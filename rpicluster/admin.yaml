@@ -50,10 +50,25 @@ spec:
             cpu: 200m
             memory: 64Mi
         volumeMounts:
+          - name: cgroup
+            mountPath: /sys/fs/cgroup:ro
+          - name: varrun
+            mountPath: /run
           - name: playbooks
             mountPath: /root/playbooks
+        securityContext:
+          runAsUser: 0
+          capabilities:
+            add: ["SYS_ADMIN","CAP_SYS_ADMIN"]
       restartPolicy: Always
       volumes:
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: DirectoryOrCreate
+        - name: varrun
+          emptyDir:
+            medium: Memory
         - name: playbooks
           hostPath:
-            path: ./rpicluster/ansible
+            path: /C/Users/miamore/Documents/Projects/kubeverse/orchestratedRPiCluster/rpicluster/ansible

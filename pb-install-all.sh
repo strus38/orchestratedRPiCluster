@@ -124,9 +124,9 @@ function runcmds {
     helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
     check_readiness "nfs-client"
 
-    #echo " ....Create chronyd"
-    #./kubectl apply -f chronyd/chronyd.yaml
-    #check_readiness "chrony"
+    echo " ....Create chronyd"
+    ./kubectl apply -f chronyd/chronyd.yaml
+    check_readiness "chrony"
 
     echo "....Create certificates manager"
     ./kubectl apply -f certmgr/cert-manager.crds.yaml
