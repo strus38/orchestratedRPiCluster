@@ -57,9 +57,9 @@ spec:
           - name: playbooks
             mountPath: /root/playbooks
         securityContext:
-          runAsUser: 0
+          allowPrivilegeEscalation: true
           capabilities:
-            add: ["SYS_ADMIN","CAP_SYS_ADMIN"]
+            add: ["NET_ADMIN","SYS_ADMIN"]
       restartPolicy: Always
       volumes:
         - name: cgroup
