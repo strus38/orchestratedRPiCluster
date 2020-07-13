@@ -12,6 +12,9 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     cert-manager.io/issuer: selfsigned
     forecastle.stakater.com/expose: "true"
+    forecastle.stakater.com/instance: forecastle
+    forecastle.stakater.com/group: "Admin"
+    forecastle.stakater.com/icon: "https://kubernetes.io/images/kubernetes-horizontal-color.png"
 spec:
   tls:
   - hosts:

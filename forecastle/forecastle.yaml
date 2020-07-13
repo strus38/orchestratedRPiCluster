@@ -15,9 +15,15 @@ data:
     headerBackground: null
     headerForeground: null
     instanceName: null
+    namespaces:
+      - kube-system
+      - monitoring
+      - rack01
     namespaceSelector:
-      any: true
-    title: null
+      any:
+        "true"
+    title: HPC RPis Cluster
+    crdEnabled: true
     
 ---
 # Source: forecastle/templates/crd.yaml
@@ -129,7 +135,7 @@ spec:
           image: keycloak/keycloak-gatekeeper:7.0.0
           imagePullPolicy: IfNotPresent
           ports:
-          - containerPort: 3000
+          - containerPort: 3001
             name: service
           args:
           - --config=/etc/secrets/gatekeeper.yaml
@@ -145,7 +151,7 @@ spec:
           name: forecastle
       - name: gatekeeper-secrets
         secret:
-          secretName: gatekeeper
+          secretName: gatekeeper-fc
       serviceAccountName: forecastle
 
 ---
@@ -214,6 +220,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: forecastle-cluster-ingress-role-binding
+  namespace: kube-system
   labels:
     app: forecastle
     group: com.stakater.platform
@@ -226,8 +233,27 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: forecastle
-  namespace: default
+  namespace: kube-system
 
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: forecastle-cluster-ingress-role-binding
+  namespace: monitoring
+  labels:
+    app: forecastle
+    group: com.stakater.platform
+    provider: stakater
+    version: "v1.0.50"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: forecastle-cluster-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: forecastle
+  namespace: kube-system
 ---
 # Source: forecastle/templates/route.yaml
 
@@ -254,3 +280,26 @@ spec:
     group: com.stakater.platform
     provider: stakater
 
+# ---
+# apiVersion: forecastle.stakater.com/v1alpha1
+# kind: ForecastleApp
+# metadata:
+#   name: grafana
+# spec:
+#   group: Monitoring
+#   icon: https://www.mytinydc.com/images/blog/blog-prometheus+grafana.png
+#   name: Grafana
+#   networkRestricted: false
+#   url: https://grafana.home.lab
+
+# ---
+# apiVersion: forecastle.stakater.com/v1alpha1
+# kind: ForecastleApp
+# metadata:
+#   name: prometheus
+# spec:
+#   group: Monitoring
+#   icon: https://www.mytinydc.com/images/blog/blog-prometheus+grafana.png
+#   name: Prometheus
+#   networkRestricted: false
+#   url: https://prometheus.home.lab

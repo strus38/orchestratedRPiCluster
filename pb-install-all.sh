@@ -151,7 +151,7 @@ function runcmds {
     check_readiness "keycloack"
 
     echo "....Create main apps UI"
-    ./kubectl create secret generic gatekeeper --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
+    ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
     ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
     check_readiness "harbor"
 

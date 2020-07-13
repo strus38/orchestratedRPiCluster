@@ -95,7 +95,7 @@ cat > /etc/docker/daemon.json <<EOF
   "log-opts": {
     "max-size": "100m"
   },
-  "insecure-registries": ["https://registry.home.lab"],
+  "insecure-registries": ["https://registry.home.lab","https://coreharbor.home.lab"],
   "registry-mirrors": ["https://docker.io","https://quay.io"],
   "storage-driver": "overlay2"
 }

@@ -11,6 +11,9 @@ metadata:
     cert-manager.io/cluster-issuer: "selfsigned"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     forecastle.stakater.com/expose: "true"
+    forecastle.stakater.com/instance: forecastle
+    forecastle.stakater.com/group: "Monitoring"
+    forecastle.stakater.com/icon: "https://netbox.home.lab/static/img/netbox_logo.svg"
 spec:
   tls:
   - hosts:

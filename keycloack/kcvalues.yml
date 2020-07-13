@@ -267,6 +267,9 @@ keycloak:
       cert-manager.io/cluster-issuer: "selfsigned"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
       forecastle.stakater.com/expose: "true"
+      forecastle.stakater.com/instance: forecastle
+      forecastle.stakater.com/group: "Admin"
+      forecastle.stakater.com/icon: "https://keycloak.home.lab/auth/resources/67qnq/welcome/keycloak/logo.png"
 
     labels: {}
     # key: value
