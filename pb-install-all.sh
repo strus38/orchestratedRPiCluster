@@ -191,8 +191,7 @@ function runcmds {
     echo "....Create tftpd"
     ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
     check_readiness "tftp"
-    ./kubectl apply -f ftpsvc/tftp-hpa/ingress.yaml -n rack01
-
+    
     echo "....Create slurmctld"
     ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
     check_readiness "slurm"

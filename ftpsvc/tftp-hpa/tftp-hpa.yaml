@@ -24,7 +24,8 @@ metadata:
   labels:
     app.name: tftpd
 spec:
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: 10.0.0.12
   ports:
     - port: 69
       targetPort: 69
@@ -53,7 +54,7 @@ spec:
     spec:
       containers:
         - name: tftpd
-          image: strusfr/docker-ubuntu-tftpd
+          image: pghalliday/tftp
           imagePullPolicy: Always
           ports:
             - name: tftpd
@@ -66,10 +67,13 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: ["NET_ADMIN","SYS_TIME"]
           volumeMounts:
             - name: tftp-nfs
-              mountPath: /srv/tftp
-              subPath: tftp
+              mountPath: /var/tftpboot
               readOnly: false
       volumes:
         - name: tftp-nfs

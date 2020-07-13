@@ -25,6 +25,9 @@ chown vagrant:vagrant /home/vagrant/.kube/config
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
+curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.15.1/calicoctl
+chmod +x ./calicoctl
+
 #Configure the Calico Network Plugin
 echo "********** $KVMSG"
 echo "********** $KVMSG"

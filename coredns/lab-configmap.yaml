@@ -34,3 +34,5 @@ data:
     karma IN A 10.0.0.10
     coreharbor IN A 10.0.0.10
     apps IN A 10.0.0.10
+    tftp IN A 10.0.0.12
+    chrony IN A 10.0.0.11
