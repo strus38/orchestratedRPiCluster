@@ -1,5 +1,5 @@
 client-id: services-client
-client-secret: 331a325c-ab14-4bc6-8109-3d6e9934abfc
+client-secret: b8c22ff6-1832-4404-bb9a-2c5eedf8c157
 discovery-url: https://keycloak.home.lab/auth/realms/master
 skip-upstream-tls-verify: true
 skip-openid-provider-tls-verify: true

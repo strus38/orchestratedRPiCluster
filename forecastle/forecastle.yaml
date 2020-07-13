@@ -182,7 +182,7 @@ spec:
       paths:
       - backend:
           serviceName: forecastle
-          servicePort: 3000
+          servicePort: 3001
 
 ---
 # Source: forecastle/templates/rbac.yaml
@@ -274,7 +274,7 @@ spec:
   - name: http
     port: 80
     protocol: TCP
-    targetPort: 3000
+    targetPort: 3001
   selector:
     app: forecastle
     group: com.stakater.platform
