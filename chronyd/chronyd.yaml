@@ -54,7 +54,28 @@ spec:
           requests:
             cpu: 20m
             memory: 64Mi
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/chrony/chrony.conf
+          subPath: chrony.conf
       restartPolicy: Always
+      volumes:
+      - name: config-volume
+        configMap:
+            name: chrony-conf
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: chronyd
+  name: chrony-conf
+  namespace: kube-system
+data:
+  # Configuration values can be set as key-value properties
+  chrony.conf: |
+    server 10.0.0.210
 
 ---
 apiVersion: v1
@@ -63,7 +84,7 @@ metadata:
   name: chronyd
   namespace: kube-system
   labels:
-    app.name: chronyd
+    app: chronyd
 spec:
   type: LoadBalancer
   loadBalancerIP: 10.0.0.11

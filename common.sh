@@ -39,8 +39,11 @@ echo "********** $KVMSG"
 echo "********** $KVMSG ->> Installing Required & Recommended Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce kubeadm kubelet kubectl python3 python3-pip
+apt-get install -y chrony avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce kubeadm kubelet kubectl python3 python3-pip
 pip3 install netbox-agent
+
+# Setting time...
+timedatectl set-timezone Europe/Paris
 
 cat > /etc/qualification <<EOF
 DATACENTER: home.lab

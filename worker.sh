@@ -25,3 +25,34 @@ service kubelet restart
 sed -i 's/^#DNS=/DNS=10.96.0.10/' /etc/systemd/resolved.conf
 sed -i 's/^#FallbackDNS=/FallbackDNS=10.0.0.20/' /etc/systemd/resolved.conf
 service systemd-resolved restart
+
+# Make sure time is sync to master node
+cat > /etc/chrony/chrony.conf <<EOF
+server 10.0.0.210 prefer iburst
+# This directive specify the location of the file containing ID/key pairs for
+# NTP authentication.
+keyfile /etc/chrony/chrony.keys
+
+# This directive specify the file into which chronyd will store the rate
+# information.
+driftfile /var/lib/chrony/chrony.drift
+
+# Uncomment the following line to turn logging on.
+#log tracking measurements statistics
+
+# Log files location.
+logdir /var/log/chrony
+
+# Stop bad estimates upsetting machine clock.
+maxupdateskew 100.0
+
+# This directive enables kernel synchronisation (every 11 minutes) of the
+# real-time clock. Note that it can’t be used along with the 'rtcfile' directive.
+rtcsync
+
+# Step the system clock instead of slewing it if the adjustment is larger than
+# one second, but only in the first three clock updates.
+makestep 1 3
+cmdallow 10.0.0.0/16
+EOF
+service chrony restart
