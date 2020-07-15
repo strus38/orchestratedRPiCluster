@@ -188,6 +188,16 @@ done
     ** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
     $ exportfs -ra
     ```
+  
+  - NTP time on RPIs
+    ```
+    $ vi /etc/systemd/timesyncd.conf
+    ... NTP=10.0.0.210
+    $ timedatectl set-ntp true
+    $ systemctl daemon-reload
+    $ service systemd-timesyncd restart
+    $ timedatectl set-timezone Europe/Paris
+    ```
 
 ## Services IPs
 

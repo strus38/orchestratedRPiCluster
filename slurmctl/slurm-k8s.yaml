@@ -127,7 +127,7 @@ spec:
       containers:
       - name: slurm
         image: strusfr/docker-ubuntu1604-slurmctld:latest
-        imagePullPolicy: Alwyas
+        imagePullPolicy: Always
         stdin: true
         tty: true
         resources:
@@ -160,6 +160,8 @@ spec:
           subPath: cgroup.conf
         - name: nfs-volume
           mountPath: /clusterfs
+        - name: tz-paris
+          mountPath: /etc/localtime
         lifecycle:
           postStart:
             exec:
@@ -175,7 +177,9 @@ spec:
           # URL for the NFS server
           server: node01.home.lab # Change this!
           path: /clusterfs
-
+      - name: tz-paris
+        hostPath:
+          path: /usr/share/zoneinfo/Europe/Paris
 ---
 apiVersion: v1
 kind: Service
