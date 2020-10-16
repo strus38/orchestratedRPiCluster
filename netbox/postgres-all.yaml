@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: netbox-postgres
   labels:
-    backend: postgres
+    backend: netbox-postgres
 spec:
   selector:
     matchLabels:
-      backend: postgres
+      backend: netbox-postgres
   replicas: 1
   template:
     metadata:
       labels:
-        backend: postgres
+        backend: netbox-postgres
     spec:
       containers:  
       - image: postgres:9.6-alpine
@@ -24,17 +24,17 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_DB
-              name: postgres-env
+              name: netbox-postgres-env
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_USER
-              name: postgres-env      
+              name: netbox-postgres-env      
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_PASSWORD
-              name: postgres-env
+              name: netbox-postgres-env
           
       restartPolicy: Always
 
@@ -42,9 +42,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: netbox-postgres
   labels:
-    backend: postgres
+    backend: netbox-postgres
 spec:
   clusterIP: None
   ports:
@@ -52,13 +52,13 @@ spec:
     port: 5432
     targetPort: 5432
   selector:
-    backend: postgres
+    backend: netbox-postgres
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-env
+  name: netbox-postgres-env
 data:
   POSTGRES_DB: netbox
   POSTGRES_USER: netbox

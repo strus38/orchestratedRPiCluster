@@ -64,15 +64,16 @@ function runcmds {
         if [ ! -f "/usr/local/bin/helm" ]; then 
             ./get_helm.sh
             echo "Configure helm"
-            helm repo add  stable https://kubernetes-charts.storage.googleapis.com/
-            helm repo add  pnnl-miscscripts https://pnnl-miscscripts.github.io/charts
-            helm repo add  pojntfx https://pojntfx.github.io/charts/
-            helm repo add  bitnami https://charts.bitnami.com/bitnami
-            helm repo add  akomljen-charts https://raw.githubusercontent.com/komljen/helm-charts/master/charts/
-            helm repo add  elastic https://helm.elastic.co
-            helm repo add  jetstack https://charts.jetstack.io
-            helm repo add  codecentric https://codecentric.github.io/helm-charts
-            helm repo add  harbor https://helm.goharbor.io
+            helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+            helm repo add pnnl-miscscripts https://pnnl-miscscripts.github.io/charts
+            helm repo add pojntfx https://pojntfx.github.io/charts/
+            helm repo add bitnami https://charts.bitnami.com/bitnami
+            helm repo add akomljen-charts https://raw.githubusercontent.com/komljen/helm-charts/master/charts/
+            helm repo add elastic https://helm.elastic.co
+            helm repo add jetstack https://charts.jetstack.io
+            helm repo add codecentric https://codecentric.github.io/helm-charts
+            helm repo add harbor https://helm.goharbor.io
+            helm repo add sylabs https://charts.enterprise.sylabs.io
         fi
     fi
     echo "### Testing binaries"
@@ -101,23 +102,18 @@ function runcmds {
     check_readiness "calico"
 
     echo "....Create metallb"
-    helm $KEYV metallb stable/metallb -n kube-system
+    helm $KEYV metallb bitnami/metallb -n kube-system
     check_readiness "metallb"
+    ./kubectl patch configmap metallb --patch "$(cat metallb/patch-metallb-config.yml)" -n kube-system
     ./kubectl apply -f metallb/metallb-config.yml
     sleep 5s
 
     echo "....Update CoreDNS, please do it manually (read README.md file)"
     ./kubectl apply -f coredns/lab-configmap.yaml  -n kube-system
-    echo "Waiting coredns configuration to be applied"
-    while [ true ] ; do
-        read -t 3 -n 1
-        if [ $? = 0 ] ; then
-            break
-        else
-        echo "Please customize CoreDNS based on coredns/README.md file and press the space key..."
-        fi
-    done
     ./kubectl apply -f coredns/lab-coredns.yaml -n kube-system
+    sleep 5s
+    ./kubectl patch configmap coredns --patch "$(cat coredns/patch-coredns-configmap.yml)" -n kube-system
+    ./kubectl patch deployment coredns --patch "$(cat coredns/patch-coredns-deployment.yml)" -n kube-system
     sleep 5s
 
     echo "... NFS client"
@@ -129,15 +125,20 @@ function runcmds {
     check_readiness "chrony"
 
     echo "....Create certificates manager"
-    ./kubectl apply -f certmgr/cert-manager.crds.yaml
+    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n cert-manager
+    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n rack01
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=cert-manager
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+    # ./kubectl apply -f certmgr/cert-manager.crds.yaml
     sleep 5s
-    helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v0.15.0
+    helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v1.0.2 --set installCRDs=true
     check_readiness "cert-manager"
     ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
     ./kubectl apply -f certmgr/issuer.yaml -n rack01
     sleep 5s
 
     echo "....Create nginx-ingress"
+    helm uninstall nginx-ingress -n nginx-ingress
     helm $KEYV nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
     check_readiness "nginx-ingress"
 
@@ -148,12 +149,12 @@ function runcmds {
     echo "....Create keycloack"
     ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
-    check_readiness "keycloack"
+    check_readiness "keycloak"
 
     echo "....Create main apps UI"
     ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
     ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
-    check_readiness "harbor"
+    check_readiness "forecastle"
 
     echo "....Create K8S dashboard"
     ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
@@ -187,6 +188,22 @@ function runcmds {
     check_readiness "grafana"
     helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
     check_readiness "karma"
+
+    echo "....Install Kubevirt"
+    export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
+    echo "Kubevirt version: $KVIRT_VERSION"
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
+    ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
+    check_readiness "virt"
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+
+    echo "Install Singularity"
+    ./kubectl apply -f ./singularity_ent/role.yml
+    ./kubectl apply -f ./singularity/singularity-creds.yaml -n kubevirt
+    helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
+    helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
+    check_readiness "singularity"
 
     echo "....Create tftpd"
     ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01

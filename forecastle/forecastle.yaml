@@ -161,7 +161,7 @@ kind: Ingress
 metadata:
   labels:
     name: forecastle
-    roup: com.stakater.platform
+    group: com.stakater.platform
     provider: stakater
     version: "v1.0.50"
   name: forecastle
@@ -169,13 +169,13 @@ metadata:
     ingress.kubernetes.io/ssl-redirect: "true"
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "selfsigned-cert"
+    cert-manager.io/cluster-issuer: "selfsigned"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   tls:
   - hosts:
     - apps.home.lab
-    secretName: apps-selfsigned-cert-tls
+    secretName: tls-forecastle
   rules:
   - host: apps.home.lab
     http:
@@ -220,7 +220,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: forecastle-cluster-ingress-role-binding
-  namespace: kube-system
+  # namespace: kube-system
   labels:
     app: forecastle
     group: com.stakater.platform
@@ -235,26 +235,26 @@ subjects:
   name: forecastle
   namespace: kube-system
 
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: forecastle-cluster-ingress-role-binding
-  namespace: monitoring
-  labels:
-    app: forecastle
-    group: com.stakater.platform
-    provider: stakater
-    version: "v1.0.50"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: forecastle-cluster-ingress-role
-subjects:
-- kind: ServiceAccount
-  name: forecastle
-  namespace: kube-system
----
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: forecastle-cluster-ingress-role-binding
+#   # namespace: monitoring
+#   labels:
+#     app: forecastle
+#     group: com.stakater.platform
+#     provider: stakater
+#     version: "v1.0.50"
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: forecastle-cluster-ingress-role
+# subjects:
+# - kind: ServiceAccount
+#   name: forecastle
+#   # namespace: kube-system
+# ---
 # Source: forecastle/templates/route.yaml
 
 ---

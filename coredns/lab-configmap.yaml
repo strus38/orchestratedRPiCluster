@@ -30,9 +30,18 @@ data:
     helm  IN A 10.0.0.10
     netbox  IN A 10.0.0.10
     prometheus  IN A 10.0.0.10
-    keycloack IN A 10.0.0.10
+    keycloak IN A 10.0.0.10
     karma IN A 10.0.0.10
     coreharbor IN A 10.0.0.10
     apps IN A 10.0.0.10
     tftp IN A 10.0.0.12
     chrony IN A 10.0.0.11
+    cloud IN A 10.0.0.10
+    library  IN A 10.0.0.10
+    auth  IN A 10.0.0.10
+    hydra  IN A 10.0.0.10
+    keys  IN A 10.0.0.10
+    minio  IN A 10.0.0.10
+    manager  IN A 10.0.0.10
+    build  IN A 10.0.0.10
+    token  IN A 10.0.0.10

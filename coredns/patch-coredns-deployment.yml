@@ -1,0 +1,23 @@
+# kubectl patch deployment patch-demo --patch "$(cat patch-file-tolerations.yaml)"
+spec:
+  template:
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: coredns
+            items:
+              - key: Corefile
+                path: Corefile
+            defaultMode: 420
+        - name: coredns-zone-volume
+          configMap:
+            name: coredns-zones
+      containers:
+        - name: coredns
+          volumeMounts:
+            - name: config-volume
+              readOnly: true
+              mountPath: /etc/coredns
+            - mountPath: "/etc/coredns/zones"
+              name: coredns-zone-volume

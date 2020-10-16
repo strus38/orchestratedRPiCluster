@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: netbox-nginx
   labels:
-    frontend: nginx
+    frontend: netbox-nginx
 spec:
   selector:
     matchLabels:
-      frontend: nginx
+      frontend: netbox-nginx
   replicas: 1
   template:
     metadata:
       labels:
-        frontend: nginx
+        frontend: netbox-nginx
     spec:
       containers:
       - name: gatekeeper
@@ -47,7 +47,7 @@ spec:
           claimName: netbox-static-files
       - name: netbox-nginx-config
         configMap:
-          name: nginx-conf
+          name: netbox-nginx-conf
       - name: gatekeeper-secrets
         secret:
           secretName: gatekeeper
@@ -56,9 +56,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: netbox-nginx
   labels:
-    frontend: nginx
+    frontend: netbox-nginx
 spec:
   type: NodePort
   ports:
@@ -66,5 +66,5 @@ spec:
     port: 80
     targetPort: 3000
   selector:
-    frontend: nginx
+    frontend: netbox-nginx
 

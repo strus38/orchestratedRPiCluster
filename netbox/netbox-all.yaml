@@ -129,7 +129,7 @@ spec:
       volumes:
       - name: netbox-nginx-config
         configMap:
-          name: nginx-conf
+          name: netbox-nginx-conf
       - name: netbox-static-files
         persistentVolumeClaim:
           claimName: netbox-static-files
@@ -197,7 +197,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata: 
-  name: nginx-conf
+  name: netbox-nginx-conf
 data:
   nginx.conf: |
     worker_processes 1;

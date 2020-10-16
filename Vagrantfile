@@ -6,7 +6,7 @@
 BOX_IMAGE = "bento/ubuntu-18.04"
 BOX_IMAGE_VERSION = "202003.31.0"
 MASTER_COUNT = 1
-WORKER_COUNT = 3
+WORKER_COUNT = 4
 POD_CIDR = "172.18.0.0/16"
 API_ADV_ADDRESS = "10.0.0.210"
 ETH1_NAME="Realtek USB GbE Family Controller"
@@ -46,8 +46,8 @@ Vagrant.configure("2") do |config|
       subconfig.vm.network :public_network, ip: "10.0.0.2#{i + 10}", bridge: "#{ETH1_NAME}"
       subconfig.vm.network :private_network, ip: "172.28.128.2#{i + 10}"
       subconfig.vm.provider :virtualbox do |vb|
-        vb.customize ["modifyvm", :id, "--cpus", 2]
-        vb.memory = 2048
+        vb.customize ["modifyvm", :id, "--cpus", 1]
+        vb.memory = 3072
       end
 
       # This if is here just to remember me to create a multi-master cluster

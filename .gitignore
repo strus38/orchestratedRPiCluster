@@ -19,3 +19,7 @@ get_helm.sh
 checkov.results.xml
 netbox/config/__pycache__
 *.pyc
+singularity_ent/*
+*.crt
+*.key
+*.html

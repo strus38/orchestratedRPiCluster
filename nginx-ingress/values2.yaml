@@ -4,9 +4,14 @@
 controller:
   name: controller
   image:
+    # registry value can be any of the following:
+    #  us.gcr.io
+    #  eu.gcr.io
+    #  asia.gcr.io
     registry: us.gcr.io
     repository: k8s-artifacts-prod/ingress-nginx/controller
     tag: "v0.34.1"
+    # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
     pullPolicy: IfNotPresent
     # www-data -> uid 101
     runAsUser: 101
@@ -16,6 +21,9 @@ controller:
   # Note that if you enable it for existing deployments, it won't work as the labels are immutable.
   # We recommend setting this to true for new deployments.
   useComponentLabel: false
+
+  # Override component label key
+  # componentLabelKeyOverride:
 
   # Configures the ports the nginx-controller listens on
   containerPort:
@@ -38,7 +46,7 @@ controller:
   # Required for use with CNI based kubernetes installations (such as ones set up by kubeadm),
   # since CNI and hostport don't mix yet. Can be deprecated once https://github.com/kubernetes/kubernetes/issues/23920
   # is merged
-  hostNetwork: true
+  hostNetwork: false
 
   # Optionally customize the pod dnsConfig.
   dnsConfig: {}
@@ -46,7 +54,7 @@ controller:
   # Optionally change this to ClusterFirstWithHostNet in case you have 'hostNetwork: true'.
   # By default, while using host network, name resolution uses the host's DNS. If you wish nginx-controller
   # to keep resolving names inside the k8s network, use ClusterFirstWithHostNet.
-  dnsPolicy: ClusterFirstWithHostNet
+  dnsPolicy: ClusterFirst
 
   # Bare-metal considerations via the host network https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#via-the-host-network
   # Ingress status was blank because there is no Service exposing the NGINX Ingress controller in a configuration using the host network, the default --publish-service flag used in standard cloud setups does not apply
@@ -119,8 +127,7 @@ controller:
   ## E.g. to specify the default SSL certificate you can use
   ## extraArgs:
   ##   default-ssl-certificate: "<namespace>/<secret_name>"
-  extraArgs:
-    default-ssl-certificate: "nginx-ingress/home-lab"
+  extraArgs: {}
 
   ## Additional environment variables to set
   extraEnvs: []
@@ -219,6 +226,10 @@ controller:
   ##
   podAnnotations: {}
 
+  # Add Config Checksum to pod Annotations
+  # This will trigger Rolling Updates on configuration changes
+  podAnnotationConfigChecksum: false
+
   replicaCount: 1
 
   minAvailable: 1
@@ -257,10 +268,10 @@ controller:
     ##
     externalIPs: []
 
-    loadBalancerIP: "10.0.0.10"
+    loadBalancerIP: ""
     loadBalancerSourceRanges: []
 
-    enableHttp: false
+    enableHttp: true
     enableHttps: true
 
     ## Set external traffic policy to: "Local" to preserve source IP on
@@ -295,6 +306,12 @@ controller:
       https: ""
       tcp: {}
       udp: {}
+
+    ## Enables an additional internal load balancer (besides the external one).
+    ## Annotations are mandatory for the load balancer to come up. Varies with the cloud service.
+    internal:
+      enabled: false
+      annotations: {}
 
   extraContainers: []
   ## Additional containers to be added to the controller pod.
@@ -363,6 +380,7 @@ controller:
       priorityClassName: ""
       podAnnotations: {}
       nodeSelector: {}
+      resources: {}
 
   metrics:
     port: 10254
@@ -453,6 +471,9 @@ defaultBackend:
   # We recommend setting this to true for new deployments.
   useComponentLabel: false
 
+  # Override component label key
+  # componentLabelKeyOverride:
+
   extraArgs: {}
 
   serviceAccount:
@@ -524,6 +545,13 @@ defaultBackend:
   #   cpu: 10m
   #   memory: 20Mi
 
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+
   service:
     annotations: {}
     ## Deprecated, instead simply do not provide a clusterIP value
@@ -557,7 +585,7 @@ podSecurityPolicy:
 
 serviceAccount:
   create: true
-  name: nginx
+  name:
   annotations: {}
 
 ## Optional array of imagePullSecrets containing private registry credentials
@@ -576,3 +604,4 @@ tcp: {}
 ##
 udp: {}
 #  53: "kube-system/kube-dns:53"
+
