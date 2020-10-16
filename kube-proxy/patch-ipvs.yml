@@ -1,0 +1,5 @@
+# kubectl patch deployment patch-demo --patch "$(cat patch-file-tolerations.yaml)"
+spec:
+  template:
+    spec:
+    
