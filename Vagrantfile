@@ -47,7 +47,7 @@ Vagrant.configure("2") do |config|
       subconfig.vm.network :private_network, ip: "172.28.128.2#{i + 10}"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
-        vb.memory = 3072
+        vb.memory = 2048
       end
 
       # This if is here just to remember me to create a multi-master cluster
