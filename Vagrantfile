@@ -3,8 +3,8 @@
 #               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/master.sh
 #               https://raw.githubusercontent.com/strus38/orchestratedRPiCluster/master/worker.sh
 
-BOX_IMAGE = "bento/ubuntu-18.04"
-BOX_IMAGE_VERSION = "202003.31.0"
+BOX_IMAGE = "bento/ubuntu-20.04"
+BOX_IMAGE_VERSION = "202008.16.0"
 MASTER_COUNT = 1
 WORKER_COUNT = 4
 POD_CIDR = "172.18.0.0/16"

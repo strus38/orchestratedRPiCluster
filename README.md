@@ -221,10 +221,10 @@ NAME                     READY   STATUS    RESTARTS   AGE
 slurm-745f46bd9b-26nms   1/1     Running   0          4m28s
 
 $ kubectl exec slurm-745f46bd9b-26nms -n slurm-ns -- sinfo
-PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
-allnodes*    up   infinite      1   unk* node05
-allnodes*    up   infinite      1  drain node03
-allnodes*    up   infinite      2   idle node[02,04]
+PARTITION AVAIL  TIMELIMIT  NODES  STATE   NODELIST
+allnodes*    up   infinite      1   unk*   node05
+allnodes*    up   infinite      1  drain   node03
+allnodes*    up   infinite      2  idle    node[02,04]
 ```
 
 ## How to easily deploy all services on the cluster
