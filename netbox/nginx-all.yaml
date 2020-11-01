@@ -15,31 +15,36 @@ spec:
         frontend: netbox-nginx
     spec:
       containers:
-      - name: gatekeeper
-        image: keycloak/keycloak-gatekeeper:7.0.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 3000
-          name: service
-        args:
-        - --config=/etc/secrets/gatekeeper.yaml
-        - --redirection-url=https://netbox.home.lab
-        - --upstream-url=http://127.0.0.1:80
-        - --resources=uri=/*|roles=Admin
-        volumeMounts:
-          - name: gatekeeper-secrets
-            mountPath: /etc/secrets
+      # - name: gatekeeper
+      #   image: keycloak/keycloak-gatekeeper:7.0.0
+      #   imagePullPolicy: IfNotPresent
+      #   ports:
+      #   - containerPort: 3000
+      #     name: service
+      #   args:
+      #   - --config=/etc/secrets/gatekeeper.yaml
+      #   - --redirection-url=https://netbox.home.lab
+      #   - --upstream-url=http://127.0.0.1:80
+      #   - --resources=uri=/*|roles=Admin
+      #   volumeMounts:
+      #     - name: gatekeeper-secrets
+      #       mountPath: /etc/secrets
       - name: nginx
         image: nginx:1.12-alpine
-        #ports:
-        #- containerPort: 80
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
         command: ["nginx"]
         args: ["-c", "/etc/netbox-nginx/nginx.conf","-g", "daemon off;"] 
         volumeMounts:
         - name: netbox-static-files
           mountPath: /opt/netbox/netbox/static
         - name: netbox-nginx-config
-          mountPath: /etc/netbox-nginx 
+          mountPath: /etc/netbox-nginx
+        - name: private-ca-cert
+          mountPath: /etc/ssl/certs/ca-certificates.crt
+          subPath: tls.crt
+          readOnly: false
       restartPolicy: Always
       volumes:
       - name: netbox-static-files
@@ -48,9 +53,12 @@ spec:
       - name: netbox-nginx-config
         configMap:
           name: netbox-nginx-conf
-      - name: gatekeeper-secrets
-        secret:
-          secretName: gatekeeper
+      - name: private-ca-cert
+        configMap:
+          name: private-ca-cert
+      # - name: gatekeeper-secrets
+      #   secret:
+      #     secretName: gatekeeper
        
 ---
 apiVersion: v1
@@ -64,7 +72,7 @@ spec:
   ports:
   - name: "80"
     port: 80
-    targetPort: 3000
+    targetPort: 80
   selector:
     frontend: netbox-nginx
 

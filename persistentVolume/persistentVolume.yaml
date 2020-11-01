@@ -9,7 +9,7 @@ spec:
     storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
-  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  persistentVolumeReclaimPolicy: Retain # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /mnt/usb2 # Please change this to the relevant share
@@ -25,7 +25,7 @@ spec:
     storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
-  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  persistentVolumeReclaimPolicy: Retain # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /mnt/usb3 # Please change this to the relevant share
@@ -41,7 +41,7 @@ spec:
     storage: 10Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
-  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  persistentVolumeReclaimPolicy: Retain # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /mnt/usb4 # Please change this to the relevant share
@@ -57,7 +57,7 @@ spec:
     storage: 30Gi # This size is used to match a volume to a tenents claim
   accessModes:
     - ReadWriteMany # Access modes are defined below
-  persistentVolumeReclaimPolicy: Recycle # Reclaim policies are defined below 
+  persistentVolumeReclaimPolicy: Retain # Reclaim policies are defined below 
   nfs:
     server: node01.home.lab # Please change this to your NFS server
     path: /clusterfs # Please change this to the relevant share

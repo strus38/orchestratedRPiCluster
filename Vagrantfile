@@ -81,7 +81,7 @@ Vagrant.configure("2") do |config|
       subconfig.vm.network :private_network, ip: "172.28.128.2#{i + 20}"
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
-        vb.memory = 4096
+        vb.memory = 3072
       end
 
       subconfig.vm.provision "shell" do |s|

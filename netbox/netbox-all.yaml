@@ -16,7 +16,9 @@ spec:
     spec:
       containers:
       - name: netbox
-        image: netboxcommunity/netbox:v2.8
+        #image: netboxcommunity/netbox:v2.8
+        image:  strusfr/netbox-community-kc:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8001
         env:
@@ -120,11 +122,111 @@ spec:
             configMapKeyRef:
               key: REMOTE_AUTH_AUTO_CREATE_USER
               name: netbox-netbox-env
+        - name: REMOTE_AUTH_BACKEND
+          valueFrom:
+            configMapKeyRef:
+              key: REMOTE_AUTH_BACKEND
+              name: netbox-netbox-env
+        - name: REMOTE_AUTH_DEFAULT_GROUPS
+          valueFrom:
+            configMapKeyRef:
+              key: REMOTE_AUTH_DEFAULT_GROUPS
+              name: netbox-netbox-env
+        - name: REMOTE_AUTH_DEFAULT_PERMISSIONS
+          valueFrom:
+            configMapKeyRef:
+              key: REMOTE_AUTH_DEFAULT_PERMISSIONS
+              name: netbox-netbox-env
+        - name: OIDC_RP_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_RP_CLIENT_ID
+              name: netbox-netbox-env
+        - name: OIDC_RP_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_RP_CLIENT_SECRET
+              name: netbox-netbox-env
+        - name: OIDC_OP_AUTHORIZATION_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_OP_AUTHORIZATION_ENDPOINT
+              name: netbox-netbox-env 
+        - name: OIDC_OP_TOKEN_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_OP_TOKEN_ENDPOINT
+              name: netbox-netbox-env
+        - name: OIDC_OP_USER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_OP_USER_ENDPOINT
+              name: netbox-netbox-env
+        - name: LOGIN_REDIRECT_URL
+          valueFrom:
+            configMapKeyRef:
+              key: LOGIN_REDIRECT_URL
+              name: netbox-netbox-env
+        - name: LOGOUT_REDIRECT_URL
+          valueFrom:
+            configMapKeyRef:
+              key: LOGOUT_REDIRECT_URL
+              name: netbox-netbox-env
+        - name: OIDC_OP_JWKS_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_OP_JWKS_ENDPOINT
+              name: netbox-netbox-env
+        - name: OIDC_ALLOW_UNSECURED_JWT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_ALLOW_UNSECURED_JWT
+              name: netbox-netbox-env
+        - name: OIDC_VERIFY_JWT
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_VERIFY_JWT
+              name: netbox-netbox-env
+        - name: OIDC_RP_SIGN_ALGO
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_RP_SIGN_ALGO
+              name: netbox-netbox-env
+        # - name: OIDC_RP_IDP_SIGN_KEY
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       key: OIDC_RP_IDP_SIGN_KEY
+        #       name: netbox-netbox-env
+        - name: OIDC_VERIFY_SSL
+          valueFrom:
+            configMapKeyRef:
+              key: OIDC_VERIFY_SSL
+              name: netbox-netbox-env
         volumeMounts:
         - name: netbox-nginx-config
           mountPath: /etc/netbox-nginx/ 
         - name: netbox-static-files
-          mountPath: /opt/netbox/netbox/static  
+          mountPath: /opt/netbox/netbox/static 
+        - name: netbox-netbox-kc
+          mountPath: /opt/netbox/netbox/netbox/settings.py
+          subPath: settings.py
+        - name: netbox-netbox-kc
+          mountPath: /opt/netbox/netbox/netbox/urls.py
+          subPath: urls.py
+        - name: netbox-netbox-kc
+          mountPath: /etc/netbox/config/configuration.py
+          subPath: configuration.py
+        - name: netbox-netbox-kc
+          mountPath: /opt/netbox/netbox/templates/login.html
+          subPath: login.html
+        - name: private-ca-cert
+          mountPath: /etc/ssl/certs/ca-certificates.crt
+          subPath: tls.crt
+          readOnly: false
+        - name: netbox-netbox-kc
+          mountPath: /usr/local/lib/python3.7/site-packages/mozilla_django_oidc/xscaleNetboxMiddleware.py
+          subPath: xscaleNetboxMiddleware.py
+        
       restartPolicy: Always
       volumes:
       - name: netbox-nginx-config
@@ -133,6 +235,12 @@ spec:
       - name: netbox-static-files
         persistentVolumeClaim:
           claimName: netbox-static-files
+      - name: netbox-netbox-kc
+        configMap:
+          name: netbox-netbox-kc
+      - name: private-ca-cert
+        configMap:
+          name: private-ca-cert
 
 ---
 apiVersion: v1
@@ -173,7 +281,7 @@ metadata:
   name: netbox-netbox-env
 data:
   ALLOWED_HOSTS: '*'
-  DB_HOST: postgres
+  DB_HOST: netbox-postgres
   DB_NAME: netbox
   DB_PASSWORD: J5brHrAXFLQSif0K
   DB_USER: netbox
@@ -192,6 +300,1149 @@ data:
   SUPERUSER_PASSWORD: admin
   REMOTE_AUTH_ENABLED: "true"
   REMOTE_AUTH_AUTO_CREATE_USER: "true"
+  # REMOTE_AUTH_BACKEND: "mozilla_django_oidc.auth.OIDCAuthenticationBackend"
+  REMOTE_AUTH_BACKEND: mozilla_django_oidc.xscaleNetboxMiddleware.XscaleNetboxMiddleware
+  REMOTE_AUTH_DEFAULT_GROUPS: "netbox-viewer"
+  REMOTE_AUTH_DEFAULT_PERMISSIONS: ""
+  OIDC_RP_CLIENT_ID: "netbox"
+  OIDC_RP_CLIENT_SECRET: "65345fa6-e4fd-4913-a752-a274a7a87d96" 
+  OIDC_OP_AUTHORIZATION_ENDPOINT: "https://keycloak.home.lab/auth/realms/master/protocol/openid-connect/auth" 
+  OIDC_OP_TOKEN_ENDPOINT: "https://keycloak.home.lab/auth/realms/master/protocol/openid-connect/token"
+  OIDC_OP_USER_ENDPOINT: "https://keycloak.home.lab/auth/realms/master/protocol/openid-connect/userinfo"
+  LOGIN_REDIRECT_URL: "/"
+  LOGOUT_REDIRECT_URL: "https://keycloak.home.lab/auth/realms/master/protocol/openid-connect/logout"
+  OIDC_RP_SIGN_ALGO: "RS256"
+  OIDC_VERIFY_SSL: "false"
+  OIDC_ALLOW_UNSECURED_JWT: "true"
+  OIDC_VERIFY_JWT: "true"
+  OIDC_OP_JWKS_ENDPOINT: "https://keycloak.home.lab/auth/realms/master/protocol/openid-connect/certs"
+  # OIDC_RP_IDP_SIGN_KEY: ""
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: netbox-netbox-kc
+data:
+  xscaleNetboxMiddleware.py: |
+    from mozilla_django_oidc.auth import OIDCAuthenticationBackend
+    from django.contrib.auth.models import Group
+
+    class XscaleNetboxMiddleware(OIDCAuthenticationBackend):
+        def create_user(self, claims):
+            user = super(XscaleNetboxMiddleware, self).create_user(claims)
+            username = claims.get('username', '')
+            if username:
+              user.username = username
+            first_name = claims.get('given_name', '') 
+            if first_name:
+              user.first_name = first_name
+            last_name = claims.get('family_name', '')
+            if last_name:
+              user.last_name = last_name
+            #  "resource_access": {
+            # "netbox": {
+            #   "roles": [
+            #     "netbox-viewer"
+            #   ]
+            # }
+            usergroup = claims.get('roles', '')
+            if usergroup:
+              for i_group in usergroup:
+                try:
+                  group = Group.objects.get(name=i_group)
+                  if group:
+                    user.groups.add(group)
+                except Group.DoesNotExist:
+                  pass
+            
+            user.save()
+    
+            return user
+    
+        def update_user(self, user, claims):
+            username = claims.get('username', '')
+            if username:
+              user.username = username
+            first_name = claims.get('given_name', '') 
+            if first_name:
+              user.first_name = first_name
+            last_name = claims.get('family_name', '')
+            if last_name:
+              user.last_name = last_name
+            usergroup = claims.get('roles', '')
+            if usergroup:
+              for i_group in usergroup:
+                try:
+                  group = Group.objects.get(name=i_group)
+                  if group:
+                    user.groups.add(group)
+                except Group.DoesNotExist:
+                  pass
+            user.save()
+    
+            return user
+
+  settings.py: |
+    import importlib
+    import logging
+    import os
+    import platform
+    import re
+    import socket
+    import warnings
+    from urllib.parse import urlsplit
+
+    from django.contrib.messages import constants as messages
+    from django.core.exceptions import ImproperlyConfigured, ValidationError
+    from django.core.validators import URLValidator
+
+
+    #
+    # Environment setup
+    #
+
+    VERSION = '2.9.7'
+
+    # Hostname
+    HOSTNAME = platform.node()
+
+    # Set the base directory two levels up
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Validate Python version
+    if platform.python_version_tuple() < ('3', '6'):
+        raise RuntimeError(
+            "NetBox requires Python 3.6 or higher (current: Python {})".format(platform.python_version())
+        )
+
+
+    #
+    # Configuration import
+    #
+
+    # Import configuration parameters
+    try:
+        from netbox import configuration
+    except ImportError:
+        raise ImproperlyConfigured(
+            "Configuration file is not present. Please define netbox/netbox/configuration.py per the documentation."
+        )
+
+    # Enforce required configuration parameters
+    for parameter in ['ALLOWED_HOSTS', 'DATABASE', 'SECRET_KEY', 'REDIS']:
+        if not hasattr(configuration, parameter):
+            raise ImproperlyConfigured(
+                "Required parameter {} is missing from configuration.py.".format(parameter)
+            )
+
+    # Set required parameters
+    ALLOWED_HOSTS = getattr(configuration, 'ALLOWED_HOSTS')
+    DATABASE = getattr(configuration, 'DATABASE')
+    REDIS = getattr(configuration, 'REDIS')
+    SECRET_KEY = getattr(configuration, 'SECRET_KEY')
+
+    # Set optional parameters
+    ADMINS = getattr(configuration, 'ADMINS', [])
+    ALLOWED_URL_SCHEMES = getattr(configuration, 'ALLOWED_URL_SCHEMES', (
+        'file', 'ftp', 'ftps', 'http', 'https', 'irc', 'mailto', 'sftp', 'ssh', 'tel', 'telnet', 'tftp', 'vnc', 'xmpp',
+    ))
+    BANNER_BOTTOM = getattr(configuration, 'BANNER_BOTTOM', '')
+    BANNER_LOGIN = getattr(configuration, 'BANNER_LOGIN', '')
+    BANNER_TOP = getattr(configuration, 'BANNER_TOP', '')
+    BASE_PATH = getattr(configuration, 'BASE_PATH', '')
+    if BASE_PATH:
+        BASE_PATH = BASE_PATH.strip('/') + '/'  # Enforce trailing slash only
+    CACHE_TIMEOUT = getattr(configuration, 'CACHE_TIMEOUT', 900)
+    CHANGELOG_RETENTION = getattr(configuration, 'CHANGELOG_RETENTION', 90)
+    CORS_ORIGIN_ALLOW_ALL = getattr(configuration, 'CORS_ORIGIN_ALLOW_ALL', False)
+    CORS_ORIGIN_REGEX_WHITELIST = getattr(configuration, 'CORS_ORIGIN_REGEX_WHITELIST', [])
+    CORS_ORIGIN_WHITELIST = getattr(configuration, 'CORS_ORIGIN_WHITELIST', [])
+    DATE_FORMAT = getattr(configuration, 'DATE_FORMAT', 'N j, Y')
+    DATETIME_FORMAT = getattr(configuration, 'DATETIME_FORMAT', 'N j, Y g:i a')
+    DEBUG = getattr(configuration, 'DEBUG', False)
+    DEVELOPER = getattr(configuration, 'DEVELOPER', False)
+    DOCS_ROOT = getattr(configuration, 'DOCS_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'docs'))
+    EMAIL = getattr(configuration, 'EMAIL', {})
+    ENFORCE_GLOBAL_UNIQUE = getattr(configuration, 'ENFORCE_GLOBAL_UNIQUE', False)
+    EXEMPT_VIEW_PERMISSIONS = getattr(configuration, 'EXEMPT_VIEW_PERMISSIONS', [])
+    HTTP_PROXIES = getattr(configuration, 'HTTP_PROXIES', None)
+    INTERNAL_IPS = getattr(configuration, 'INTERNAL_IPS', ('127.0.0.1', '::1'))
+    LOGGING = getattr(configuration, 'LOGGING', {})
+    LOGIN_REQUIRED = getattr(configuration, 'LOGIN_REQUIRED', False)
+    LOGIN_TIMEOUT = getattr(configuration, 'LOGIN_TIMEOUT', None)
+    MAINTENANCE_MODE = getattr(configuration, 'MAINTENANCE_MODE', False)
+    MAX_PAGE_SIZE = getattr(configuration, 'MAX_PAGE_SIZE', 1000)
+    MEDIA_ROOT = getattr(configuration, 'MEDIA_ROOT', os.path.join(BASE_DIR, 'media')).rstrip('/')
+    STORAGE_BACKEND = getattr(configuration, 'STORAGE_BACKEND', None)
+    STORAGE_CONFIG = getattr(configuration, 'STORAGE_CONFIG', {})
+    METRICS_ENABLED = getattr(configuration, 'METRICS_ENABLED', False)
+    NAPALM_ARGS = getattr(configuration, 'NAPALM_ARGS', {})
+    NAPALM_PASSWORD = getattr(configuration, 'NAPALM_PASSWORD', '')
+    NAPALM_TIMEOUT = getattr(configuration, 'NAPALM_TIMEOUT', 30)
+    NAPALM_USERNAME = getattr(configuration, 'NAPALM_USERNAME', '')
+    PAGINATE_COUNT = getattr(configuration, 'PAGINATE_COUNT', 50)
+    PLUGINS = getattr(configuration, 'PLUGINS', [])
+    PLUGINS_CONFIG = getattr(configuration, 'PLUGINS_CONFIG', {})
+    PREFER_IPV4 = getattr(configuration, 'PREFER_IPV4', False)
+    RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = getattr(configuration, 'RACK_ELEVATION_DEFAULT_UNIT_HEIGHT', 22)
+    RACK_ELEVATION_DEFAULT_UNIT_WIDTH = getattr(configuration, 'RACK_ELEVATION_DEFAULT_UNIT_WIDTH', 220)
+    REMOTE_AUTH_AUTO_CREATE_USER = getattr(configuration, 'REMOTE_AUTH_AUTO_CREATE_USER', False)
+    REMOTE_AUTH_BACKEND = getattr(configuration, 'REMOTE_AUTH_BACKEND', 'netbox.authentication.RemoteUserBackend')
+    REMOTE_AUTH_DEFAULT_GROUPS = getattr(configuration, 'REMOTE_AUTH_DEFAULT_GROUPS', [])
+    REMOTE_AUTH_DEFAULT_PERMISSIONS = getattr(configuration, 'REMOTE_AUTH_DEFAULT_PERMISSIONS', {})
+    REMOTE_AUTH_ENABLED = getattr(configuration, 'REMOTE_AUTH_ENABLED', False)
+    REMOTE_AUTH_HEADER = getattr(configuration, 'REMOTE_AUTH_HEADER', 'HTTP_REMOTE_USER')
+    RELEASE_CHECK_URL = getattr(configuration, 'RELEASE_CHECK_URL', None)
+    RELEASE_CHECK_TIMEOUT = getattr(configuration, 'RELEASE_CHECK_TIMEOUT', 24 * 3600)
+    REPORTS_ROOT = getattr(configuration, 'REPORTS_ROOT', os.path.join(BASE_DIR, 'reports')).rstrip('/')
+    RQ_DEFAULT_TIMEOUT = getattr(configuration, 'RQ_DEFAULT_TIMEOUT', 300)
+    SCRIPTS_ROOT = getattr(configuration, 'SCRIPTS_ROOT', os.path.join(BASE_DIR, 'scripts')).rstrip('/')
+    SESSION_FILE_PATH = getattr(configuration, 'SESSION_FILE_PATH', None)
+    SHORT_DATE_FORMAT = getattr(configuration, 'SHORT_DATE_FORMAT', 'Y-m-d')
+    SHORT_DATETIME_FORMAT = getattr(configuration, 'SHORT_DATETIME_FORMAT', 'Y-m-d H:i')
+    SHORT_TIME_FORMAT = getattr(configuration, 'SHORT_TIME_FORMAT', 'H:i:s')
+    TIME_FORMAT = getattr(configuration, 'TIME_FORMAT', 'g:i a')
+    TIME_ZONE = getattr(configuration, 'TIME_ZONE', 'UTC')
+    OIDC_RP_CLIENT_ID = getattr(configuration, 'OIDC_RP_CLIENT_ID', '')
+    OIDC_RP_CLIENT_SECRET = getattr(configuration, 'OIDC_RP_CLIENT_SECRET', '')
+    OIDC_OP_AUTHORIZATION_ENDPOINT = getattr(configuration, 'OIDC_OP_AUTHORIZATION_ENDPOINT', '')
+    OIDC_OP_TOKEN_ENDPOINT = getattr(configuration, 'OIDC_OP_TOKEN_ENDPOINT', '')
+    OIDC_OP_USER_ENDPOINT = getattr(configuration, 'OIDC_OP_USER_ENDPOINT', '')
+    LOGIN_REDIRECT_URL = getattr(configuration, 'LOGIN_REDIRECT_URL', '')
+    LOGOUT_REDIRECT_URL = getattr(configuration, 'LOGOUT_REDIRECT_URL', '')
+    OIDC_RP_SIGN_ALGO = getattr(configuration, 'OIDC_RP_SIGN_ALGO', 'HS256')
+    OIDC_OP_JWKS_ENDPOINT = getattr(configuration, 'OIDC_OP_JWKS_ENDPOINT', None)
+    OIDC_ALLOW_UNSECURED_JWT = getattr(configuration, 'OIDC_ALLOW_UNSECURED_JWT', True)
+    # OIDC_RP_IDP_SIGN_KEY = getattr(configuration, 'OIDC_RP_IDP_SIGN_KEY', None)
+    OIDC_VERIFY_SSL = getattr(configuration, 'OIDC_VERIFY_SSL', False)
+    OIDC_VERIFY_JWT = getattr(configuration, 'OIDC_VERIFY_JWT', False)
+
+    # Validate update repo URL and timeout
+    if RELEASE_CHECK_URL:
+        try:
+            URLValidator(RELEASE_CHECK_URL)
+        except ValidationError:
+            raise ImproperlyConfigured(
+                "RELEASE_CHECK_URL must be a valid API URL. Example: "
+                "https://api.github.com/repos/netbox-community/netbox"
+            )
+
+    # Enforce a minimum cache timeout for update checks
+    if RELEASE_CHECK_TIMEOUT < 3600:
+        raise ImproperlyConfigured("RELEASE_CHECK_TIMEOUT has to be at least 3600 seconds (1 hour)")
+
+    # TODO: Remove in v2.10
+    # Backward compatibility for REMOTE_AUTH_DEFAULT_PERMISSIONS
+    if type(REMOTE_AUTH_DEFAULT_PERMISSIONS) is not dict:
+        try:
+            REMOTE_AUTH_DEFAULT_PERMISSIONS = {perm: None for perm in REMOTE_AUTH_DEFAULT_PERMISSIONS}
+            warnings.warn(
+                "REMOTE_AUTH_DEFAULT_PERMISSIONS should be a dictionary. Backward compatibility will be removed in v2.10."
+            )
+        except TypeError:
+            raise ImproperlyConfigured("REMOTE_AUTH_DEFAULT_PERMISSIONS must be a dictionary.")
+    # Backward compatibility for REMOTE_AUTH_BACKEND
+    if REMOTE_AUTH_BACKEND == 'utilities.auth_backends.RemoteUserBackend':
+        warnings.warn(
+            "RemoteUserBackend has moved! Please update your configuration to:\n"
+            "    REMOTE_AUTH_BACKEND='netbox.authentication.RemoteUserBackend'"
+        )
+        REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
+
+
+    #
+    # Database
+    #
+
+    # Only PostgreSQL is supported
+    if METRICS_ENABLED:
+        DATABASE.update({
+            'ENGINE': 'django_prometheus.db.backends.postgresql'
+        })
+    else:
+        DATABASE.update({
+            'ENGINE': 'django.db.backends.postgresql'
+        })
+
+    DATABASES = {
+        'default': DATABASE,
+    }
+
+
+    #
+    # Media storage
+    #
+
+    if STORAGE_BACKEND is not None:
+        DEFAULT_FILE_STORAGE = STORAGE_BACKEND
+
+        # django-storages
+        if STORAGE_BACKEND.startswith('storages.'):
+
+            try:
+                import storages.utils
+            except ImportError:
+                raise ImproperlyConfigured(
+                    "STORAGE_BACKEND is set to {} but django-storages is not present. It can be installed by running 'pip "
+                    "install django-storages'.".format(STORAGE_BACKEND)
+                )
+
+            # Monkey-patch django-storages to fetch settings from STORAGE_CONFIG
+            def _setting(name, default=None):
+                if name in STORAGE_CONFIG:
+                    return STORAGE_CONFIG[name]
+                return globals().get(name, default)
+            storages.utils.setting = _setting
+
+    if STORAGE_CONFIG and STORAGE_BACKEND is None:
+        warnings.warn(
+            "STORAGE_CONFIG has been set in configuration.py but STORAGE_BACKEND is not defined. STORAGE_CONFIG will be "
+            "ignored."
+        )
+
+
+    #
+    # Redis
+    #
+
+    # Background task queuing
+    if 'tasks' not in REDIS:
+        raise ImproperlyConfigured(
+            "REDIS section in configuration.py is missing the 'tasks' subsection."
+        )
+    TASKS_REDIS = REDIS['tasks']
+    TASKS_REDIS_HOST = TASKS_REDIS.get('HOST', 'localhost')
+    TASKS_REDIS_PORT = TASKS_REDIS.get('PORT', 6379)
+    TASKS_REDIS_SENTINELS = TASKS_REDIS.get('SENTINELS', [])
+    TASKS_REDIS_USING_SENTINEL = all([
+        isinstance(TASKS_REDIS_SENTINELS, (list, tuple)),
+        len(TASKS_REDIS_SENTINELS) > 0
+    ])
+    TASKS_REDIS_SENTINEL_SERVICE = TASKS_REDIS.get('SENTINEL_SERVICE', 'default')
+    TASKS_REDIS_SENTINEL_TIMEOUT = TASKS_REDIS.get('SENTINEL_TIMEOUT', 10)
+    TASKS_REDIS_PASSWORD = TASKS_REDIS.get('PASSWORD', '')
+    TASKS_REDIS_DATABASE = TASKS_REDIS.get('DATABASE', 0)
+    TASKS_REDIS_SSL = TASKS_REDIS.get('SSL', False)
+    # TODO: Remove in v2.10 (see #5171)
+    if 'DEFAULT_TIMEOUT' in TASKS_REDIS:
+        warnings.warn('DEFAULT_TIMEOUT is no longer supported under REDIS configuration. Set RQ_DEFAULT_TIMEOUT instead.')
+
+    # Caching
+    if 'caching' not in REDIS:
+        raise ImproperlyConfigured(
+            "REDIS section in configuration.py is missing caching subsection."
+        )
+    CACHING_REDIS = REDIS['caching']
+    CACHING_REDIS_HOST = CACHING_REDIS.get('HOST', 'localhost')
+    CACHING_REDIS_PORT = CACHING_REDIS.get('PORT', 6379)
+    CACHING_REDIS_SENTINELS = CACHING_REDIS.get('SENTINELS', [])
+    CACHING_REDIS_USING_SENTINEL = all([
+        isinstance(CACHING_REDIS_SENTINELS, (list, tuple)),
+        len(CACHING_REDIS_SENTINELS) > 0
+    ])
+    CACHING_REDIS_SENTINEL_SERVICE = CACHING_REDIS.get('SENTINEL_SERVICE', 'default')
+    CACHING_REDIS_PASSWORD = CACHING_REDIS.get('PASSWORD', '')
+    CACHING_REDIS_DATABASE = CACHING_REDIS.get('DATABASE', 0)
+    CACHING_REDIS_SSL = CACHING_REDIS.get('SSL', False)
+
+
+    #
+    # Sessions
+    #
+
+    if LOGIN_TIMEOUT is not None:
+        # Django default is 1209600 seconds (14 days)
+        SESSION_COOKIE_AGE = LOGIN_TIMEOUT
+    if SESSION_FILE_PATH is not None:
+        SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+
+
+    #
+    # Email
+    #
+
+    EMAIL_HOST = EMAIL.get('SERVER')
+    EMAIL_HOST_USER = EMAIL.get('USERNAME')
+    EMAIL_HOST_PASSWORD = EMAIL.get('PASSWORD')
+    EMAIL_PORT = EMAIL.get('PORT', 25)
+    EMAIL_SSL_CERTFILE = EMAIL.get('SSL_CERTFILE')
+    EMAIL_SSL_KEYFILE = EMAIL.get('SSL_KEYFILE')
+    EMAIL_SUBJECT_PREFIX = '[NetBox] '
+    EMAIL_USE_SSL = EMAIL.get('USE_SSL', False)
+    EMAIL_USE_TLS = EMAIL.get('USE_TLS', False)
+    EMAIL_TIMEOUT = EMAIL.get('TIMEOUT', 10)
+    SERVER_EMAIL = EMAIL.get('FROM_EMAIL')
+
+
+    #
+    # Django
+    #
+
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'mozilla_django_oidc',  # Load after auth
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'django.contrib.humanize',
+        'cacheops',
+        'corsheaders',
+        'debug_toolbar',
+        'django_filters',
+        'django_tables2',
+        'django_prometheus',
+        'mptt',
+        'rest_framework',
+        'taggit',
+        'timezone_field',
+        'circuits',
+        'dcim',
+        'ipam',
+        'extras',
+        'secrets',
+        'tenancy',
+        'users',
+        'utilities',
+        'virtualization',
+        'django_rq',  # Must come after extras to allow overriding management commands
+        'drf_yasg',
+    ]
+
+    # Middleware
+    MIDDLEWARE = [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+        'django_prometheus.middleware.PrometheusBeforeMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'django.middleware.security.SecurityMiddleware',
+        'utilities.middleware.ExceptionHandlingMiddleware',
+        'utilities.middleware.RemoteUserMiddleware',
+        'utilities.middleware.LoginRequiredMiddleware',
+        'utilities.middleware.APIVersionMiddleware',
+        'extras.middleware.ObjectChangeMiddleware',
+        'django_prometheus.middleware.PrometheusAfterMiddleware',
+        'mozilla_django_oidc.middleware.SessionRefresh',
+    ]
+
+    ROOT_URLCONF = 'netbox.urls'
+
+    TEMPLATES_DIR = BASE_DIR + '/templates'
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [TEMPLATES_DIR],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.template.context_processors.media',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'utilities.context_processors.settings_and_registry',
+                ],
+            },
+        },
+    ]
+
+    # Set up authentication backends
+    AUTHENTICATION_BACKENDS = [
+        REMOTE_AUTH_BACKEND,
+        'netbox.authentication.ObjectPermissionBackend',
+    ]
+
+    # Internationalization
+    LANGUAGE_CODE = 'en-us'
+    USE_I18N = True
+    USE_TZ = True
+
+    # WSGI
+    WSGI_APPLICATION = 'netbox.wsgi.application'
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+    # Static files (CSS, JavaScript, Images)
+    STATIC_ROOT = BASE_DIR + '/static'
+    STATIC_URL = '/{}static/'.format(BASE_PATH)
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, "project-static"),
+    )
+
+    # Media
+    MEDIA_URL = '/{}media/'.format(BASE_PATH)
+
+    # Disable default limit of 1000 fields per request. Needed for bulk deletion of objects. (Added in Django 1.10.)
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
+    # Messages
+    MESSAGE_TAGS = {
+        messages.ERROR: 'danger',
+    }
+
+    # Authentication URLs
+    LOGIN_URL = '/{}login/'.format(BASE_PATH)
+
+    CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+
+    # Exclude potentially sensitive models from wildcard view exemption. These may still be exempted
+    # by specifying the model individually in the EXEMPT_VIEW_PERMISSIONS configuration parameter.
+    EXEMPT_EXCLUDE_MODELS = (
+        ('auth', 'group'),
+        ('auth', 'user'),
+        ('users', 'objectpermission'),
+    )
+
+    #
+    # Caching
+    #
+    if CACHING_REDIS_USING_SENTINEL:
+        CACHEOPS_SENTINEL = {
+            'locations': CACHING_REDIS_SENTINELS,
+            'service_name': CACHING_REDIS_SENTINEL_SERVICE,
+            'db': CACHING_REDIS_DATABASE,
+        }
+    else:
+        if CACHING_REDIS_SSL:
+            REDIS_CACHE_CON_STRING = 'rediss://'
+        else:
+            REDIS_CACHE_CON_STRING = 'redis://'
+
+        if CACHING_REDIS_PASSWORD:
+            REDIS_CACHE_CON_STRING = '{}:{}@'.format(REDIS_CACHE_CON_STRING, CACHING_REDIS_PASSWORD)
+
+        REDIS_CACHE_CON_STRING = '{}{}:{}/{}'.format(
+            REDIS_CACHE_CON_STRING,
+            CACHING_REDIS_HOST,
+            CACHING_REDIS_PORT,
+            CACHING_REDIS_DATABASE
+        )
+        CACHEOPS_REDIS = REDIS_CACHE_CON_STRING
+
+    if not CACHE_TIMEOUT:
+        CACHEOPS_ENABLED = False
+    else:
+        CACHEOPS_ENABLED = True
+
+
+    CACHEOPS_DEFAULTS = {
+        'timeout': CACHE_TIMEOUT
+    }
+    CACHEOPS = {
+        'auth.user': {'ops': 'get', 'timeout': 60 * 15},
+        'auth.*': {'ops': ('fetch', 'get')},
+        'auth.permission': {'ops': 'all'},
+        'circuits.*': {'ops': 'all'},
+        'dcim.region': None,  # MPTT models are exempt due to raw sql
+        'dcim.rackgroup': None,  # MPTT models are exempt due to raw sql
+        'dcim.*': {'ops': 'all'},
+        'ipam.*': {'ops': 'all'},
+        'extras.*': {'ops': 'all'},
+        'secrets.*': {'ops': 'all'},
+        'users.*': {'ops': 'all'},
+        'tenancy.tenantgroup': None,  # MPTT models are exempt due to raw sql
+        'tenancy.*': {'ops': 'all'},
+        'virtualization.*': {'ops': 'all'},
+    }
+    CACHEOPS_DEGRADE_ON_FAILURE = True
+
+
+    #
+    # Django Prometheus
+    #
+
+    PROMETHEUS_EXPORT_MIGRATIONS = False
+
+
+    #
+    # Django filters
+    #
+
+    FILTERS_NULL_CHOICE_LABEL = 'None'
+    FILTERS_NULL_CHOICE_VALUE = 'null'
+
+
+    #
+    # Django REST framework (API)
+    #
+
+    REST_FRAMEWORK_VERSION = VERSION.rsplit('.', 1)[0]  # Use major.minor as API version
+    REST_FRAMEWORK = {
+        'ALLOWED_VERSIONS': [REST_FRAMEWORK_VERSION],
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.SessionAuthentication',
+            'netbox.api.TokenAuthentication',
+        ),
+        'DEFAULT_FILTER_BACKENDS': (
+            'django_filters.rest_framework.DjangoFilterBackend',
+        ),
+        'DEFAULT_PAGINATION_CLASS': 'netbox.api.OptionalLimitOffsetPagination',
+        'DEFAULT_PERMISSION_CLASSES': (
+            'netbox.api.TokenPermissions',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+            'netbox.api.FormlessBrowsableAPIRenderer',
+        ),
+        'DEFAULT_VERSION': REST_FRAMEWORK_VERSION,
+        'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
+        'PAGE_SIZE': PAGINATE_COUNT,
+        'VIEW_NAME_FUNCTION': 'netbox.api.get_view_name',
+    }
+
+
+    #
+    # drf_yasg (OpenAPI/Swagger)
+    #
+
+    SWAGGER_SETTINGS = {
+        'DEFAULT_AUTO_SCHEMA_CLASS': 'utilities.custom_inspectors.NetBoxSwaggerAutoSchema',
+        'DEFAULT_FIELD_INSPECTORS': [
+            'utilities.custom_inspectors.JSONFieldInspector',
+            'utilities.custom_inspectors.NullableBooleanFieldInspector',
+            'utilities.custom_inspectors.CustomChoiceFieldInspector',
+            'utilities.custom_inspectors.SerializedPKRelatedFieldInspector',
+            'drf_yasg.inspectors.CamelCaseJSONFilter',
+            'drf_yasg.inspectors.ReferencingSerializerInspector',
+            'drf_yasg.inspectors.RelatedFieldInspector',
+            'drf_yasg.inspectors.ChoiceFieldInspector',
+            'drf_yasg.inspectors.FileFieldInspector',
+            'drf_yasg.inspectors.DictFieldInspector',
+            'drf_yasg.inspectors.SerializerMethodFieldInspector',
+            'drf_yasg.inspectors.SimpleFieldInspector',
+            'drf_yasg.inspectors.StringDefaultFieldInspector',
+        ],
+        'DEFAULT_FILTER_INSPECTORS': [
+            'drf_yasg.inspectors.CoreAPICompatInspector',
+        ],
+        'DEFAULT_INFO': 'netbox.urls.openapi_info',
+        'DEFAULT_MODEL_DEPTH': 1,
+        'DEFAULT_PAGINATOR_INSPECTORS': [
+            'utilities.custom_inspectors.NullablePaginatorInspector',
+            'drf_yasg.inspectors.DjangoRestResponsePagination',
+            'drf_yasg.inspectors.CoreAPICompatInspector',
+        ],
+        'SECURITY_DEFINITIONS': {
+            'Bearer': {
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'in': 'header',
+            }
+        },
+        'VALIDATOR_URL': None,
+    }
+
+
+    #
+    # Django RQ (Webhooks backend)
+    #
+
+    if TASKS_REDIS_USING_SENTINEL:
+        RQ_PARAMS = {
+            'SENTINELS': TASKS_REDIS_SENTINELS,
+            'MASTER_NAME': TASKS_REDIS_SENTINEL_SERVICE,
+            'DB': TASKS_REDIS_DATABASE,
+            'PASSWORD': TASKS_REDIS_PASSWORD,
+            'SOCKET_TIMEOUT': None,
+            'CONNECTION_KWARGS': {
+                'socket_connect_timeout': TASKS_REDIS_SENTINEL_TIMEOUT
+            },
+        }
+    else:
+        RQ_PARAMS = {
+            'HOST': TASKS_REDIS_HOST,
+            'PORT': TASKS_REDIS_PORT,
+            'DB': TASKS_REDIS_DATABASE,
+            'PASSWORD': TASKS_REDIS_PASSWORD,
+            'SSL': TASKS_REDIS_SSL,
+            'DEFAULT_TIMEOUT': RQ_DEFAULT_TIMEOUT,
+        }
+
+    RQ_QUEUES = {
+        'default': RQ_PARAMS,  # Webhooks
+        'check_releases': RQ_PARAMS,
+    }
+
+
+    #
+    # NetBox internal settings
+    #
+
+    # Secrets
+    SECRETS_MIN_PUBKEY_SIZE = 2048
+
+    # Pagination
+    PER_PAGE_DEFAULTS = [
+        25, 50, 100, 250, 500, 1000
+    ]
+    if PAGINATE_COUNT not in PER_PAGE_DEFAULTS:
+        PER_PAGE_DEFAULTS.append(PAGINATE_COUNT)
+        PER_PAGE_DEFAULTS = sorted(PER_PAGE_DEFAULTS)
+
+
+    #
+    # Plugins
+    #
+
+    for plugin_name in PLUGINS:
+
+        # Import plugin module
+        try:
+            plugin = importlib.import_module(plugin_name)
+        except ImportError:
+            raise ImproperlyConfigured(
+                "Unable to import plugin {}: Module not found. Check that the plugin module has been installed within the "
+                "correct Python environment.".format(plugin_name)
+            )
+
+        # Determine plugin config and add to INSTALLED_APPS.
+        try:
+            plugin_config = plugin.config
+            INSTALLED_APPS.append("{}.{}".format(plugin_config.__module__, plugin_config.__name__))
+        except AttributeError:
+            raise ImproperlyConfigured(
+                "Plugin {} does not provide a 'config' variable. This should be defined in the plugin's __init__.py file "
+                "and point to the PluginConfig subclass.".format(plugin_name)
+            )
+
+        # Validate user-provided configuration settings and assign defaults
+        if plugin_name not in PLUGINS_CONFIG:
+            PLUGINS_CONFIG[plugin_name] = {}
+        plugin_config.validate(PLUGINS_CONFIG[plugin_name])
+
+        # Add middleware
+        plugin_middleware = plugin_config.middleware
+        if plugin_middleware and type(plugin_middleware) in (list, tuple):
+            MIDDLEWARE.extend(plugin_middleware)
+
+        # Apply cacheops config
+        if type(plugin_config.caching_config) is not dict:
+            raise ImproperlyConfigured(
+                "Plugin {} caching_config must be a dictionary.".format(plugin_name)
+            )
+        CACHEOPS.update({
+            "{}.{}".format(plugin_name, key): value for key, value in plugin_config.caching_config.items()
+        })
+  
+  urls.py: |
+    from django.conf import settings
+    from django.conf.urls import include
+    from django.urls import path, re_path
+    from django.views.static import serve
+    from drf_yasg import openapi
+    from drf_yasg.views import get_schema_view
+
+    from extras.plugins.urls import plugin_admin_patterns, plugin_patterns, plugin_api_patterns
+    from netbox.views import APIRootView, HomeView, StaticMediaFailureView, SearchView
+    from users.views import LoginView, LogoutView
+    from .admin import admin_site
+
+
+    openapi_info = openapi.Info(
+        title="NetBox API",
+        default_version='v2',
+        description="API to access NetBox",
+        terms_of_service="https://github.com/netbox-community/netbox",
+        license=openapi.License(name="Apache v2 License"),
+    )
+
+    schema_view = get_schema_view(
+        openapi_info,
+        validators=['flex', 'ssv'],
+        public=True,
+    )
+
+    _patterns = [
+
+        # Base views
+        path('', HomeView.as_view(), name='home'),
+        path('search/', SearchView.as_view(), name='search'),
+
+        # Login/logout
+        path('login/', LoginView.as_view(), name='login'),
+        path('logout/', LogoutView.as_view(), name='logout'),
+
+        # Apps
+        path('circuits/', include('circuits.urls')),
+        path('dcim/', include('dcim.urls')),
+        path('extras/', include('extras.urls')),
+        path('ipam/', include('ipam.urls')),
+        path('secrets/', include('secrets.urls')),
+        path('tenancy/', include('tenancy.urls')),
+        path('user/', include('users.urls')),
+        path('virtualization/', include('virtualization.urls')),
+
+        # API
+        path('api/', APIRootView.as_view(), name='api-root'),
+        path('api/circuits/', include('circuits.api.urls')),
+        path('api/dcim/', include('dcim.api.urls')),
+        path('api/extras/', include('extras.api.urls')),
+        path('api/ipam/', include('ipam.api.urls')),
+        path('api/secrets/', include('secrets.api.urls')),
+        path('api/tenancy/', include('tenancy.api.urls')),
+        path('api/users/', include('users.api.urls')),
+        path('api/virtualization/', include('virtualization.api.urls')),
+        path('api/docs/', schema_view.with_ui('swagger'), name='api_docs'),
+        path('api/redoc/', schema_view.with_ui('redoc'), name='api_redocs'),
+        re_path(r'^api/swagger(?P<format>.json|.yaml)$', schema_view.without_ui(), name='schema_swagger'),
+
+        # Serving static media in Django to pipe it through LoginRequiredMiddleware
+        path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+
+        # Admin
+        path('admin/', admin_site.urls),
+        path('admin/background-tasks/', include('django_rq.urls')),
+
+        # Errors
+        path('media-failure/', StaticMediaFailureView.as_view(), name='media_failure'),
+
+        # Plugins
+        path('plugins/', include((plugin_patterns, 'plugins'))),
+        path('api/plugins/', include((plugin_api_patterns, 'plugins-api'))),
+        path('admin/plugins/', include(plugin_admin_patterns))
+    ]
+
+
+    if settings.DEBUG:
+        import debug_toolbar
+        _patterns += [
+            path('__debug__/', include(debug_toolbar.urls)),
+        ]
+
+    if settings.METRICS_ENABLED:
+        _patterns += [
+            path('', include('django_prometheus.urls')),
+        ]
+
+    # Prepend BASE_PATH
+    urlpatterns = [
+        path('{}'.format(settings.BASE_PATH), include(_patterns)),
+        path('oidc/', include('mozilla_django_oidc.urls')),
+    ]
+
+    handler500 = 'utilities.views.server_error'
+
+  configuration.py: |
+    ####
+    ## We recommend to not edit this file.
+    ## Create separate files to overwrite the settings.
+    ## See `extra.py` as an example.
+    ####
+
+    import re
+
+    from os.path import dirname, abspath, join
+    from os import environ
+
+    # For reference see https://netbox.readthedocs.io/en/stable/configuration/
+    # Based on https://github.com/netbox-community/netbox/blob/master/netbox/netbox/configuration.example.py
+
+    # Read secret from file
+    def _read_secret(secret_name, default = None):
+        try:
+            f = open('/run/secrets/' + secret_name, 'r', encoding='utf-8')
+        except EnvironmentError:
+            return default
+        else:
+            with f:
+                return f.readline().strip()
+
+    _BASE_DIR = dirname(dirname(abspath(__file__)))
+
+    #########################
+    #                       #
+    #   Required settings   #
+    #                       #
+    #########################
+
+    # This is a list of valid fully-qualified domain names (FQDNs) for the NetBox server. NetBox will not permit write
+    # access to the server via any other hostnames. The first FQDN in the list will be treated as the preferred name.
+    #
+    # Example: ALLOWED_HOSTS = ['netbox.example.com', 'netbox.internal.local']
+    ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '*').split(' ')
+
+    # PostgreSQL database configuration. See the Django documentation for a complete list of available parameters:
+    #   https://docs.djangoproject.com/en/stable/ref/settings/#databases
+    DATABASE = {
+        'NAME': environ.get('DB_NAME', 'netbox'),            # Database name
+        'USER': environ.get('DB_USER', ''),                  # PostgreSQL username
+        'PASSWORD': _read_secret('db_password', environ.get('DB_PASSWORD', '')),
+                                                            # PostgreSQL password
+        'HOST': environ.get('DB_HOST', 'localhost'),         # Database server
+        'PORT': environ.get('DB_PORT', ''),                  # Database port (leave blank for default)
+        'OPTIONS': {'sslmode': environ.get('DB_SSLMODE', 'prefer')},
+                                                            # Database connection SSLMODE
+        'CONN_MAX_AGE': int(environ.get('DB_CONN_MAX_AGE', '300')),
+                                                            # Max database connection age
+    }
+
+    # Redis database settings. Redis is used for caching and for queuing background tasks such as webhook events. A separate
+    # configuration exists for each. Full connection details are required in both sections, and it is strongly recommended
+    # to use two separate database IDs.
+    REDIS = {
+        'tasks': {
+            'HOST': environ.get('REDIS_HOST', 'localhost'),
+            'PORT': int(environ.get('REDIS_PORT', 6379)),
+            'PASSWORD': _read_secret('redis_password', environ.get('REDIS_PASSWORD', '')),
+            'DATABASE': int(environ.get('REDIS_DATABASE', 0)),
+            'SSL': environ.get('REDIS_SSL', 'False').lower() == 'true',
+        },
+        'caching': {
+            'HOST': environ.get('REDIS_CACHE_HOST', environ.get('REDIS_HOST', 'localhost')),
+            'PORT': int(environ.get('REDIS_CACHE_PORT', environ.get('REDIS_PORT', 6379))),
+            'PASSWORD': _read_secret('redis_cache_password', environ.get('REDIS_CACHE_PASSWORD', environ.get('REDIS_PASSWORD', ''))),
+            'DATABASE': int(environ.get('REDIS_CACHE_DATABASE', 1)),
+            'SSL': environ.get('REDIS_CACHE_SSL', environ.get('REDIS_SSL', 'False')).lower() == 'true',
+        },
+    }
+
+    # This key is used for secure generation of random numbers and strings. It must never be exposed outside of this file.
+    # For optimal security, SECRET_KEY should be at least 50 characters in length and contain a mix of letters, numbers, and
+    # symbols. NetBox will not run without this defined. For more information, see
+    # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY
+    SECRET_KEY = _read_secret('secret_key', environ.get('SECRET_KEY', ''))
+
+
+    #########################
+    #                       #
+    #   Optional settings   #
+    #                       #
+    #########################
+
+    # Specify one or more name and email address tuples representing NetBox administrators. These people will be notified of
+    # application errors (assuming correct email settings are provided).
+    ADMINS = [
+        # ['John Doe', 'jdoe@example.com'],
+    ]
+
+    # URL schemes that are allowed within links in NetBox
+    ALLOWED_URL_SCHEMES = (
+        'file', 'ftp', 'ftps', 'http', 'https', 'irc', 'mailto', 'sftp', 'ssh', 'tel', 'telnet', 'tftp', 'vnc', 'xmpp',
+    )
+
+    # Optionally display a persistent banner at the top and/or bottom of every page. HTML is allowed. To display the same
+    # content in both banners, define BANNER_TOP and set BANNER_BOTTOM = BANNER_TOP.
+    BANNER_TOP = environ.get('BANNER_TOP', '')
+    BANNER_BOTTOM = environ.get('BANNER_BOTTOM', '')
+
+    # Text to include on the login page above the login form. HTML is allowed.
+    BANNER_LOGIN = environ.get('BANNER_LOGIN', '')
+
+    # Base URL path if accessing NetBox within a directory. For example, if installed at http://example.com/netbox/, set:
+    # BASE_PATH = 'netbox/'
+    BASE_PATH = environ.get('BASE_PATH', '')
+
+    # Cache timeout in seconds. Set to 0 to dissable caching. Defaults to 900 (15 minutes)
+    CACHE_TIMEOUT = int(environ.get('CACHE_TIMEOUT', 900))
+
+    # Maximum number of days to retain logged changes. Set to 0 to retain changes indefinitely. (Default: 90)
+    CHANGELOG_RETENTION = int(environ.get('CHANGELOG_RETENTION', 90))
+
+    # API Cross-Origin Resource Sharing (CORS) settings. If CORS_ORIGIN_ALLOW_ALL is set to True, all origins will be
+    # allowed. Otherwise, define a list of allowed origins using either CORS_ORIGIN_WHITELIST or
+    # CORS_ORIGIN_REGEX_WHITELIST. For more information, see https://github.com/ottoyiu/django-cors-headers
+    CORS_ORIGIN_ALLOW_ALL = environ.get('CORS_ORIGIN_ALLOW_ALL', 'False').lower() == 'true'
+    CORS_ORIGIN_WHITELIST = list(filter(None, environ.get('CORS_ORIGIN_WHITELIST', 'https://localhost').split(' ')))
+    CORS_ORIGIN_REGEX_WHITELIST = [re.compile(r) for r in list(filter(None, environ.get('CORS_ORIGIN_REGEX_WHITELIST', '').split(' ')))]
+
+    # Set to True to enable server debugging. WARNING: Debugging introduces a substantial performance penalty and may reveal
+    # sensitive information about your installation. Only enable debugging while performing testing. Never enable debugging
+    # on a production system.
+    # DEBUG = environ.get('DEBUG', 'False').lower() == 'true'
+    DEBUG = 'true'
+
+    # Email settings
+    EMAIL = {
+        'SERVER': environ.get('EMAIL_SERVER', 'localhost'),
+        'PORT': int(environ.get('EMAIL_PORT', 25)),
+        'USERNAME': environ.get('EMAIL_USERNAME', ''),
+        'PASSWORD': _read_secret('email_password', environ.get('EMAIL_PASSWORD', '')),
+        'USE_SSL': environ.get('EMAIL_USE_SSL', 'False').lower() == 'true',
+        'USE_TLS': environ.get('EMAIL_USE_TLS', 'False').lower() == 'true',
+        'SSL_CERTFILE': environ.get('EMAIL_SSL_CERTFILE', ''),
+        'SSL_KEYFILE': environ.get('EMAIL_SSL_KEYFILE', ''),
+        'TIMEOUT': int(environ.get('EMAIL_TIMEOUT', 10)),  # seconds
+        'FROM_EMAIL': environ.get('EMAIL_FROM', ''),
+    }
+
+    # Enforcement of unique IP space can be toggled on a per-VRF basis. To enforce unique IP space within the global table
+    # (all prefixes and IP addresses not assigned to a VRF), set ENFORCE_GLOBAL_UNIQUE to True.
+    ENFORCE_GLOBAL_UNIQUE = environ.get('ENFORCE_GLOBAL_UNIQUE', 'False').lower() == 'true'
+
+    # Exempt certain models from the enforcement of view permissions. Models listed here will be viewable by all users and
+    # by anonymous users. List models in the form `<app>.<model>`. Add '*' to this list to exempt all models.
+    EXEMPT_VIEW_PERMISSIONS = list(filter(None, environ.get('EXEMPT_VIEW_PERMISSIONS', '').split(' ')))
+
+    # Enable custom logging. Please see the Django documentation for detailed guidance on configuring custom logs:
+    #   https://docs.djangoproject.com/en/stable/topics/logging/
+    LOGGING = {}
+
+    # Setting this to True will permit only authenticated users to access any part of NetBox. By default, anonymous users
+    # are permitted to access most data in NetBox (excluding secrets) but not make any changes.
+    LOGIN_REQUIRED = environ.get('LOGIN_REQUIRED', 'False').lower() == 'true'
+
+    # The length of time (in seconds) for which a user will remain logged into the web UI before being prompted to
+    # re-authenticate. (Default: 1209600 [14 days])
+    LOGIN_TIMEOUT = environ.get('LOGIN_TIMEOUT', None)
+
+    # Setting this to True will display a "maintenance mode" banner at the top of every page.
+    MAINTENANCE_MODE = environ.get('MAINTENANCE_MODE', 'False').lower() == 'true'
+
+    # An API consumer can request an arbitrary number of objects =by appending the "limit" parameter to the URL (e.g.
+    # "?limit=1000"). This setting defines the maximum limit. Setting it to 0 or None will allow an API consumer to request
+    # all objects by specifying "?limit=0".
+    MAX_PAGE_SIZE = int(environ.get('MAX_PAGE_SIZE', 1000))
+
+    # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed. Note that
+    # the default value of this setting is derived from the installed location.
+    MEDIA_ROOT = environ.get('MEDIA_ROOT', join(_BASE_DIR, 'media'))
+
+    # Expose Prometheus monitoring metrics at the HTTP endpoint '/metrics'
+    METRICS_ENABLED = environ.get('METRICS_ENABLED', 'False').lower() == 'true'
+
+    # Credentials that NetBox will uses to authenticate to devices when connecting via NAPALM.
+    NAPALM_USERNAME = environ.get('NAPALM_USERNAME', '')
+    NAPALM_PASSWORD = _read_secret('napalm_password', environ.get('NAPALM_PASSWORD', ''))
+
+    # NAPALM timeout (in seconds). (Default: 30)
+    NAPALM_TIMEOUT = int(environ.get('NAPALM_TIMEOUT', 30))
+
+    # NAPALM optional arguments (see http://napalm.readthedocs.io/en/latest/support/#optional-arguments). Arguments must
+    # be provided as a dictionary.
+    NAPALM_ARGS = {}
+
+    # Determine how many objects to display per page within a list. (Default: 50)
+    PAGINATE_COUNT = int(environ.get('PAGINATE_COUNT', 50))
+
+    # Enable installed plugins. Add the name of each plugin to the list.
+    PLUGINS = []
+
+    # Plugins configuration settings. These settings are used by various plugins that the user may have installed.
+    # Each key in the dictionary is the name of an installed plugin and its value is a dictionary of settings.
+    PLUGINS_CONFIG = {
+    }
+
+    # When determining the primary IP address for a device, IPv6 is preferred over IPv4 by default. Set this to True to
+    # prefer IPv4 instead.
+    PREFER_IPV4 = environ.get('PREFER_IPV4', 'False').lower() == 'true'
+
+    # Rack elevation size defaults, in pixels. For best results, the ratio of width to height should be roughly 10:1.
+    RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = int(environ.get('RACK_ELEVATION_DEFAULT_UNIT_HEIGHT', 22))
+    RACK_ELEVATION_DEFAULT_UNIT_WIDTH = int(environ.get('RACK_ELEVATION_DEFAULT_UNIT_WIDTH', 220))
+
+    # Remote authentication support
+    REMOTE_AUTH_ENABLED = environ.get('REMOTE_AUTH_ENABLED', 'False').lower() == 'true'
+    REMOTE_AUTH_BACKEND = environ.get('REMOTE_AUTH_BACKEND', 'netbox.authentication.RemoteUserBackend')
+    REMOTE_AUTH_HEADER = environ.get('REMOTE_AUTH_HEADER', 'HTTP_REMOTE_USER')
+    REMOTE_AUTH_AUTO_CREATE_USER = environ.get('REMOTE_AUTH_AUTO_CREATE_USER', 'True').lower() == 'true'
+    REMOTE_AUTH_DEFAULT_GROUPS = list(filter(None, environ.get('REMOTE_AUTH_DEFAULT_GROUPS', '').split(' ')))
+
+    # This determines how often the GitHub API is called to check the latest release of NetBox. Must be at least 1 hour.
+    RELEASE_CHECK_TIMEOUT = int(environ.get('RELEASE_CHECK_TIMEOUT', 24 * 3600))
+
+    # This repository is used to check whether there is a new release of NetBox available. Set to None to disable the
+    # version check or use the URL below to check for release in the official NetBox repository.
+    # https://api.github.com/repos/netbox-community/netbox/releases
+    RELEASE_CHECK_URL = environ.get('RELEASE_CHECK_URL', None)
+
+    # The file path where custom reports will be stored. A trailing slash is not needed. Note that the default value of
+    # this setting is derived from the installed location.
+    REPORTS_ROOT = environ.get('REPORTS_ROOT', '/etc/netbox/reports')
+
+    # Maximum execution time for background tasks, in seconds.
+    RQ_DEFAULT_TIMEOUT = int(environ.get('RQ_DEFAULT_TIMEOUT', 300))
+
+    # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
+    # this setting is derived from the installed location.
+    SCRIPTS_ROOT = environ.get('SCRIPTS_ROOT', '/etc/netbox/scripts')
+
+    # By default, NetBox will store session data in the database. Alternatively, a file path can be specified here to use
+    # local file storage instead. (This can be useful for enabling authentication on a standby instance with read-only
+    # database access.) Note that the user as which NetBox runs must have read and write permissions to this path.
+    SESSION_FILE_PATH = environ.get('REPORTS_ROOT', None)
+
+    # Time zone (default: UTC)
+    TIME_ZONE = environ.get('TIME_ZONE', 'UTC')
+
+    # Date/time formatting. See the following link for supported formats:
+    # https://docs.djangoproject.com/en/stable/ref/templates/builtins/#date
+    DATE_FORMAT = environ.get('DATE_FORMAT', 'N j, Y')
+    SHORT_DATE_FORMAT = environ.get('SHORT_DATE_FORMAT', 'Y-m-d')
+    TIME_FORMAT = environ.get('TIME_FORMAT', 'g:i a')
+    SHORT_TIME_FORMAT = environ.get('SHORT_TIME_FORMAT', 'H:i:s')
+    DATETIME_FORMAT = environ.get('DATETIME_FORMAT', 'N j, Y g:i a')
+    SHORT_DATETIME_FORMAT = environ.get('SHORT_DATETIME_FORMAT', 'Y-m-d H:i')
+
+    OIDC_RP_CLIENT_ID = environ.get('OIDC_RP_CLIENT_ID', '')
+    OIDC_RP_CLIENT_SECRET = environ.get('OIDC_RP_CLIENT_SECRET', '')
+    OIDC_OP_AUTHORIZATION_ENDPOINT = environ.get('OIDC_OP_AUTHORIZATION_ENDPOINT', '')
+    OIDC_OP_TOKEN_ENDPOINT = environ.get('OIDC_OP_TOKEN_ENDPOINT', '')
+    OIDC_OP_USER_ENDPOINT = environ.get('OIDC_OP_USER_ENDPOINT', '')
+    LOGIN_REDIRECT_URL = environ.get('LOGIN_REDIRECT_URL', '')
+    LOGOUT_REDIRECT_URL = environ.get('LOGOUT_REDIRECT_URL', '')
+    OIDC_RP_SIGN_ALGO = environ.get('OIDC_RP_SIGN_ALGO', 'HS256')
+    OIDC_OP_JWKS_ENDPOINT = environ.get('OIDC_OP_JWKS_ENDPOINT', None)
+    OIDC_ALLOW_UNSECURED_JWT = environ.get('OIDC_ALLOW_UNSECURED_JWT', 'True').lower() == 'true'
+    # OIDC_RP_IDP_SIGN_KEY = environ.get('OIDC_RP_IDP_SIGN_KEY', None)
+    OIDC_VERIFY_SSL = environ.get('REMOTE_AUTH_ENABLED', 'False').lower() == 'false'
+    OIDC_VERIFY_JWT = True
+
+  login.html: |
+    {% extends 'base.html' %}
+    {% load form_helpers %}
+
+    {% block content %}
+    <div class="row" style="margin-top: {% if settings.BANNER_LOGIN %}100{% else %}150{% endif %}px;">
+        <div class="col-sm-4 col-sm-offset-4">
+            {% if settings.BANNER_LOGIN %}
+                <div style="margin-bottom: 25px">
+                    {{ settings.BANNER_LOGIN|safe }}
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+                <div class="panel panel-danger">
+                    <div class="panel-heading"><strong>Errors</strong></div>
+                    <div class="panel-body">
+                        {{ form.non_field_errors }}
+                    </div>
+                </div>
+            {% endif %}
+            <form action="{% url 'login' %}" method="post" class="form form-horizontal">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Log In</strong>
+                    </div>
+                    <div class="panel-body">
+                        {% csrf_token %}
+                        {% if 'next' in request.GET %}<input type="hidden" name="next" value="{{ request.GET.next }}" />{% endif %}
+                        {% if 'next' in request.POST %}<input type="hidden" name="next" value="{{ request.POST.next }}" />{% endif %}
+                        {% render_form form %}
+                    </div>
+                    <div class="panel-footer text-right">
+                        <button type="submit" class="btn btn-primary">Log In</button>
+                    </div>
+                </div>
+            </form>
+            {% if user.is_authenticated %}
+              <p>Current user: {{ user.email }}</p>
+              <form action="{% url 'oidc_logout' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="logout">
+              </form>
+            {% else %}
+              <a href="{% url 'oidc_authentication_init' %}">Login with SSO</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endblock %}
 
 ---
 apiVersion: v1
