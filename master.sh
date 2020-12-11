@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # kuberverse k8s lab provisioner
+set -e
 
 KVMSG=$1
 NODE=$2
