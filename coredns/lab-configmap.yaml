@@ -45,3 +45,4 @@ data:
     manager  IN A 10.0.0.10
     build  IN A 10.0.0.10
     token  IN A 10.0.0.10
+    askbot IN A 10.0.0.10

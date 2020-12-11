@@ -107,6 +107,7 @@ Using this setup, the Vagrant VMs will be assigned the following IPs:
 ```
 $ vagrant plugin install vagrant-scp
 $ vagrant plugin install vagrant-winnfsd
+$ vagrant plugin install vagrant-cachier
 ```
 
 7) Default docker registry setup on worker nodes (can be customized):

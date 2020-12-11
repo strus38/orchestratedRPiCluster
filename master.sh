@@ -48,7 +48,7 @@ echo "********** $KVMSG ->> Initializing Kubernetes Cluster"
 echo "********** $KVMSG ->> Master Node $NODE"
 echo "********** $KVMSG ->> kv-master-$NODE"
 echo "Running: kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $API_ADV_ADDRESS"
-kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $API_ADV_ADDRESS --kubernetes-version=v1.19.0 | tee /vagrant/kubeadm-init.out
+kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $API_ADV_ADDRESS --kubernetes-version=v1.20.0 | tee /vagrant/kubeadm-init.out
 # optionnaly can add: --kubernetes-version=v1.18.3
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -61,7 +61,7 @@ chown vagrant:vagrant /home/vagrant/.kube/config
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
-curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.15.1/calicoctl
+curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.17.1/calicoctl
 chmod +x ./calicoctl
 
 #Configure the Calico Network Plugin

@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.box_version = BOX_IMAGE_VERSION
-      subconfig.cache.scope = :box
+      #subconfig.cache.scope = :box
       subconfig.vm.synced_folder 'src/', "/var/www", 
         type:"nfs", 
         mount_options: %w{rw,async,fsc,nolock,vers=3,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}
@@ -72,7 +72,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.box_version = BOX_IMAGE_VERSION
-      subconfig.cache.scope = :box
+      #subconfig.cache.scope = :box
       subconfig.vm.synced_folder 'src/', "/var/www", 
         type:"nfs", 
         mount_options: %w{rw,async,fsc,nolock,vers=3,udp,rsize=32768,wsize=32768,hard,noatime,actimeo=2}

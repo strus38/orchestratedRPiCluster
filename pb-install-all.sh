@@ -74,6 +74,9 @@ function runcmds {
             helm repo add codecentric https://codecentric.github.io/helm-charts
             helm repo add harbor https://helm.goharbor.io
             helm repo add sylabs https://charts.enterprise.sylabs.io
+            helm repo add grafana https://grafana.github.io/helm-charts
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            # helm repo add stable https://charts.helm.sh/stable
         fi
     fi
     echo "### Testing binaries"
@@ -86,39 +89,39 @@ function runcmds {
     echo "Environment READY"
     echo "-----"
 
-    # if [ ! -f "/usr/local/bin/checkov" ]; then 
-    #     echo "### Issuing security report"
-    #     checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
-    #     junit2html checkov.results.xml > checkov.html
-    # fi
+    if [ ! -f "/usr/local/bin/checkov" ]; then 
+        echo "### Issuing security report"
+        checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
+        junit2html checkov.results.xml > checkov.html
+    fi
 
-    # echo "### Starting configuration of all services..."
-    # ./kubectl get nodes
-    # echo "....Create namespaces"
-    # ./kubectl apply -f createNamespaces.yaml
-    # sleep 5s
+    echo "### Starting configuration of all services..."
+    ./kubectl get nodes
+    echo "....Create namespaces"
+    ./kubectl apply -f createNamespaces.yaml
+    sleep 5s
 
-    # echo "Wait for all calico nodes to be ready"
-    # check_readiness "calico"
+    echo "Wait for all calico nodes to be ready"
+    check_readiness "calico"
 
-    # echo "....Create metallb"
-    # helm $KEYV metallb bitnami/metallb -n kube-system
-    # check_readiness "metallb"
-    # ./kubectl patch configmap metallb --patch "$(cat metallb/patch-metallb-config.yml)" -n kube-system
-    # ./kubectl apply -f metallb/metallb-config.yml
-    # sleep 5s
+    echo "....Create metallb"
+    helm $KEYV metallb bitnami/metallb -n kube-system
+    check_readiness "metallb"
+    ./kubectl patch configmap metallb --patch "$(cat metallb/patch-metallb-config.yml)" -n kube-system
+    ./kubectl apply -f metallb/metallb-config.yml
+    sleep 5s
 
-    # echo "....Updating CoreDNS to add RPi nodes"
-    # ./kubectl apply -f coredns/lab-configmap.yaml  -n kube-system
-    # ./kubectl apply -f coredns/lab-coredns.yaml -n kube-system
-    # sleep 5s
-    # ./kubectl patch configmap coredns --patch "$(cat coredns/patch-coredns-configmap.yml)" -n kube-system
-    # ./kubectl patch deployment coredns --patch "$(cat coredns/patch-coredns-deployment.yml)" -n kube-system
-    # sleep 5s
+    echo "....Updating CoreDNS to add RPi nodes"
+    ./kubectl apply -f coredns/lab-configmap.yaml  -n kube-system
+    ./kubectl apply -f coredns/lab-coredns.yaml -n kube-system
+    sleep 5s
+    ./kubectl patch configmap coredns --patch "$(cat coredns/patch-coredns-configmap.yml)" -n kube-system
+    ./kubectl patch deployment coredns --patch "$(cat coredns/patch-coredns-deployment.yml)" -n kube-system
+    sleep 5s
 
-    # echo "... NFS client"
-    # helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
-    # check_readiness "nfs-client"
+    echo "... NFS client"
+    helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
+    check_readiness "nfs-client"
 
     echo " ....Create chronyd"
     ./kubectl apply -f chronyd/chronyd.yaml
@@ -128,8 +131,11 @@ function runcmds {
     ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n cert-manager
     ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n kube-system
     ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n rack01
+    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n monitoring
     ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=cert-manager
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=kube-system
     ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=monitoring
     # ./kubectl apply -f certmgr/cert-manager.crds.yaml
     sleep 5s
     helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v1.0.2 --set installCRDs=true
@@ -140,7 +146,8 @@ function runcmds {
 
     echo "....Create nginx-ingress"
     helm uninstall nginx-ingress -n nginx-ingress
-    helm $KEYV nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
+    # helm $KEYV nginx-ingress -f nginx-ingress/values.yaml stable/nginx-ingress -n nginx-ingress
+    helm $KEYV nginx-ingress -f nginx-ingress/values2.yaml ingress-nginx/ingress-nginx -n nginx-ingress
     check_readiness "nginx-ingress"
 
     echo "....Create Persistent Volumes"
@@ -152,59 +159,59 @@ function runcmds {
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloak"
 
-    # echo "....Create main apps UI"
-    # ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
-    # ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
-    # check_readiness "forecastle"
+    echo "....Create main apps UI"
+    ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
+    ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
+    check_readiness "forecastle"
 
-    # echo "....Create K8S dashboard"
-    # ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
-    # check_readiness "dashboard"
-    # ./kubectl create serviceaccount dashboard-admin-sa
-    # ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
-    # sleep 5s
-    # ./kubectl apply -f dashboard/ingress.yaml -n kubernetes-dashboard
-    # sleep 5s
+    echo "....Create K8S dashboard"
+    ./kubectl apply -f dashboard/dashboard.yaml -n kubernetes-dashboard
+    check_readiness "dashboard"
+    ./kubectl create serviceaccount dashboard-admin-sa
+    ./kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+    sleep 5s
+    ./kubectl apply -f dashboard/ingress.yaml -n kubernetes-dashboard
+    sleep 5s
 
-    # echo "....Create Registries: helm/docker and tools"
-    # helm $KEYV harbor harbor/harbor -f registry/harbor/values.yaml -n kube-system
-    # check_readiness "harbor"
-    # ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
-    # sleep 5s
-    # helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
-    # check_readiness "docker-registry"
+    echo "....Create Registries: helm/docker and tools"
+    helm $KEYV harbor harbor/harbor -f registry/harbor/values.yaml -n kube-system
+    check_readiness "harbor"
+    ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
+    sleep 5s
+    helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
+    check_readiness "docker-registry"
 
     echo "....Create netbox"
     ./kubectl create secret generic gatekeeper --from-file=./netbox/kc/gatekeeper.yaml -n kube-system
     ./kubectl apply -f netbox/. -n kube-system
     check_readiness "netbox"
 
-    # echo "....Create monitoring"
-    # helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
-    # ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
-    # check_readiness "prometheus"
-    # ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
-    # ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
+    echo "....Create monitoring"
+    helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
+    check_readiness "prometheus"
+    ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
+    ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
     # helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
     # check_readiness "grafana"
     # helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
     # check_readiness "karma"
 
-    # echo "....Install Kubevirt"
-    # export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
-    # echo "Kubevirt version: $KVIRT_VERSION"
-    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
-    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
-    # ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
-    # check_readiness "virt"
-    # ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+    echo "....Install Kubevirt"
+    export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
+    echo "Kubevirt version: $KVIRT_VERSION"
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
+    ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
+    check_readiness "virt"
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
 
-    # echo "Install Singularity"
-    # ./kubectl apply -f ./singularity_ent/role.yml
-    # ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
-    # helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
-    # helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
-    # check_readiness "singularity"
+    echo "Install Singularity"
+    ./kubectl apply -f ./singularity_ent/role.yml
+    ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
+    helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
+    helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
+    check_readiness "singularity"
 
     # echo "....Create tftpd"
     # ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
