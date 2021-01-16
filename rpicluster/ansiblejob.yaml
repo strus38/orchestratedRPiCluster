@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: playbook-
+  labels:
+    purpose: playbook
+spec:
+  parallelism: 1    
+  completions: 1    
+  activeDeadlineSeconds: 1800 
+  backoffLimit: 6   
+  template:
+    spec:
+      containers:
+      - name: ansible-playbook
+        image: geerlingguy/docker-ubuntu1804-ansible:latest
+        command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "inventory","--limit","$(NODE)"]
+        imagePullPolicy: IfNotPresent
+        stdin: true
+        tty: true
+        env:
+          - name: container
+            value: docker
+        resources:
+          limits:
+            cpu: 200m
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+        volumeMounts:
+          - name: cgroup
+            mountPath: /sys/fs/cgroup:ro
+          - name: varrun
+            mountPath: /run
+          - name: varlock
+            mountPath: /run/lock
+          - name: fuse
+            mountPath: /sys/fs/fuse/connections
+          - name:  hugepages
+            mountPath:  /dev/hugepages
+          - name: playbooks
+            mountPath: /etc/ansible:ro
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add: ["ALL"]
+      volumes:
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: DirectoryOrCreate
+        - name: varrun
+          emptyDir:
+            medium: Memory
+        - name: varlock
+          emptyDir:
+            medium: Memory
+        - name: fuse
+          emptyDir:
+            medium: Memory
+        - name: hugepages
+          emptyDir:
+            medium: Memory
+        - name: playbooks
+          nfs: 
+            # URL for the NFS server
+            server: node01.home.lab # Change this!
+            path: /clusterfs
+      restartPolicy: OnFailure 
