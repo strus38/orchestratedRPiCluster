@@ -14,7 +14,7 @@ spec:
       containers:
       - name: ansible-playbook
         image: strusfr/docker-ubuntu1804-ansible:latest
-        command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "/etc/ansible/inventory","--limit",$(NODE)]
+        command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "/etc/ansible/inventory","--limit",$(NODE),"--ssh-common-args", "'-o StrictHostKeyChecking=no'"]
         imagePullPolicy: IfNotPresent
         stdin: true
         tty: true
