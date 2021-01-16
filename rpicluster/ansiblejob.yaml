@@ -15,7 +15,7 @@ spec:
       - name: ansible-playbook
         image: strusfr/docker-ubuntu1804-ansible:latest
         command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "/etc/ansible/inventory","--limit",$(NODE),"--ssh-common-args", "'-o StrictHostKeyChecking=no'"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         stdin: true
         tty: true
         env:
@@ -23,6 +23,8 @@ spec:
             value: docker
           - name: NODE
             value: ${NODE_VALUE}
+          - name: ANSIBLE_CONFIG
+            value: /etc/ansible
         resources:
           limits:
             cpu: 200m
