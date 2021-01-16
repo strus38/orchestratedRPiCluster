@@ -110,7 +110,7 @@ $ vagrant plugin install vagrant-winnfsd
 $ vagrant plugin install vagrant-cachier
 ```
 
-7) Default docker registry setup on worker nodes (can be customized):
+7) Default docker registry setup on worker nodes (can be customized), but it is automatically like this by default:
 ```
 $ cat /etc/docker/daemon.json
 {
@@ -119,18 +119,19 @@ $ cat /etc/docker/daemon.json
   "log-opts": {
     "max-size": "100m"
   },
-  "insecure-registries": ["https://registry.home.lab"],
+  "insecure-registries": ["https://registry.home.lab,"https://harbor.home.lab"],
   "registry-mirrors": ["https://docker.io","https://quay.io","https://hub.docker.com"],
   "storage-driver": "overlay2"
 }
 $  systemctl daemon-reload && systemctl restart docker
 ```
 
-Note: easily populate your local docker repositories with all running images of your K8S cluster. This is used when the cluster is up and running to populate the Harbor registry with all running docker images.
+Note: easily populate your local docker repositories with all running images of your K8S cluster. This is used when the cluster is up and running to populate the Harbor registry with all running docker images. From the workers do:
 ```
-for i in $(docker images | grep -v home.lab | tail -n +2 | awk '{print $1":"$2}'); do 
-  docker tag $i registry.home.lab/$i
-  docker push registry.home.lab/$i
+docker login --username=admin --password=Harbor12345
+for i in $(docker images --format="{{.Repository}}:{{.Tag}}" | grep -v home.lab); do 
+  docker tag $i harbor.home.lab/library/$i
+  docker push harbor.home.lab/library/$i
 done
 ```
 

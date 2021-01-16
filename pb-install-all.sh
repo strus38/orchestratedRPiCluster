@@ -76,7 +76,8 @@ function runcmds {
             helm repo add sylabs https://charts.enterprise.sylabs.io
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-            # helm repo add stable https://charts.helm.sh/stable
+            helm repo add stableold https://charts.helm.sh/stable
+            helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
         fi
     fi
     echo "### Testing binaries"
@@ -107,8 +108,8 @@ function runcmds {
     echo "....Create metallb"
     helm $KEYV metallb bitnami/metallb -n kube-system
     check_readiness "metallb"
-    ./kubectl patch configmap metallb --patch "$(cat metallb/patch-metallb-config.yml)" -n kube-system
-    ./kubectl apply -f metallb/metallb-config.yml
+    ./kubectl apply -f metallb/metallb-config.yml -n kube-system
+    ./kubectl patch configmap config --patch "$(cat metallb/patch-metallb-config.yml)" -n kube-system
     sleep 5s
 
     echo "....Updating CoreDNS to add RPi nodes"
@@ -120,7 +121,7 @@ function runcmds {
     sleep 5s
 
     echo "... NFS client"
-    helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
+    helm $KEYV nfs-client stableold/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
     check_readiness "nfs-client"
 
     echo " ....Create chronyd"
@@ -138,7 +139,7 @@ function runcmds {
     ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=monitoring
     # ./kubectl apply -f certmgr/cert-manager.crds.yaml
     sleep 5s
-    helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v1.0.2 --set installCRDs=true
+    helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v1.1.0 --set installCRDs=true
     check_readiness "cert-manager"
     ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
     ./kubectl apply -f certmgr/issuer.yaml -n rack01
@@ -178,7 +179,7 @@ function runcmds {
     check_readiness "harbor"
     ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
     sleep 5s
-    helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
+    helm $KEYV docker-registry stableold/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
 
     echo "....Create netbox"
@@ -187,42 +188,53 @@ function runcmds {
     check_readiness "netbox"
 
     echo "....Create monitoring"
-    helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    helm $KEYV --generate-name prometheus-community/kube-prometheus-stack -f .\monitoring\kps-values.yaml -n monitoring
+    #helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
     ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
     check_readiness "prometheus"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-    # helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
-    # check_readiness "grafana"
-    # helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
-    # check_readiness "karma"
+    #helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    #check_readiness "grafana"
+    helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
+    check_readiness "karma"
+
+    echo "....Install JupyterHub"
+    # export TOKEN=openssl rand -hex 32
+    # Token value: 68dfd25df6f95b5f274b2cd85fcfd1dbe777adf866d1729c5b05e9b929ef37ca
+    #helm $KEYV jupyterhub jupyterhub/jupyterhub --namespace rack01 --version=1.3.0 --values jupyterHub/config.yaml
+    #check_readiness "jupyterhub"
 
     echo "....Install Kubevirt"
-    export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
-    echo "Kubevirt version: $KVIRT_VERSION"
-    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
-    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
-    ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
-    check_readiness "virt"
-    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+    # export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
+    # echo "Kubevirt version: $KVIRT_VERSION"
+    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
+    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
+    # ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
+    # check_readiness "virt"
+    # ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
 
     echo "Install Singularity"
-    ./kubectl apply -f ./singularity_ent/role.yml
-    ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
-    helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
-    helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
-    check_readiness "singularity"
+    # ./kubectl apply -f ./singularity_ent/role.yml
+    # ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
+    # helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
+    # helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
+    # check_readiness "singularity"
 
-    # echo "....Create tftpd"
-    # ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
-    # check_readiness "tftp"
+    echo "Install discourse"
+    helm $KEYV discourse bitnami/discourse -f discourse/discourse_values.yaml -n kube-system
+    check_readiness "discourse"
+
+    echo "....Create tftpd"
+    ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
+    check_readiness "tftp"
     
-    # echo "....Create slurmctld"
-    # ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
-    # check_readiness "slurm"
+    echo "....Create slurmctld"
+    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
+    check_readiness "slurm"
 
-    # echo ".... Create admin container to run ansible playbooks"
-    # ./kubectl apply -f rpicluster/admin.yaml
+    echo ".... Create admin container to run ansible playbooks"
+    ./kubectl apply -f rpicluster/admin.yaml
 
     echo ".... Populate Netbox with default values"
     cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py  

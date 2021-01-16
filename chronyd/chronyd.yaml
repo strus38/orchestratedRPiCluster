@@ -41,7 +41,7 @@ spec:
         - "node09.home.lab"
       containers:
       - name: chronyd
-        image: alvistack/chrony:latest
+        image: alvistack/chrony-3.5:20201225.1.0
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: true

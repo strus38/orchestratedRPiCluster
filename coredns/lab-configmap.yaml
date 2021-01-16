@@ -32,7 +32,7 @@ data:
     prometheus  IN A 10.0.0.10
     keycloak IN A 10.0.0.10
     karma IN A 10.0.0.10
-    coreharbor IN A 10.0.0.10
+    harbor IN A 10.0.0.10
     apps IN A 10.0.0.10
     tftp IN A 10.0.0.12
     chrony IN A 10.0.0.11
@@ -46,3 +46,4 @@ data:
     build  IN A 10.0.0.10
     token  IN A 10.0.0.10
     askbot IN A 10.0.0.10
+    jupyter IN A 10.0.0.10

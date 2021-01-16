@@ -64,11 +64,11 @@ spec:
           - name:  hugepages
             mountPath:  /dev/hugepages
           - name: playbooks
-            mountPath: /etc/ansible:ro
+            mountPath: /etc/ansible
         securityContext:
           allowPrivilegeEscalation: true
           capabilities:
-            add: ["SYS_ADMIN"]
+            add: ["ALL"]
       restartPolicy: Always
       volumes:
         - name: cgroup
@@ -88,6 +88,7 @@ spec:
           emptyDir:
             medium: Memory
         - name: playbooks
-          hostPath:
-            path:  "/mnt/c/Users/miamore/Documents/Projects/kubeverse/orchestratedRPiCluster/rpicluster/ansible"
-            type: Directory
+          nfs: 
+            # URL for the NFS server
+            server: node01.home.lab # Change this!
+            path: /clusterfs
