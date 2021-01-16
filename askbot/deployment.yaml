@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    application: askbot
+  name: askbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: askbot
+  template:
+    metadata:
+      labels:
+        application: askbot
+    spec:
+      containers:
+      - name: askbot
+        image: hjacobs/askbot
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 200Mi

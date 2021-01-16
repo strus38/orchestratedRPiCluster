@@ -38,7 +38,7 @@ spec:
         - "node05.home.lab"
       containers:
       - name: ansible
-        image: geerlingguy/docker-ubuntu1804-ansible:latest
+        image: strusfr/docker-ubuntu1804-ansible:latest
         imagePullPolicy: IfNotPresent
         stdin: true
         tty: true

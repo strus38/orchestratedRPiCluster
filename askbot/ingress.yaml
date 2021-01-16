@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    name: askbot
+    application: askbot
+  name: askbot
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "selfsigned"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    forecastle.stakater.com/expose: "true"
+    forecastle.stakater.com/instance: forecastle
+    forecastle.stakater.com/group: "Users"
+    forecastle.stakater.com/icon: ""
+spec:
+  tls:
+  - hosts:
+    - askbot.home.lab
+    secretName: askbot-selfsigned-cert-tls
+  rules:
+  - host: "askbot.home.lab"
+    http:
+      paths:
+      - backend:
+          serviceName: askbot
+          servicePort: 80

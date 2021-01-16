@@ -13,14 +13,16 @@ spec:
     spec:
       containers:
       - name: ansible-playbook
-        image: geerlingguy/docker-ubuntu1804-ansible:latest
-        command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "inventory","--limit","$(NODE)"]
+        image: strusfr/docker-ubuntu1804-ansible:latest
+        command: ["ansible-playbook",  "/etc/ansible/test.yaml", "-i", "/etc/ansible/inventory","--limit",$(NODE)]
         imagePullPolicy: IfNotPresent
         stdin: true
         tty: true
         env:
           - name: container
             value: docker
+          - name: NODE
+            value: ${NODE_VALUE}
         resources:
           limits:
             cpu: 200m
