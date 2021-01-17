@@ -112,10 +112,10 @@ systemctl restart docker
 
 # Set the registry common script
 cat > /root/add2reg.sh <<EOF
-docker login --username=admin --password=Harbor12345
-for i in $(docker images --format="{{.Repository}}:{{.Tag}}" | grep -v home.lab); do 
-  docker tag $i harbor.home.lab/library/$i
-  docker push harbor.home.lab/library/$i
+docker login --username=admin --password=Harbor12345 https://harbor.home.lab
+for i in \$(docker images --format="{{.Repository}}:{{.Tag}}" | grep -v home.lab); do 
+  docker tag \$i harbor.home.lab/library/$i
+  docker push harbor.home.lab/library/\$i
 done
 EOF
 chmod 755 /root/add2reg.sh

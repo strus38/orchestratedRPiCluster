@@ -229,15 +229,15 @@ function runcmds {
     ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
     check_readiness "tftp"
     
-    echo "....Create slurmctld"
-    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
-    check_readiness "slurm"
-
     echo ".... Create admin container to run ansible playbooks"
     ./kubectl apply -f rpicluster/admin.yaml
 
     echo ".... Populate Netbox with default values"
     cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py  
+
+    echo "....Create slurmctld"
+    ./kubectl apply -f slurmctl/slurm-k8s.yaml -n rack01
+    check_readiness "slurm"
 
     echo "Done"
 }

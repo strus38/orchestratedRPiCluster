@@ -1,7 +1,7 @@
 data:
-  config: |
+  metallb-config: |
     address-pools:
     - name: default
       protocol: layer2
       addresses:
-      - 10.0.0.9-10.0.0.150
+      - 10.0.0.9-10.0.0.100
