@@ -28,13 +28,10 @@ Storage node services:
 
 Screenshots:
 
-* RPi Cluster View (COVID19 - built with some stuff I had at that time :-) )
+* RPi Cluster View ( 3D printed racks )
 
-![RPi Cluster View](imgs/RpiClusterView.PNG)![RPi Cluster View](imgs/rackView.PNG)
-
-* 3D view of the in-progress final cluster stack
-
-![RPi Cluster 3D View](imgs/3DView.PNG)![RPi Cluster 3D View](imgs/3DView2.PNG)
+![RPi Cluster View](imgs/RpiClusterView.PNG)
+![RPi Cluster View](imgs/rackView.PNG)
 
 * Apps dashboard
 
