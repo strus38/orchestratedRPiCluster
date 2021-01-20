@@ -3,7 +3,30 @@
 ## Objective
 Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop.
 Basically, the laptop is used to host the K8S cluster and all services required in an HPC cluster.
-The RPis are used as compute nodes.
+The RPis are used as compute nodes and 1 is also acting as the storage node internal for K8S and external for backups.
+
+Services front-ends:
+- Forecastle as application dashboard solution
+- Keycloak as SSO solution
+- Harbor as registry & chart museum solution
+- Grafana / Prometheus / Karama / node_exporters as monitoring solution
+- Dashboard K8S as overall admin solution
+- Netbox as DCIM solution
+- JupyterHub as developers dream
+- Discourse as FAQ solution
+- Velero as backup solution
+- ELK stack as logging solution (optionnal since it requires plenty of CPUs/RAM on the Windows machine)
+- Singularity Enterprise as job container solution (optionnal since it requires a valid license - not available on this github)
+
+End-user additonal services:
+- Ansible pod as deployment solution
+- Slurm as Workload scheduler solution
+
+Storage node services:
+- minio as S3 solution
+- NFS server as dynamic storage class for K8S services
+
+Screenshots:
 
 * RPi Cluster View (COVID19 - built with some stuff I had at that time :-) )
 

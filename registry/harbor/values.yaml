@@ -53,6 +53,7 @@ expose:
       forecastle.stakater.com/instance: forecastle
       forecastle.stakater.com/group: "Admin"
       forecastle.stakater.com/icon: "https://goharbor.io/img/logos/harbor-horizontal-color.png"
+
   clusterIP:
     # The name of ClusterIP service
     name: harbor
@@ -412,7 +413,8 @@ portal:
   tolerations: []
   affinity: {}
   ## Additional deployment annotations
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: "harbor-harbor-portal"
 
 core:
   image:
@@ -496,7 +498,8 @@ registry:
   tolerations: []
   affinity: {}
   ## Additional deployment annotations
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: "harbor-harbor-registry"
   # Secret is used to secure the upload state from client
   # and registry storage backend.
   # See: https://github.com/docker/distribution/blob/master/docs/configuration.md#http
@@ -542,7 +545,8 @@ chartmuseum:
   tolerations: []
   affinity: {}
   ## Additional deployment annotations
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: "harbor-harbor-chartmuseum"
 
 clair:
   enabled: true
@@ -712,7 +716,8 @@ database:
   # Note: the default number of connections is 1024 for postgre of harbor.
   maxOpenConns: 1000
   ## Additional deployment annotations
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: "harbor-harbor-database"
 
 redis:
   # if external Redis is used, set "type" to "external"
@@ -748,5 +753,6 @@ redis:
     trivyAdapterIndex: "5"
     password: ""
   ## Additional deployment annotations
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: "harbor-harbor-redis"
 

@@ -78,6 +78,7 @@ function runcmds {
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
             helm repo add stableold https://charts.helm.sh/stable
             helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+            helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
         fi
     fi
     echo "### Testing binaries"
@@ -194,8 +195,10 @@ function runcmds {
     check_readiness "prometheus"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-    #helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
-    #check_readiness "grafana"
+
+    helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    check_readiness "grafana"
+    
     helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
     check_readiness "karma"
 
@@ -218,12 +221,12 @@ function runcmds {
     # ./kubectl apply -f ./singularity_ent/role.yml
     # ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
     # helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
-    # helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n n rack01
+    # helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n rack01
     # check_readiness "singularity"
 
     echo "Install discourse"
-    helm $KEYV discourse bitnami/discourse -f discourse/discourse_values.yaml -n kube-system
-    check_readiness "discourse"
+    # helm $KEYV discourse bitnami/discourse -f discourse/discourse_values.yaml -n kube-system
+    # check_readiness "discourse"
 
     echo "....Create tftpd"
     ./kubectl apply -f ftpsvc/tftp-hpa/tftp-hpa.yaml -n rack01
@@ -231,6 +234,10 @@ function runcmds {
     
     echo ".... Create admin container to run ansible playbooks"
     ./kubectl apply -f rpicluster/admin.yaml
+
+    echo "Setup backup solution"
+    helm $KEYV velero vmware-tanzu/velero -f backup/velero-values.yaml -n kube-system
+    check_readiness "velero"
 
     echo ".... Populate Netbox with default values"
     cd netbox/config && pip3 install -r requirements.txt && python3 netbox_init.py  
