@@ -3,8 +3,15 @@
 ## Objective
 Build a HPC home-lab based on RPIs managed by a K8S cluster on a laptop.
 Basically, the laptop is used to host the K8S cluster and all services required in an HPC cluster.
-The RPis are used as compute nodes and 1 is also acting as the storage node internal for K8S and external for backups.
+The RPis are used as compute nodes and 1 is acting as the storage node delivering K8S and backup storage spaces.
 
+Warning: security is implemented in a minimal manner
+- HTTPS on UI: YES
+- SSO configuration to be done manually after Keycloak is deployed
+- RBAC: default model provided by Helm chart/deployment files
+- No service mesh / no HTTPS between pod services
+
+## Content
 Services front-ends:
 - Forecastle as application dashboard solution
 - Keycloak as SSO solution
@@ -26,7 +33,7 @@ Storage node services:
 - minio as S3 solution
 - NFS server as dynamic storage class for K8S services
 
-Screenshots:
+## Screenshots
 
 * RPi Cluster View ( 3D printed racks )
 
@@ -79,9 +86,9 @@ Screenshots:
 
 ## Compatibility
 
-| Branch / Kubernetes Version         |       1.17.X       |       1.18.X       | 
+| Branch / Kubernetes Version         |       1.19.X       |       1.20.X       | 
 | ----------------------------------- | :----------------: | :----------------: | 
-| Master                              | :x:                | :white_check_mark: |
+| Master/Workers                      | :white_check_mark: | :white_check_mark: |
 
 
 - :white_check_mark: Compatible
@@ -229,7 +236,7 @@ Fixed Cluster Services endpoints for admins:
 * UI entry point: https://apps.home.lab (aka: 10.0.0.10)
 * SLURM controller for rack01: 10.0.0.9
 
-## SLURM
+## Workload scheduler with Slurm
 
 Currently using SLURM 18.08.5 - Ubuntu 18.04 (otherwise the slurm node_exporter for Ubuntu cannot be compiled)
 Note: missleading name of the containers: docker-ubuntu1604-xxx are in fact Ubuntu18.04 :-).
@@ -276,8 +283,9 @@ kv-worker-1   Ready    <none>   4d3h   v1.18.2
 kv-worker-2   Ready    <none>   4d3h   v1.18.2
 ```
 
-* Easy way to start all services
+* Easy way to start all services from the PC
 ```
+$ wsl
 $ ./pb-install-all.sh --deploy
 ```
 
