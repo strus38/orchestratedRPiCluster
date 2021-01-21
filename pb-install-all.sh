@@ -64,7 +64,7 @@ function runcmds {
         if [ ! -f "/usr/local/bin/helm" ]; then 
             ./get_helm.sh
             echo "Configure helm"
-            helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+            # DEPRECATED helm repo add stableold https://kubernetes-charts.storage.googleapis.com/
             helm repo add pnnl-miscscripts https://pnnl-miscscripts.github.io/charts
             helm repo add pojntfx https://pojntfx.github.io/charts/
             helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -76,12 +76,13 @@ function runcmds {
             helm repo add sylabs https://charts.enterprise.sylabs.io
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-            helm repo add stableold https://charts.helm.sh/stable
+            helm repo add stable https://charts.helm.sh/stable
             helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
             helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
         fi
     fi
     echo "### Testing binaries"
+    export KUBECONFIG=/mnt/c/Users/miamore/.kube/config
     ./kubectl version
     helm version
     ./kubectl config view --raw >/tmp/config
@@ -91,11 +92,11 @@ function runcmds {
     echo "Environment READY"
     echo "-----"
 
-    if [ ! -f "/usr/local/bin/checkov" ]; then 
-        echo "### Issuing security report"
-        checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
-        junit2html checkov.results.xml > checkov.html
-    fi
+    # if [ ! -f "/usr/local/bin/checkov" ]; then 
+    #     echo "### Issuing security report"
+    #     checkov -d . --framework kubernetes -o junitxml 2> checkov.results.xml
+    #     junit2html checkov.results.xml > checkov.html
+    # fi
 
     echo "### Starting configuration of all services..."
     ./kubectl get nodes
@@ -122,7 +123,10 @@ function runcmds {
     sleep 5s
 
     echo "... NFS client"
-    helm $KEYV nfs-client stableold/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
+    #helm $KEYV nfs-client stable/nfs-client-provisioner -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
+    cd nfs-subdir-external-provisioner/deploy/helm/
+    helm $KEYV nfs-client . -n kube-system --set nfs.server=10.0.0.2 --set nfs.path=/mnt/usb6 --set storageClass.name=nfs-dyn
+    cd ../../..
     check_readiness "nfs-client"
 
     echo " ....Create chronyd"
@@ -163,7 +167,7 @@ function runcmds {
 
     echo "....Create main apps UI"
     ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
-    ./kubectl apply -f forecastle/forecastle.yaml -n kube-system
+    ./kubectl apply -f forecastle/forecastle2001.yaml -n kube-system
     check_readiness "forecastle"
 
     echo "....Create K8S dashboard"
@@ -180,7 +184,7 @@ function runcmds {
     check_readiness "harbor"
     ./kubectl apply -f registry/dockerRegistry/pvc-claim.yaml -n rack01
     sleep 5s
-    helm $KEYV docker-registry stableold/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
+    helm $KEYV docker-registry stable/docker-registry -f registry/dockerRegistry/registryvalues.yaml -n rack01
     check_readiness "docker-registry"
 
     echo "....Create netbox"
@@ -203,10 +207,10 @@ function runcmds {
     check_readiness "karma"
 
     echo "....Install JupyterHub"
-    # export TOKEN=openssl rand -hex 32
+    export TOKEN=$(openssl rand -hex 32)
     # Token value: 68dfd25df6f95b5f274b2cd85fcfd1dbe777adf866d1729c5b05e9b929ef37ca
-    #helm $KEYV jupyterhub jupyterhub/jupyterhub --namespace rack01 --version=1.3.0 --values jupyterHub/config.yaml
-    #check_readiness "jupyterhub"
+    helm $KEYV jupyterhub jupyterhub/jupyterhub --namespace rack01 --version=1.3.0 --values jupyterHub/config.yaml
+    check_readiness "jupyterhub"
 
     echo "....Install Kubevirt"
     # export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)

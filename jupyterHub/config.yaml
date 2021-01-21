@@ -512,7 +512,7 @@ ingress:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     forecastle.stakater.com/expose: "true"
     forecastle.stakater.com/instance: forecastle
-    forecastle.stakater.com/group: "Users playground"
+    forecastle.stakater.com/group: "Users"
     forecastle.stakater.com/icon: "https://fr.wikipedia.org/wiki/Jupyter#/media/Fichier:Jupyter_logo.svg"
   hosts:
     - jupyter.home.lab
