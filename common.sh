@@ -114,7 +114,7 @@ systemctl restart docker
 cat > /root/add2reg.sh <<EOF
 docker login --username=admin --password=Harbor12345 https://harbor.home.lab
 for i in \$(docker images --format="{{.Repository}}:{{.Tag}}" | grep -v home.lab); do 
-  docker tag \$i harbor.home.lab/library/$i
+  docker tag \$i harbor.home.lab/library/\$i
   docker push harbor.home.lab/library/\$i
 done
 EOF

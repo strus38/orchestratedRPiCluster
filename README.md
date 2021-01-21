@@ -48,6 +48,10 @@ Storage node services:
 
 ![RPi Cluster Lens](imgs/lens1.PNG)
 
+* minio dashboard - backup content on S3
+
+![RPi minio external storage](imgs/minio-storagenode.PNG)
+
 * Netbox: 'The source of truth' :-)
 
 ![RPi Cluster Lens](imgs/netbox.PNG)
@@ -79,6 +83,10 @@ Storage node services:
 * K8S dashboard services
 
 ![K8S dashboard services](imgs/dashSvc.PNG)
+
+* Harbor registry dashboard
+
+![Harbor registry](imgs/harbor.PNG)
 
 ## High-level design
 
