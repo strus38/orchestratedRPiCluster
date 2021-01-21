@@ -39,7 +39,7 @@ spec:
       containers:
       - name: ansible
         image: strusfr/docker-ubuntu1804-ansible:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         stdin: true
         tty: true
         env:

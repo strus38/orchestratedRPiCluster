@@ -206,7 +206,7 @@ function runcmds {
     echo "....Install JupyterHub"
     export TOKEN=$(openssl rand -hex 32)
     # Token value: 68dfd25df6f95b5f274b2cd85fcfd1dbe777adf866d1729c5b05e9b929ef37ca
-    helm $KEYV jupyterhub jupyterhub/jupyterhub --namespace rack01 --version=1.3.0 --values jupyterHub/config.yaml
+    helm $KEYV jupyterhub jupyterhub/jupyterhub --namespace rack01 --values jupyterHub/config.yaml
     check_readiness "jupyterhub"
 
     echo "....Install Kubevirt"
