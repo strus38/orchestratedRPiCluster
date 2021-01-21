@@ -193,18 +193,15 @@ function runcmds {
     check_readiness "netbox"
 
     echo "....Create monitoring"
-    helm $KEYV --generate-name prometheus-community/kube-prometheus-stack -f .\monitoring\kps-values.yaml -n monitoring
-    #helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
-    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
-    check_readiness "prometheus"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-
-    helm $KEYV grafana stable/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
-    check_readiness "grafana"
+    helm $KEYV prometheus prometheus-community/kube-prometheus-stack -f .\monitoring\kps-values.yaml -n monitoring
+    ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
+    check_readiness "prometheus"
     
-    helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
-    check_readiness "karma"
+    # DEPRECATED - helm $KEYV prometheus stable/prometheus -f monitoring/prometheus/prometheus.values -n monitoring
+    # DEPRECATED - helm $KEYV grafana grafana/grafana -f monitoring/grafana/grafanavalues.yaml -n monitoring
+    # DEPRECATED - helm $KEYV karma stable/karma --version 1.5.2 -f monitoring/karma/values.yaml -n monitoring
 
     echo "....Install JupyterHub"
     export TOKEN=$(openssl rand -hex 32)

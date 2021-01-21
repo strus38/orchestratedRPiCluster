@@ -4,6 +4,7 @@
 # Editor swapfiles
 .*.sw?
 *~
+*.tgz
 
 # Vagrant stuff
 /.vagrant
