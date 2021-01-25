@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ../kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: test
+    app: test
+  name: test
+spec:
+  selector:
+    matchLabels:
+      app: test
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: test
+        app: test
+    spec:
+      containers:
+      - args:
+        - /bin/ash
+        - -c
+        - (id keys-sync || adduser -h /var/local/keys-sync -S -D -s /bin/sh keys-sync)
+          && chmod 711 /var/local/keys-sync && cp /key /var/local/keys-sync/keys-sync
+          && chown keys-sync:nogroup /var/local/keys-sync/keys-sync && chmod 644 /var/local/keys-sync/keys-sync
+          && apk add openssh && ssh-keygen -A && sed -i -e '/#StrictModes/ s/.*/StrictModes
+          no/' /etc/ssh/sshd_config && sed -i -e '/AuthorizedKeysFile/ s/.*/AuthorizedKeysFile
+          /var/local/keys-sync/%u/' /etc/ssh/sshd_config && passwd keys-sync -d test
+          && passwd root -d test && /usr/sbin/sshd -D
+        image: alpine:3.8
+        name: test
+        resources: {}
+        volumeMounts:
+        - mountPath: /key
+          name: test-claim0
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: test-claim0
+        persistentVolumeClaim:
+          claimName: test-claim0
+          readOnly: true
+status: {}

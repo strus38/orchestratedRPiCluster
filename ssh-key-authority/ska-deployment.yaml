@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ../kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ska
+    app: ska
+  name: ska
+spec:
+  selector:
+    matchLabels:
+      app: ska
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ska
+        app: ska
+    spec:
+      containers:
+      - image: httpd:alpine
+        name: ska
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+        - mountPath: /ska/public-html
+          name: ska-claim0
+          readOnly: true
+        - mountPath: /usr/local/apache2/conf/httpd.conf
+          name: ska-claim1
+          readOnly: true
+        - mountPath: /allowed-users
+          name: ska-claim2
+      restartPolicy: Always
+      volumes:
+      - name: ska-claim0
+        persistentVolumeClaim:
+          claimName: ska-claim0
+          readOnly: true
+      - name: ska-claim1
+        persistentVolumeClaim:
+          claimName: ska-claim1
+          readOnly: true
+      - name: ska-claim2
+        persistentVolumeClaim:
+          claimName: ska-claim2
+status: {}

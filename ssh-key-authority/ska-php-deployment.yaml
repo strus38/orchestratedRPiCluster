@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ../kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ska-php
+    app: ska-php
+  name: ska-php
+spec:
+  selector:
+    matchLabels:
+      app: ska-php
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ska-php
+        app: ska-php
+    spec:
+      containers:
+      - image: toendeavour/ssh-key-authority
+        name: ska-php
+        resources: {}
+        volumeMounts:
+        - mountPath: /ska/config/
+          name: ska-php-claim0
+        - mountPath: /etc/ssmtp/ssmtp.conf
+          name: ska-php-claim1
+          readOnly: true
+        - mountPath: /public-html
+          name: ska-php-claim2
+      restartPolicy: Always
+      volumes:
+      - name: ska-php-claim0
+        persistentVolumeClaim:
+          claimName: ska-php-claim0
+      - name: ska-php-claim1
+        persistentVolumeClaim:
+          claimName: ska-php-claim1
+          readOnly: true
+      - name: ska-php-claim2
+        persistentVolumeClaim:
+          claimName: ska-php-claim2
+status: {}

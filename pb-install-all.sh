@@ -234,7 +234,8 @@ function runcmds {
     check_readiness "tftp"
     
     echo ".... Create admin container to run ansible playbooks"
-    ./kubectl apply -f rpicluster/admin.yaml
+    ./kubectl apply -f rpicluster/admin.yaml -n rack01
+    ./kubectl apply -f rpicluster/admin.yaml -n kube-system
 
     echo "Setup backup solution"
     helm $KEYV velero vmware-tanzu/velero -f backup/velero-values.yaml -n kube-system

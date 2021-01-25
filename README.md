@@ -306,6 +306,18 @@ This UI is protected by keycloak. So you must add users in Keycloak first: https
 
 ## Debug tips
 
+* usually after the VMs are stopped, at restart kubectl won't work again. It fix it:
+- login on master node
+`vagrant ssh kv-master-0`
+- run the commands:
+```
+sudo -i
+swapoff -a
+exit
+kubectl version
+```
+- then enjoy!
+
 * when you have a worker vm which is stuck or need a reboot, here is how to take it back in the cluster
 ```
 From the worker node after reboot
@@ -316,6 +328,9 @@ $ sudo swapoff -a
 3. start kubeadm join (info found ni the kubeadm-init.out file generated during vagrant deployment)
 $ sudo kubeadm join YourMasterNodeIPAddress --token xxxx --discovery-token-ca-cert-hash \
 sha256...
+
+Note: If the token expired, just create one from the master by running:
+kubeadm token create --print-join-command
 ```
 
 ## RBAC related topics
