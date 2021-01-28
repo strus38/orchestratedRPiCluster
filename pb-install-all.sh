@@ -210,22 +210,24 @@ function runcmds {
     check_readiness "jupyterhub"
 
     echo "....Install Kubevirt"
-    # export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
-    # echo "Kubevirt version: $KVIRT_VERSION"
-    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
-    # ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
-    # ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
-    # check_readiness "virt"
-    # ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
+    export KVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
+    echo "Kubevirt version: $KVIRT_VERSION"
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-operator.yaml
+    ./kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${KVIRT_VERSION}/kubevirt-cr.yaml
+    ./kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
+    check_readiness "virt"
+    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
 
-    echo "Install Singularity"
-    # ./kubectl apply -f ./singularity_ent/role.yml
-    # ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
-    # helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
-    # helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n rack01
-    # check_readiness "singularity"
+    if [ -d "./singularity_ent" ]; then
+        echo "Install Singularity"
+        ./kubectl apply -f ./singularity_ent/role.yml
+        ./kubectl apply -f ./singularity_ent/singularity-creds.yaml -n kubevirt
+        helm $KEYV  singularity -f ./singularity_ent/values.yaml sylabs/singularity-enterprise -n rack01
+        helm $KEYV singularity-crds sylabs/singularity-enterprise --values crdDefinitions.frontend.host=cloud.home.lab -n rack01
+        check_readiness "singularity"
+    fi
 
-    echo "Install discourse"
+    # echo "Install discourse"
     # helm $KEYV discourse bitnami/discourse -f discourse/discourse_values.yaml -n kube-system
     # check_readiness "discourse"
 
