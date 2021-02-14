@@ -225,6 +225,56 @@ done
     ** add "/mnt/usbX        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
     $ exportfs -ra
     ```
+    example:
+    ```
+    Disk /dev/sda: 465.8 GiB, 500107862016 bytes, 976773168 sectors
+    Disk model: 00G2B0C-00PX
+    Units: sectors of 1 * 512 = 512 bytes
+    Sector size (logical/physical): 512 bytes / 4096 bytes
+    I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+    Disklabel type: gpt
+    Disk identifier: DE0AC0F0-D4B3-4ABB-A2AB-733DCF8E40C3
+
+    Device         Start       End   Sectors  Size Type
+    /dev/sda1     999424  19531775  18532352  8.9G Linux filesystem
+    /dev/sda2   19531776  39061503  19529728  9.3G Linux filesystem
+    /dev/sda3   39061504  58593279  19531776  9.3G Linux filesystem
+    /dev/sda4   58593280  78125055  19531776  9.3G Linux filesystem
+    /dev/sda5   78125056  97656831  19531776  9.3G Linux filesystem
+    /dev/sda6   97656832 214843750 117186919 55.9G Linux filesystem
+    /dev/sda7  214845440 351561727 136716288 65.2G Linux filesystem
+    root@node01:/home/pi# cat <<EOF >>/etc/exports
+    /mnt/usb1        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb2        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb3        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb4        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb5        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb6        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    /mnt/usb7        10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)
+    EOF
+    root@node01:/home/pi# mkdir /mnt/usb1
+    root@node01:/home/pi# mkdir /mnt/usb2
+    root@node01:/home/pi# mkdir /mnt/usb3
+    root@node01:/home/pi# mkdir /mnt/usb4
+    root@node01:/home/pi# mkdir /mnt/usb5
+    root@node01:/home/pi# mkdir /mnt/usb6
+    root@node01:/home/pi# mkdir /mnt/usb7
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb1
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb2
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb3
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb4
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb5
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb6
+    root@node01:/home/pi# chown nobody:nogroup -R /mnt/usb7
+    root@node01:/home/pi# chmod 777 -R /mnt/usb1
+    root@node01:/home/pi# chmod 777 -R /mnt/usb2
+    root@node01:/home/pi# chmod 777 -R /mnt/usb3
+    root@node01:/home/pi# chmod 777 -R /mnt/usb4
+    root@node01:/home/pi# chmod 777 -R /mnt/usb5
+    root@node01:/home/pi# chmod 777 -R /mnt/usb6
+    root@node01:/home/pi# chmod 777 -R /mnt/usb7
+    root@node01:/home/pi# exportfs -ra
+    ```
   
   - NTP time on RPIs
     ```
@@ -294,6 +344,8 @@ kv-worker-2   Ready    <none>   4d3h   v1.18.2
 * Easy way to start all services from the PC
 ```
 $ wsl
+$ create-ca.sh
+$ create-certificates.sh <your domain>
 $ ./pb-install-all.sh --deploy
 ```
 

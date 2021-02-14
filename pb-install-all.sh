@@ -28,22 +28,13 @@ function remove {
 function reset {
     ./kubectl config view --raw >/tmp/config
     export KUBECONFIG=/tmp/config
-    helm delete nfs-client -n kube-system
-    helm delete cert-manager -n cert-manager
-    helm delete nginx-ingress -n nginx-ingress
-    helm delete docker-registry -n rack01
-    helm delete chartmuseum -n rack01
-    helm delete prometheus -n monitoring
-    helm delete grafana -n monitoring
-    helm delete karma -n monitoring
-    ./kubectl delete -f keycloack/. -n kube-system --force
-    ./kubectl delete -f netbox/. -n kube-system --force
-    ./kubectl delete -f monitoring/kubestatemetrics/. -n kube-system --force
     ./kubectl delete ns kubernetes-dashboard --force
     ./kubectl delete ns rack01 --force
+    ./kubectl delete ns rack02 --force
     ./kubectl delete ns cert-manager --force
     ./kubectl delete ns monitoring --force
     ./kubectl delete ns nginx-ingress --force
+    ./kubectl delete ns kubevirt --force
 }
 
 function runcmds {
@@ -79,6 +70,8 @@ function runcmds {
             helm repo add stable https://charts.helm.sh/stable
             helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
             helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+            helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+            helm repo add gabibbo97 https://gabibbo97.github.io/charts/
         fi
     fi
     echo "### Testing binaries"
@@ -134,20 +127,21 @@ function runcmds {
     check_readiness "chrony"
 
     echo "....Create certificates manager"
-    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n cert-manager
-    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n kube-system
-    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n rack01
-    ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n monitoring
-    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=cert-manager
-    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=kube-system
-    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=rack01
-    ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key --namespace=monitoring
+    for ns in cert-manager kube-system rack01 monitoring kubevirt; do
+        if [ $KEYV = 'upgrade' ]; then
+            ./kubectl delete configmap private-ca-cert -n ${ns}
+            ./kubectl delete secret ca-key-pair -n ${ns}
+        fi
+        ./kubectl create configmap private-ca-cert --from-file=tls.crt=ca.crt  -n ${ns}
+        ./kubectl create secret tls ca-key-pair --cert=ca.crt --key=ca.key -n ${ns}
+    done
     # ./kubectl apply -f certmgr/cert-manager.crds.yaml
     sleep 5s
     helm $KEYV cert-manager jetstack/cert-manager -n cert-manager --version v1.1.0 --set installCRDs=true
     check_readiness "cert-manager"
-    ./kubectl apply -f certmgr/issuer.yaml -n cert-manager
-    ./kubectl apply -f certmgr/issuer.yaml -n rack01
+    for ns in cert-manager kube-system rack01 monitoring kubevirt; do
+        ./kubectl apply -f certmgr/issuer.yaml -n ${ns}
+    done
     sleep 5s
 
     echo "....Create nginx-ingress"
@@ -160,10 +154,12 @@ function runcmds {
     ./kubectl apply -f persistentVolume/persistentVolume.yaml
     sleep 5s
 
-    echo "....Create keycloack"
+    echo "....Create keycloack & 389-ds"
     ./kubectl create secret generic realm-secret --from-file=keycloack/realm-export.json -n kube-system
     helm $KEYV keycloak codecentric/keycloak --version 8.2.2 -f keycloack/kcvalues.yml -n kube-system
     check_readiness "keycloak"
+    helm $KEYV 389ds gabibbo97/389ds --version 0.1.0
+    check_readiness "389ds"
 
     echo "....Create main apps UI"
     ./kubectl create secret generic gatekeeper-fc --from-file=./forecastle/kc/gatekeeper.yaml -n kube-system
@@ -195,7 +191,7 @@ function runcmds {
     echo "....Create monitoring"
     ./kubectl apply -f monitoring/kubestatemetrics/. -n kube-system
     ./kubectl apply -f monitoring/grafana/grafanaconfig.yaml -n monitoring
-    helm $KEYV prometheus prometheus-community/kube-prometheus-stack -f .\monitoring\kps-values.yaml -n monitoring
+    helm $KEYV prometheus prometheus-community/kube-prometheus-stack -f ./monitoring/kps-values.yaml -n monitoring
     ./kubectl apply -f monitoring/prometheus/clusterrole.yaml -n monitoring
     check_readiness "prometheus"
     
@@ -318,6 +314,7 @@ do
         echo "  -d: Deploy all services on existing cluster"
         echo "  -r: Delete the whole cluster and all services"
         echo "  -i: Delete all services running on the cluster"
+        echo "  -u: Upgrade all services running on the cluster"
         exit 0
         ;;
     esac
